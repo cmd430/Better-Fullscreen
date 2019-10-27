@@ -341,9 +341,9 @@ Public Class BetterFullscreen
         Dim hWnd = GetForegroundWindow()
         Dim hWndTitle As New StringBuilder
         Dim [class] As String = ""
-        Dim _size As String() = ReadINI(Config, "SETTINGS", "size", "800x600").Split("x"c)
-        Dim _location As String() = ReadINI(Config, "SETTINGS", "location", "0x0").Split("x"c)
-        Dim [size] As New Size(_size(0), (1))
+        Dim _size As String() = ReadINI(Config, "SETTINGS", "default_size", "800x600").Split("x"c)
+        Dim _location As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
+        Dim [size] As New Size(_size(0), _size(1))
         Dim [location] As New Point(_location(0), _location(1))
         GetWindowText(hWnd, hWndTitle, 128)
         GetClassName(hWnd, [class], 128)
