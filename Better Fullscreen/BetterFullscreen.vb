@@ -1,6 +1,8 @@
 ﻿Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Text
+Imports Microsoft.Win32
+Imports Microsoft.Win32.Registry
 
 Public Class BetterFullscreen
 
@@ -175,7 +177,9 @@ Public Class BetterFullscreen
     End Sub
     Private Sub LoadGameSettings(Optional ByVal SelectedGame As String = Nothing)
         If SelectedGame Is Nothing And Not ComboBox_Games.SelectedIndex = 0 Then
-            ComboBox_Games.SelectedIndex = 0
+            If ComboBox_Games.Items.Count > 0 Then
+                ComboBox_Games.SelectedIndex = 0
+            End If
         Else
             ComboBox_Games.SelectedIndex = SelectedGame
         End If
@@ -200,6 +204,30 @@ Public Class BetterFullscreen
         Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
         RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
         __SettingsChanged = True
+    End Sub
+    Public Function LoadWithWindows() As Boolean
+        Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
+        If key Is Nothing Then
+            Return False
+        End If
+
+        Dim value As Object = key.GetValue(Process.GetCurrentProcess().MainModule.FileName)
+        If TypeOf value Is String Then
+            Return value.StartsWith("""" & Application.ExecutablePath & """")
+        End If
+
+        Return False
+    End Function
+    Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_startWithWindows.CheckedChanged
+        If LoadWithWindows() Then
+            Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
+            key.DeleteValue(Process.GetCurrentProcess().MainModule.FileName, False)
+            CheckBox_startWithWindows.Checked = False
+        Else
+            Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
+            key.SetValue(Process.GetCurrentProcess().MainModule.FileName, """" & Application.ExecutablePath & """")
+            CheckBox_startWithWindows.Checked = True
+        End If
     End Sub
     Private Sub Button_ReloadApp_Click(sender As Object, e As EventArgs) Handles Button_ReloadApp.Click
         LoadSettings()

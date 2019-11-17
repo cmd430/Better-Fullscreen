@@ -76,6 +76,7 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
         Me.Button_Remove = New System.Windows.Forms.Button()
         Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
+        Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -108,29 +109,29 @@ Partial Class BetterFullscreen
         '
         Me.TrayMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToggleWindowToolStripMenuItem, Me.ReloadToolStripMenuItem, Me.ToolStripSeparator1, Me.ExitToolStripMenuItem})
         Me.TrayMenu.Name = "ContextMenuStrip1"
-        Me.TrayMenu.Size = New System.Drawing.Size(157, 76)
+        Me.TrayMenu.Size = New System.Drawing.Size(149, 76)
         '
         'ToggleWindowToolStripMenuItem
         '
         Me.ToggleWindowToolStripMenuItem.Name = "ToggleWindowToolStripMenuItem"
-        Me.ToggleWindowToolStripMenuItem.Size = New System.Drawing.Size(156, 22)
-        Me.ToggleWindowToolStripMenuItem.Text = "Toggle Window"
+        Me.ToggleWindowToolStripMenuItem.Size = New System.Drawing.Size(148, 22)
+        Me.ToggleWindowToolStripMenuItem.Text = "Toggle Config"
         '
         'ReloadToolStripMenuItem
         '
         Me.ReloadToolStripMenuItem.Name = "ReloadToolStripMenuItem"
-        Me.ReloadToolStripMenuItem.Size = New System.Drawing.Size(156, 22)
+        Me.ReloadToolStripMenuItem.Size = New System.Drawing.Size(148, 22)
         Me.ReloadToolStripMenuItem.Text = "Reload"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(153, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(145, 6)
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(156, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(148, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'RichTextBox_EventLog
@@ -539,6 +540,7 @@ Partial Class BetterFullscreen
         '
         'GroupBox_ApplicationSettings
         '
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_startWithWindows)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label21)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Key)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Modifier)
@@ -620,6 +622,17 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 303.0!))
         Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
         Me.TableLayoutPanel4.TabIndex = 7
+        '
+        'CheckBox_startWithWindows
+        '
+        Me.CheckBox_startWithWindows.AutoSize = True
+        Me.CheckBox_startWithWindows.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_startWithWindows.Location = New System.Drawing.Point(9, 157)
+        Me.CheckBox_startWithWindows.Name = "CheckBox_startWithWindows"
+        Me.CheckBox_startWithWindows.Size = New System.Drawing.Size(117, 17)
+        Me.CheckBox_startWithWindows.TabIndex = 24
+        Me.CheckBox_startWithWindows.Text = "Start with Windows"
+        Me.CheckBox_startWithWindows.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
@@ -713,4 +726,5 @@ Partial Class BetterFullscreen
     Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
     Friend WithEvents GroupBox_GameSettings As GroupBox
     Friend WithEvents Button_Remove As Button
+    Friend WithEvents CheckBox_startWithWindows As CheckBox
 End Class
