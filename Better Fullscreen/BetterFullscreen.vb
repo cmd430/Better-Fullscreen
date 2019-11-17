@@ -147,6 +147,10 @@ Public Class BetterFullscreen
     Private Sub WarframeBetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
         __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
+        If LoadWithWindows() Then
+            CheckBox_startWithWindows.Checked = True
+        End If
+        AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         Init()
     End Sub
     Private Sub Timer_Scanner_Tick(sender As Object, e As EventArgs) Handles Timer_Scanner.Tick
@@ -179,31 +183,38 @@ Public Class BetterFullscreen
         If SelectedGame Is Nothing And Not ComboBox_Games.SelectedIndex = 0 Then
             If ComboBox_Games.Items.Count > 0 Then
                 ComboBox_Games.SelectedIndex = 0
+                GroupBox_GameSettings.Enabled = True
+            Else
+                GroupBox_GameSettings.Enabled = False
             End If
         Else
             ComboBox_Games.SelectedIndex = SelectedGame
         End If
-        Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-        TextBox_Title.Text = Game.Value.Title
-        TextBox_Class.Text = Game.Value.Class
-        NumericUpDown_Width.Value = Game.Value.Size.Width
-        NumericUpDown_Height.Value = Game.Value.Size.Height
-        NumericUpDown_Top.Value = Game.Value.Location.Y
-        NumericUpDown_Left.Value = Game.Value.Location.X
-        RichTextBox_EventLog.AppendText("Loaded '" & Game.Key & "' settings" & vbCrLf)
+        If ComboBox_Games.SelectedIndex > -1 Then
+            Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
+            TextBox_Title.Text = Game.Value.Title
+            TextBox_Class.Text = Game.Value.Class
+            NumericUpDown_Width.Value = Game.Value.Size.Width
+            NumericUpDown_Height.Value = Game.Value.Size.Height
+            NumericUpDown_Top.Value = Game.Value.Location.Y
+            NumericUpDown_Left.Value = Game.Value.Location.X
+            RichTextBox_EventLog.AppendText("Loaded '" & Game.Key & "' settings" & vbCrLf)
+        End If
     End Sub
     Private Sub SaveGameSettings()
-        Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-        WriteINI(Config, Game.Key, "title", TextBox_Title.Text)
-        WriteINI(Config, Game.Key, "class", TextBox_Class.Text)
-        WriteINI(Config, Game.Key, "size", NumericUpDown_Width.Value & "x" & NumericUpDown_Height.Value)
-        WriteINI(Config, Game.Key, "location", NumericUpDown_Left.Value & "x" & NumericUpDown_Top.Value)
-        Game.Value.Title = TextBox_Title.Text
-        Game.Value.Class = TextBox_Class.Text
-        Game.Value.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
-        Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
-        RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
-        __SettingsChanged = True
+        If ComboBox_Games.SelectedIndex > -1 Then
+            Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
+            WriteINI(Config, Game.Key, "title", TextBox_Title.Text)
+            WriteINI(Config, Game.Key, "class", TextBox_Class.Text)
+            WriteINI(Config, Game.Key, "size", NumericUpDown_Width.Value & "x" & NumericUpDown_Height.Value)
+            WriteINI(Config, Game.Key, "location", NumericUpDown_Left.Value & "x" & NumericUpDown_Top.Value)
+            Game.Value.Title = TextBox_Title.Text
+            Game.Value.Class = TextBox_Class.Text
+            Game.Value.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
+            Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
+            RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
+            __SettingsChanged = True
+        End If
     End Sub
     Public Function LoadWithWindows() As Boolean
         Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
@@ -218,7 +229,8 @@ Public Class BetterFullscreen
 
         Return False
     End Function
-    Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_startWithWindows.CheckedChanged
+    Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
+        RemoveHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         If LoadWithWindows() Then
             Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
             key.DeleteValue(Process.GetCurrentProcess().MainModule.FileName, False)
@@ -228,6 +240,7 @@ Public Class BetterFullscreen
             key.SetValue(Process.GetCurrentProcess().MainModule.FileName, """" & Application.ExecutablePath & """")
             CheckBox_startWithWindows.Checked = True
         End If
+        AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
     End Sub
     Private Sub Button_ReloadApp_Click(sender As Object, e As EventArgs) Handles Button_ReloadApp.Click
         LoadSettings()
