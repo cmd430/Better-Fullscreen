@@ -1,6 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Text
+Imports System.Threading
 Imports Microsoft.Win32
 Imports Microsoft.Win32.Registry
 
@@ -198,6 +199,7 @@ Public Class BetterFullscreen
             NumericUpDown_Height.Value = Game.Value.Size.Height
             NumericUpDown_Top.Value = Game.Value.Location.Y
             NumericUpDown_Left.Value = Game.Value.Location.X
+            NumericUpDown_Delay.Value = Game.Value.Delay
             RichTextBox_EventLog.AppendText("Loaded '" & Game.Key & "' settings" & vbCrLf)
         End If
     End Sub
@@ -208,10 +210,12 @@ Public Class BetterFullscreen
             WriteINI(Config, Game.Key, "class", TextBox_Class.Text)
             WriteINI(Config, Game.Key, "size", NumericUpDown_Width.Value & "x" & NumericUpDown_Height.Value)
             WriteINI(Config, Game.Key, "location", NumericUpDown_Left.Value & "x" & NumericUpDown_Top.Value)
+            WriteINI(Config, Game.Key, "delay", NumericUpDown_Delay.Value)
             Game.Value.Title = TextBox_Title.Text
             Game.Value.Class = TextBox_Class.Text
             Game.Value.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
             Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
+            Game.Value.Delay = NumericUpDown_Delay.Value
             RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
             __SettingsChanged = True
         End If
@@ -308,6 +312,7 @@ Public Class BetterFullscreen
         Public Property [Class] As String
         Public Property [Size] As Size
         Public Property [Location] As Point
+        Public Property [Delay] As Integer
         Public Property [State] As Integer
     End Class
 
@@ -333,6 +338,7 @@ Public Class BetterFullscreen
               .Class = If(_Class = "", Nothing, _Class),
               .Size = New Size(_Size(0), _Size(1)),
               .Location = New Point(_Location(0), _Location(1)),
+              .Delay = ReadINI(Config, Game, "delay", 0),
               .State = 0
             })
             RichTextBox_EventLog.AppendText("Loaded " & Game & vbCrLf)
@@ -350,6 +356,7 @@ Public Class BetterFullscreen
                     RichTextBox_EventLog.AppendText("setting WS_VISIBLE" & vbCrLf)
                     RichTextBox_EventLog.AppendText("resizing window " & Game.Value.Size.ToString() & vbCrLf)
                     RichTextBox_EventLog.AppendText("repositioning window " & Game.Value.Location.ToString() & vbCrLf)
+                    Thread.Sleep(Game.Value.Delay)
                     SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                     SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
                     Game.Value.State = 1
@@ -395,6 +402,7 @@ Public Class BetterFullscreen
                 WriteINI(Config, [title], "class", [class])
                 WriteINI(Config, [title], "size", [size].Width & "x" & [size].Height)
                 WriteINI(Config, [title], "location", [location].X & "x" & [location].Y)
+                WriteINI(Config, [title], "delay", 0)
                 RichTextBox_EventLog.AppendText([title] & " added" & vbCrLf)
                 RichTextBox_EventLog.AppendText("size " & [size].ToString & vbCrLf)
                 RichTextBox_EventLog.AppendText("location " & [location].ToString() & vbCrLf)
