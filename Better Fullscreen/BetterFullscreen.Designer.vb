@@ -80,6 +80,7 @@ Partial Class BetterFullscreen
         Me.Label22 = New System.Windows.Forms.Label()
         Me.NumericUpDown_Delay = New System.Windows.Forms.NumericUpDown()
         Me.Label23 = New System.Windows.Forms.Label()
+        Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -147,7 +148,7 @@ Partial Class BetterFullscreen
         Me.RichTextBox_EventLog.Location = New System.Drawing.Point(3, 16)
         Me.RichTextBox_EventLog.Name = "RichTextBox_EventLog"
         Me.RichTextBox_EventLog.ReadOnly = True
-        Me.RichTextBox_EventLog.Size = New System.Drawing.Size(633, 244)
+        Me.RichTextBox_EventLog.Size = New System.Drawing.Size(633, 220)
         Me.RichTextBox_EventLog.TabIndex = 1
         Me.RichTextBox_EventLog.Text = ""
         '
@@ -155,9 +156,9 @@ Partial Class BetterFullscreen
         '
         Me.GroupBox_Events.Controls.Add(Me.RichTextBox_EventLog)
         Me.GroupBox_Events.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox_Events.Location = New System.Drawing.Point(3, 267)
+        Me.GroupBox_Events.Location = New System.Drawing.Point(3, 291)
         Me.GroupBox_Events.Name = "GroupBox_Events"
-        Me.GroupBox_Events.Size = New System.Drawing.Size(639, 263)
+        Me.GroupBox_Events.Size = New System.Drawing.Size(639, 239)
         Me.GroupBox_Events.TabIndex = 3
         Me.GroupBox_Events.TabStop = False
         Me.GroupBox_Events.Text = "Events"
@@ -166,7 +167,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_Reload.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Reload.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Reload.Location = New System.Drawing.Point(250, 222)
+        Me.Button_Reload.Location = New System.Drawing.Point(250, 246)
         Me.Button_Reload.Name = "Button_Reload"
         Me.Button_Reload.Size = New System.Drawing.Size(29, 23)
         Me.Button_Reload.TabIndex = 19
@@ -177,7 +178,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_Save.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Save.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Save.Location = New System.Drawing.Point(6, 222)
+        Me.Button_Save.Location = New System.Drawing.Point(6, 246)
         Me.Button_Save.Name = "Button_Save"
         Me.Button_Save.Size = New System.Drawing.Size(170, 23)
         Me.Button_Save.TabIndex = 18
@@ -347,7 +348,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_ReloadApp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_ReloadApp.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_ReloadApp.Location = New System.Drawing.Point(290, 222)
+        Me.Button_ReloadApp.Location = New System.Drawing.Point(290, 246)
         Me.Button_ReloadApp.Name = "Button_ReloadApp"
         Me.Button_ReloadApp.Size = New System.Drawing.Size(38, 23)
         Me.Button_ReloadApp.TabIndex = 19
@@ -358,7 +359,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_SaveApp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_SaveApp.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_SaveApp.Location = New System.Drawing.Point(9, 222)
+        Me.Button_SaveApp.Location = New System.Drawing.Point(9, 246)
         Me.Button_SaveApp.Name = "Button_SaveApp"
         Me.Button_SaveApp.Size = New System.Drawing.Size(275, 23)
         Me.Button_SaveApp.TabIndex = 18
@@ -543,7 +544,7 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel3.Name = "TableLayoutPanel3"
         Me.TableLayoutPanel3.RowCount = 1
         Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel3.Size = New System.Drawing.Size(639, 258)
+        Me.TableLayoutPanel3.Size = New System.Drawing.Size(639, 282)
         Me.TableLayoutPanel3.TabIndex = 6
         '
         'GroupBox_ApplicationSettings
@@ -571,7 +572,7 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox_ApplicationSettings.Location = New System.Drawing.Point(3, 3)
         Me.GroupBox_ApplicationSettings.Name = "GroupBox_ApplicationSettings"
-        Me.GroupBox_ApplicationSettings.Size = New System.Drawing.Size(336, 252)
+        Me.GroupBox_ApplicationSettings.Size = New System.Drawing.Size(336, 276)
         Me.GroupBox_ApplicationSettings.TabIndex = 0
         Me.GroupBox_ApplicationSettings.TabStop = False
         Me.GroupBox_ApplicationSettings.Text = "Application Settings"
@@ -589,6 +590,7 @@ Partial Class BetterFullscreen
         '
         'GroupBox_GameSettings
         '
+        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_CaptureMouse)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label22)
         Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Delay)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label23)
@@ -615,7 +617,7 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox_GameSettings.Location = New System.Drawing.Point(345, 3)
         Me.GroupBox_GameSettings.Name = "GroupBox_GameSettings"
-        Me.GroupBox_GameSettings.Size = New System.Drawing.Size(291, 252)
+        Me.GroupBox_GameSettings.Size = New System.Drawing.Size(291, 276)
         Me.GroupBox_GameSettings.TabIndex = 1
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
@@ -624,7 +626,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_Remove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Remove.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Remove.Location = New System.Drawing.Point(182, 222)
+        Me.Button_Remove.Location = New System.Drawing.Point(182, 246)
         Me.Button_Remove.Name = "Button_Remove"
         Me.Button_Remove.Size = New System.Drawing.Size(62, 23)
         Me.Button_Remove.TabIndex = 20
@@ -642,7 +644,7 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel4.Name = "TableLayoutPanel4"
         Me.TableLayoutPanel4.RowCount = 2
         Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 269.0!))
+        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 245.0!))
         Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
         Me.TableLayoutPanel4.TabIndex = 7
         '
@@ -674,6 +676,17 @@ Partial Class BetterFullscreen
         Me.Label23.Size = New System.Drawing.Size(34, 13)
         Me.Label23.TabIndex = 21
         Me.Label23.Text = "Delay"
+        '
+        'CheckBox_CaptureMouse
+        '
+        Me.CheckBox_CaptureMouse.AutoSize = True
+        Me.CheckBox_CaptureMouse.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 223)
+        Me.CheckBox_CaptureMouse.Name = "CheckBox_CaptureMouse"
+        Me.CheckBox_CaptureMouse.Size = New System.Drawing.Size(98, 17)
+        Me.CheckBox_CaptureMouse.TabIndex = 25
+        Me.CheckBox_CaptureMouse.Text = "Capture Mouse"
+        Me.CheckBox_CaptureMouse.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
@@ -772,4 +785,5 @@ Partial Class BetterFullscreen
     Friend WithEvents Label22 As Label
     Friend WithEvents NumericUpDown_Delay As NumericUpDown
     Friend WithEvents Label23 As Label
+    Friend WithEvents CheckBox_CaptureMouse As CheckBox
 End Class
