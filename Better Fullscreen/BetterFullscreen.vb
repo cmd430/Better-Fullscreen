@@ -146,7 +146,6 @@ Public Class BetterFullscreen
     Private __Hotkeys As New Hotkeys
     Private __SettingsChanged As Boolean = False
     Private __Cursor = New Cursor(Cursor.Current.Handle)
-    Private __ScreenSize As New Size(0, 0)
 
     Private Sub WarframeBetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
@@ -155,10 +154,6 @@ Public Class BetterFullscreen
             CheckBox_startWithWindows.Checked = True
         End If
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
-        For Each scrn As Screen In Screen.AllScreens
-            __ScreenSize.Width += scrn.Bounds.Width
-            __ScreenSize.Height += scrn.Bounds.Height
-        Next
         Init()
     End Sub
     Private Sub Timer_Scanner_Tick(sender As Object, e As EventArgs) Handles Timer_Scanner.Tick
@@ -208,6 +203,7 @@ Public Class BetterFullscreen
             NumericUpDown_Left.Value = Game.Value.Location.X
             NumericUpDown_Delay.Value = Game.Value.Delay
             CheckBox_CaptureMouse.Checked = Game.Value.CaptureMouse
+            CheckBox_ProfileEnabled.Checked = Game.Value.Enabled
             RichTextBox_EventLog.AppendText("Loaded '" & Game.Key & "' settings" & vbCrLf)
         End If
     End Sub
@@ -220,12 +216,14 @@ Public Class BetterFullscreen
             WriteINI(Config, Game.Key, "location", NumericUpDown_Left.Value & "x" & NumericUpDown_Top.Value)
             WriteINI(Config, Game.Key, "delay", NumericUpDown_Delay.Value)
             WriteINI(Config, Game.Key, "capture-mouse", CheckBox_CaptureMouse.Checked)
+            WriteINI(Config, Game.Key, "profile-enabled", CheckBox_ProfileEnabled.Checked)
             Game.Value.Title = TextBox_Title.Text
             Game.Value.Class = TextBox_Class.Text
             Game.Value.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
             Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
             Game.Value.Delay = NumericUpDown_Delay.Value
             Game.Value.CaptureMouse = CheckBox_CaptureMouse.Checked
+            Game.Value.Enabled = CheckBox_CaptureMouse.Checked
             RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
             __SettingsChanged = True
         End If
@@ -325,6 +323,7 @@ Public Class BetterFullscreen
         Public Property [Delay] As Integer
         Public Property [CaptureMouse] As Boolean
         Public Property [State] As Integer
+        Public Property [Enabled] As Boolean
     End Class
 
     Private Sub Init()
@@ -351,6 +350,7 @@ Public Class BetterFullscreen
               .Location = New Point(_Location(0), _Location(1)),
               .Delay = ReadINI(Config, Game, "delay", 0),
               .CaptureMouse = ReadINI(Config, Game, "capture-mouse", False),
+              .Enabled = ReadINI(Config, Game, "profile-enabled", True),
               .State = 0
             })
             RichTextBox_EventLog.AppendText("Loaded " & Game & vbCrLf)
@@ -362,7 +362,7 @@ Public Class BetterFullscreen
     Private Sub DoWork()
         For Each Game As KeyValuePair(Of String, WindowData) In Games
             Dim Window_HWND As IntPtr = FindWindowW(Game.Value.Class, Game.Value.Title)
-            If Window_HWND <> IntPtr.Zero Then
+            If Window_HWND <> IntPtr.Zero And Game.Value.Enabled Then
                 If Game.Value.State = 0 Then
                     RichTextBox_EventLog.AppendText(Game.Key & " started" & vbCrLf)
                     RichTextBox_EventLog.AppendText("setting WS_VISIBLE" & vbCrLf)
@@ -394,7 +394,7 @@ Public Class BetterFullscreen
                         RichTextBox_EventLog.AppendText("setting HWND_NOTOPMOST" & vbCrLf)
                         SetWindowPos(Window_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
                         If Game.Value.CaptureMouse Then
-                            __Cursor.Clip = New Rectangle(New Point(0, 0), __ScreenSize)
+                            __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                         End If
                         Game.Value.State = 1
                     End If
@@ -403,7 +403,7 @@ Public Class BetterFullscreen
                 If Game.Value.State > 0 Then
                     RichTextBox_EventLog.AppendText(Game.Key & " exited" & vbCrLf)
                     If Game.Value.CaptureMouse Then
-                        __Cursor.Clip = New Rectangle(New Point(0, 0), __ScreenSize)
+                        __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                     End If
                     Game.Value.State = 0
                 End If
@@ -430,6 +430,7 @@ Public Class BetterFullscreen
                 WriteINI(Config, [title], "location", [location].X & "x" & [location].Y)
                 WriteINI(Config, [title], "delay", 0)
                 WriteINI(Config, [title], "capture-mouse", False)
+                WriteINI(Config, [title], "profile-enabled", True)
                 RichTextBox_EventLog.AppendText([title] & " added" & vbCrLf)
                 RichTextBox_EventLog.AppendText("size " & [size].ToString & vbCrLf)
                 RichTextBox_EventLog.AppendText("location " & [location].ToString() & vbCrLf)

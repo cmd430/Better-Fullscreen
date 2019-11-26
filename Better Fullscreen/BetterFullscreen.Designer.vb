@@ -75,12 +75,13 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings = New System.Windows.Forms.GroupBox()
         Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
-        Me.Button_Remove = New System.Windows.Forms.Button()
-        Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
+        Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
         Me.Label22 = New System.Windows.Forms.Label()
         Me.NumericUpDown_Delay = New System.Windows.Forms.NumericUpDown()
         Me.Label23 = New System.Windows.Forms.Label()
-        Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
+        Me.Button_Remove = New System.Windows.Forms.Button()
+        Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
+        Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -94,8 +95,8 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel3.SuspendLayout()
         Me.GroupBox_ApplicationSettings.SuspendLayout()
         Me.GroupBox_GameSettings.SuspendLayout()
-        Me.TableLayoutPanel4.SuspendLayout()
         CType(Me.NumericUpDown_Delay, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TableLayoutPanel4.SuspendLayout()
         Me.SuspendLayout()
         '
         'Timer_Scanner
@@ -167,7 +168,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_Reload.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Reload.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Reload.Location = New System.Drawing.Point(250, 246)
+        Me.Button_Reload.Location = New System.Drawing.Point(256, 246)
         Me.Button_Reload.Name = "Button_Reload"
         Me.Button_Reload.Size = New System.Drawing.Size(29, 23)
         Me.Button_Reload.TabIndex = 19
@@ -189,7 +190,7 @@ Partial Class BetterFullscreen
         '
         Me.Label7.AutoSize = True
         Me.Label7.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label7.Location = New System.Drawing.Point(179, 140)
+        Me.Label7.Location = New System.Drawing.Point(185, 140)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(25, 13)
         Me.Label7.TabIndex = 16
@@ -209,7 +210,7 @@ Partial Class BetterFullscreen
         '
         Me.Label9.AutoSize = True
         Me.Label9.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label9.Location = New System.Drawing.Point(161, 158)
+        Me.Label9.Location = New System.Drawing.Point(164, 158)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(12, 13)
         Me.Label9.TabIndex = 14
@@ -217,7 +218,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_Left
         '
-        Me.NumericUpDown_Left.Location = New System.Drawing.Point(182, 156)
+        Me.NumericUpDown_Left.Location = New System.Drawing.Point(188, 156)
         Me.NumericUpDown_Left.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Left.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Left.Name = "NumericUpDown_Left"
@@ -247,7 +248,7 @@ Partial Class BetterFullscreen
         '
         Me.Label6.AutoSize = True
         Me.Label6.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label6.Location = New System.Drawing.Point(179, 101)
+        Me.Label6.Location = New System.Drawing.Point(185, 101)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(38, 13)
         Me.Label6.TabIndex = 10
@@ -267,7 +268,7 @@ Partial Class BetterFullscreen
         '
         Me.Label4.AutoSize = True
         Me.Label4.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label4.Location = New System.Drawing.Point(161, 119)
+        Me.Label4.Location = New System.Drawing.Point(164, 119)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(12, 13)
         Me.Label4.TabIndex = 8
@@ -275,7 +276,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_Height
         '
-        Me.NumericUpDown_Height.Location = New System.Drawing.Point(182, 117)
+        Me.NumericUpDown_Height.Location = New System.Drawing.Point(188, 117)
         Me.NumericUpDown_Height.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Height.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Height.Name = "NumericUpDown_Height"
@@ -303,7 +304,7 @@ Partial Class BetterFullscreen
         '
         'TextBox_Class
         '
-        Me.TextBox_Class.Location = New System.Drawing.Point(57, 78)
+        Me.TextBox_Class.Location = New System.Drawing.Point(63, 78)
         Me.TextBox_Class.Name = "TextBox_Class"
         Me.TextBox_Class.Size = New System.Drawing.Size(222, 20)
         Me.TextBox_Class.TabIndex = 4
@@ -320,7 +321,7 @@ Partial Class BetterFullscreen
         '
         'TextBox_Title
         '
-        Me.TextBox_Title.Location = New System.Drawing.Point(57, 52)
+        Me.TextBox_Title.Location = New System.Drawing.Point(63, 52)
         Me.TextBox_Title.Name = "TextBox_Title"
         Me.TextBox_Title.Size = New System.Drawing.Size(222, 20)
         Me.TextBox_Title.TabIndex = 2
@@ -341,7 +342,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_Games.FormattingEnabled = True
         Me.ComboBox_Games.Location = New System.Drawing.Point(6, 19)
         Me.ComboBox_Games.Name = "ComboBox_Games"
-        Me.ComboBox_Games.Size = New System.Drawing.Size(273, 21)
+        Me.ComboBox_Games.Size = New System.Drawing.Size(170, 21)
         Me.ComboBox_Games.TabIndex = 0
         '
         'Button_ReloadApp
@@ -590,6 +591,7 @@ Partial Class BetterFullscreen
         '
         'GroupBox_GameSettings
         '
+        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_ProfileEnabled)
         Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_CaptureMouse)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label22)
         Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Delay)
@@ -622,31 +624,16 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
         '
-        'Button_Remove
+        'CheckBox_CaptureMouse
         '
-        Me.Button_Remove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Button_Remove.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Remove.Location = New System.Drawing.Point(182, 246)
-        Me.Button_Remove.Name = "Button_Remove"
-        Me.Button_Remove.Size = New System.Drawing.Size(62, 23)
-        Me.Button_Remove.TabIndex = 20
-        Me.Button_Remove.Text = "Remove"
-        Me.Button_Remove.UseVisualStyleBackColor = True
-        '
-        'TableLayoutPanel4
-        '
-        Me.TableLayoutPanel4.ColumnCount = 1
-        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel4.Controls.Add(Me.TableLayoutPanel3, 0, 0)
-        Me.TableLayoutPanel4.Controls.Add(Me.GroupBox_Events, 0, 1)
-        Me.TableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel4.Location = New System.Drawing.Point(3, 3)
-        Me.TableLayoutPanel4.Name = "TableLayoutPanel4"
-        Me.TableLayoutPanel4.RowCount = 2
-        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 245.0!))
-        Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
-        Me.TableLayoutPanel4.TabIndex = 7
+        Me.CheckBox_CaptureMouse.AutoSize = True
+        Me.CheckBox_CaptureMouse.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 223)
+        Me.CheckBox_CaptureMouse.Name = "CheckBox_CaptureMouse"
+        Me.CheckBox_CaptureMouse.Size = New System.Drawing.Size(98, 17)
+        Me.CheckBox_CaptureMouse.TabIndex = 25
+        Me.CheckBox_CaptureMouse.Text = "Capture Mouse"
+        Me.CheckBox_CaptureMouse.UseVisualStyleBackColor = True
         '
         'Label22
         '
@@ -677,16 +664,42 @@ Partial Class BetterFullscreen
         Me.Label23.TabIndex = 21
         Me.Label23.Text = "Delay"
         '
-        'CheckBox_CaptureMouse
+        'Button_Remove
         '
-        Me.CheckBox_CaptureMouse.AutoSize = True
-        Me.CheckBox_CaptureMouse.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 223)
-        Me.CheckBox_CaptureMouse.Name = "CheckBox_CaptureMouse"
-        Me.CheckBox_CaptureMouse.Size = New System.Drawing.Size(98, 17)
-        Me.CheckBox_CaptureMouse.TabIndex = 25
-        Me.CheckBox_CaptureMouse.Text = "Capture Mouse"
-        Me.CheckBox_CaptureMouse.UseVisualStyleBackColor = True
+        Me.Button_Remove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.Button_Remove.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.Button_Remove.Location = New System.Drawing.Point(182, 246)
+        Me.Button_Remove.Name = "Button_Remove"
+        Me.Button_Remove.Size = New System.Drawing.Size(68, 23)
+        Me.Button_Remove.TabIndex = 20
+        Me.Button_Remove.Text = "Remove"
+        Me.Button_Remove.UseVisualStyleBackColor = True
+        '
+        'TableLayoutPanel4
+        '
+        Me.TableLayoutPanel4.ColumnCount = 1
+        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel4.Controls.Add(Me.TableLayoutPanel3, 0, 0)
+        Me.TableLayoutPanel4.Controls.Add(Me.GroupBox_Events, 0, 1)
+        Me.TableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel4.Location = New System.Drawing.Point(3, 3)
+        Me.TableLayoutPanel4.Name = "TableLayoutPanel4"
+        Me.TableLayoutPanel4.RowCount = 2
+        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 245.0!))
+        Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
+        Me.TableLayoutPanel4.TabIndex = 7
+        '
+        'CheckBox_ProfileEnabled
+        '
+        Me.CheckBox_ProfileEnabled.AutoSize = True
+        Me.CheckBox_ProfileEnabled.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_ProfileEnabled.Location = New System.Drawing.Point(188, 21)
+        Me.CheckBox_ProfileEnabled.Name = "CheckBox_ProfileEnabled"
+        Me.CheckBox_ProfileEnabled.Size = New System.Drawing.Size(97, 17)
+        Me.CheckBox_ProfileEnabled.TabIndex = 26
+        Me.CheckBox_ProfileEnabled.Text = "Profile Enabled"
+        Me.CheckBox_ProfileEnabled.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
@@ -722,8 +735,8 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings.PerformLayout()
         Me.GroupBox_GameSettings.ResumeLayout(False)
         Me.GroupBox_GameSettings.PerformLayout()
-        Me.TableLayoutPanel4.ResumeLayout(False)
         CType(Me.NumericUpDown_Delay, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TableLayoutPanel4.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -786,4 +799,5 @@ Partial Class BetterFullscreen
     Friend WithEvents NumericUpDown_Delay As NumericUpDown
     Friend WithEvents Label23 As Label
     Friend WithEvents CheckBox_CaptureMouse As CheckBox
+    Friend WithEvents CheckBox_ProfileEnabled As CheckBox
 End Class
