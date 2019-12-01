@@ -75,13 +75,14 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings = New System.Windows.Forms.GroupBox()
         Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
+        Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
         Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
         Me.Label22 = New System.Windows.Forms.Label()
         Me.NumericUpDown_Delay = New System.Windows.Forms.NumericUpDown()
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Button_Remove = New System.Windows.Forms.Button()
         Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
-        Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -591,6 +592,7 @@ Partial Class BetterFullscreen
         '
         'GroupBox_GameSettings
         '
+        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_ForceTopMost)
         Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_ProfileEnabled)
         Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_CaptureMouse)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label22)
@@ -623,6 +625,17 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.TabIndex = 1
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
+        '
+        'CheckBox_ProfileEnabled
+        '
+        Me.CheckBox_ProfileEnabled.AutoSize = True
+        Me.CheckBox_ProfileEnabled.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_ProfileEnabled.Location = New System.Drawing.Point(188, 21)
+        Me.CheckBox_ProfileEnabled.Name = "CheckBox_ProfileEnabled"
+        Me.CheckBox_ProfileEnabled.Size = New System.Drawing.Size(97, 17)
+        Me.CheckBox_ProfileEnabled.TabIndex = 26
+        Me.CheckBox_ProfileEnabled.Text = "Profile Enabled"
+        Me.CheckBox_ProfileEnabled.UseVisualStyleBackColor = True
         '
         'CheckBox_CaptureMouse
         '
@@ -690,16 +703,16 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
         Me.TableLayoutPanel4.TabIndex = 7
         '
-        'CheckBox_ProfileEnabled
+        'CheckBox_ForceTopMost
         '
-        Me.CheckBox_ProfileEnabled.AutoSize = True
-        Me.CheckBox_ProfileEnabled.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_ProfileEnabled.Location = New System.Drawing.Point(188, 21)
-        Me.CheckBox_ProfileEnabled.Name = "CheckBox_ProfileEnabled"
-        Me.CheckBox_ProfileEnabled.Size = New System.Drawing.Size(97, 17)
-        Me.CheckBox_ProfileEnabled.TabIndex = 26
-        Me.CheckBox_ProfileEnabled.Text = "Profile Enabled"
-        Me.CheckBox_ProfileEnabled.UseVisualStyleBackColor = True
+        Me.CheckBox_ForceTopMost.AutoSize = True
+        Me.CheckBox_ForceTopMost.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(182, 223)
+        Me.CheckBox_ForceTopMost.Name = "CheckBox_ForceTopMost"
+        Me.CheckBox_ForceTopMost.Size = New System.Drawing.Size(101, 17)
+        Me.CheckBox_ForceTopMost.TabIndex = 27
+        Me.CheckBox_ForceTopMost.Text = "Force Top Most"
+        Me.CheckBox_ForceTopMost.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
@@ -800,4 +813,5 @@ Partial Class BetterFullscreen
     Friend WithEvents Label23 As Label
     Friend WithEvents CheckBox_CaptureMouse As CheckBox
     Friend WithEvents CheckBox_ProfileEnabled As CheckBox
+    Friend WithEvents CheckBox_ForceTopMost As CheckBox
 End Class
