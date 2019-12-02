@@ -75,6 +75,7 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings = New System.Windows.Forms.GroupBox()
         Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
+        Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
         Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
         Me.Label22 = New System.Windows.Forms.Label()
@@ -82,7 +83,6 @@ Partial Class BetterFullscreen
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Button_Remove = New System.Windows.Forms.Button()
         Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
-        Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -305,9 +305,9 @@ Partial Class BetterFullscreen
         '
         'TextBox_Class
         '
-        Me.TextBox_Class.Location = New System.Drawing.Point(63, 78)
+        Me.TextBox_Class.Location = New System.Drawing.Point(57, 78)
         Me.TextBox_Class.Name = "TextBox_Class"
-        Me.TextBox_Class.Size = New System.Drawing.Size(222, 20)
+        Me.TextBox_Class.Size = New System.Drawing.Size(228, 20)
         Me.TextBox_Class.TabIndex = 4
         '
         'Label2
@@ -322,9 +322,9 @@ Partial Class BetterFullscreen
         '
         'TextBox_Title
         '
-        Me.TextBox_Title.Location = New System.Drawing.Point(63, 52)
+        Me.TextBox_Title.Location = New System.Drawing.Point(57, 52)
         Me.TextBox_Title.Name = "TextBox_Title"
-        Me.TextBox_Title.Size = New System.Drawing.Size(222, 20)
+        Me.TextBox_Title.Size = New System.Drawing.Size(228, 20)
         Me.TextBox_Title.TabIndex = 2
         '
         'Label1
@@ -626,6 +626,17 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
         '
+        'CheckBox_ForceTopMost
+        '
+        Me.CheckBox_ForceTopMost.AutoSize = True
+        Me.CheckBox_ForceTopMost.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(182, 223)
+        Me.CheckBox_ForceTopMost.Name = "CheckBox_ForceTopMost"
+        Me.CheckBox_ForceTopMost.Size = New System.Drawing.Size(101, 17)
+        Me.CheckBox_ForceTopMost.TabIndex = 27
+        Me.CheckBox_ForceTopMost.Text = "Force Top Most"
+        Me.CheckBox_ForceTopMost.UseVisualStyleBackColor = True
+        '
         'CheckBox_ProfileEnabled
         '
         Me.CheckBox_ProfileEnabled.AutoSize = True
@@ -702,17 +713,6 @@ Partial Class BetterFullscreen
         Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 245.0!))
         Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
         Me.TableLayoutPanel4.TabIndex = 7
-        '
-        'CheckBox_ForceTopMost
-        '
-        Me.CheckBox_ForceTopMost.AutoSize = True
-        Me.CheckBox_ForceTopMost.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(182, 223)
-        Me.CheckBox_ForceTopMost.Name = "CheckBox_ForceTopMost"
-        Me.CheckBox_ForceTopMost.Size = New System.Drawing.Size(101, 17)
-        Me.CheckBox_ForceTopMost.TabIndex = 27
-        Me.CheckBox_ForceTopMost.Text = "Force Top Most"
-        Me.CheckBox_ForceTopMost.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '

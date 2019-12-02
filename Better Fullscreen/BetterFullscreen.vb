@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.DateTime
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Threading
@@ -171,11 +172,14 @@ Public Class BetterFullscreen
     End Sub
     Private Sub Button_Remove_Click(sender As Object, e As EventArgs) Handles Button_Remove.Click
         Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-        RemoveINISection(Config, Game.Key)
-        RichTextBox_EventLog.AppendText("Removed '" & Game.Key & "' settings" & vbCrLf)
-        ComboBox_Games.Items.RemoveAt(ComboBox_Games.SelectedIndex)
-        Games.Remove(Game.Key)
-        LoadGameSettings()
+        Dim confirm As Integer = MessageBox.Show("Remove Profile '" & Game.Key & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel)
+        If confirm = DialogResult.OK Then
+            RemoveINISection(Config, Game.Key)
+            LogEvent("Removed '" & Game.Key & "' settings")
+            ComboBox_Games.Items.RemoveAt(ComboBox_Games.SelectedIndex)
+            Games.Remove(Game.Key)
+            LoadGameSettings()
+        End If
     End Sub
     Private Sub Button_Reload_Click(sender As Object, e As EventArgs) Handles Button_Reload.Click
         LoadGameSettings(ComboBox_Games.SelectedIndex)
@@ -206,7 +210,7 @@ Public Class BetterFullscreen
             CheckBox_CaptureMouse.Checked = Game.Value.CaptureMouse
             CheckBox_ForceTopMost.Checked = Game.Value.ForceTopMost
             CheckBox_ProfileEnabled.Checked = Game.Value.ProfileEnabled
-            RichTextBox_EventLog.AppendText("Loaded '" & Game.Key & "' settings" & vbCrLf)
+            LogEvent("Loaded '" & Game.Key & "' settings")
         End If
     End Sub
     Private Sub SaveGameSettings()
@@ -228,7 +232,7 @@ Public Class BetterFullscreen
             Game.Value.CaptureMouse = CheckBox_CaptureMouse.Checked
             Game.Value.ProfileEnabled = CheckBox_ProfileEnabled.Checked
             Game.Value.ForceTopMost = CheckBox_ForceTopMost.Checked
-            RichTextBox_EventLog.AppendText("Saved '" & Game.Key & "' settings" & vbCrLf)
+            LogEvent("Saved '" & Game.Key & "' settings")
             __SettingsChanged = True
         End If
     End Sub
@@ -273,14 +277,14 @@ Public Class BetterFullscreen
         NumericUpDown_DefaultHeight.Value = [size](1)
         NumericUpDown_DefaultTop.Value = [location](1)
         NumericUpDown_DefaultLeft.Value = [location](0)
-        RichTextBox_EventLog.AppendText("Loaded application settings" & vbCrLf)
+        LogEvent("Loaded application settings")
     End Sub
     Private Sub SaveSettings()
         WriteINI(Config, "SETTINGS", "hotkey", ComboBox_Key.SelectedIndex + 112)
         WriteINI(Config, "SETTINGS", "modifier", ComboBox_Modifier.SelectedIndex)
         WriteINI(Config, "SETTINGS", "default_size", NumericUpDown_DefaultWidth.Value & "x" & NumericUpDown_DefaultHeight.Value)
         WriteINI(Config, "SETTINGS", "default_location", NumericUpDown_DefaultLeft.Value & "x" & NumericUpDown_DefaultTop.Value)
-        RichTextBox_EventLog.AppendText("Saved application settings" & vbCrLf)
+        LogEvent("Saved application settings")
         __SettingsChanged = True
     End Sub
     Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
@@ -332,18 +336,28 @@ Public Class BetterFullscreen
         Public Property [ForceTopMost] As Boolean
         Public Property [ProfileEnabled] As Boolean
         Public Property [State] As Integer
-
     End Class
 
     Private Sub Init()
-        RichTextBox_EventLog.AppendText("Loading Games" & vbCrLf)
+        Dim start As DateTime
+        Dim [end] As DateTime
+        Dim elapsed As TimeSpan
+        LogEvent("Loading Games")
+        start = Now
         For Each Section As String In ReadINISections(Config)
             If Not Section = "SETTINGS" Then
                 LoadGame(Section)
                 ComboBox_Games.Items.Add(Section)
             End If
         Next
-        RichTextBox_EventLog.AppendText("Ready" & vbCrLf)
+        [end] = Now
+        elapsed = [end].Subtract(start)
+        LogEvent("Loaded all games in " & elapsed.TotalSeconds.ToString("0.000") & "ms")
+        LogEvent("Ready")
+    End Sub
+
+    Private Sub LogEvent(msg)
+        RichTextBox_EventLog.AppendText("[" & Now.ToString("HH:mm:ss") & "] " & msg & vbCrLf)
     End Sub
 
     Private Sub LoadGame(Game)
@@ -363,9 +377,9 @@ Public Class BetterFullscreen
               .ProfileEnabled = ReadINI(Config, Game, "profile-enabled", True),
               .State = 0
             })
-            RichTextBox_EventLog.AppendText("Loaded " & Game & vbCrLf)
+            LogEvent("Loaded " & Game)
         Else
-            RichTextBox_EventLog.AppendText("Skipped " & Game & vbCrLf)
+            LogEvent("Skipped " & Game)
         End If
     End Sub
 
@@ -374,15 +388,15 @@ Public Class BetterFullscreen
             Dim Window_HWND As IntPtr = FindWindowW(Game.Value.Class, Game.Value.Title)
             If Window_HWND <> IntPtr.Zero And Game.Value.ProfileEnabled Then
                 If Game.Value.State = 0 Then
-                    RichTextBox_EventLog.AppendText(Game.Key & " started" & vbCrLf)
+                    LogEvent(Game.Key & " started")
                     If Game.Value.Delay > 0 Then
-                        RichTextBox_EventLog.AppendText("delaying actions for " & Game.Value.Delay & "ms" & vbCrLf)
+                        LogEvent("delaying actions for " & Game.Value.Delay & "ms")
                         Thread.Sleep(Game.Value.Delay)
                     End If
-                    RichTextBox_EventLog.AppendText("setting WS_VISIBLE" & vbCrLf)
+                    LogEvent("setting WS_VISIBLE")
                     SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                    RichTextBox_EventLog.AppendText("resizing window " & Game.Value.Size.ToString() & vbCrLf)
-                    RichTextBox_EventLog.AppendText("repositioning window " & Game.Value.Location.ToString() & vbCrLf)
+                    LogEvent("resizing window " & Game.Value.Size.ToString())
+                    LogEvent("repositioning window " & Game.Value.Location.ToString())
                     SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
                     If Game.Value.CaptureMouse Then
                         __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
@@ -392,26 +406,26 @@ Public Class BetterFullscreen
                 End If
                 If Window_HWND = GetForegroundWindow() Then
                     If Game.Value.State = 1 Then
-                        RichTextBox_EventLog.AppendText(Game.Key & " has focus" & vbCrLf)
+                        LogEvent(Game.Key & " has focus")
                         If Game.Value.ForceTopMost Then
-                            RichTextBox_EventLog.AppendText("setting HWND_TOPMOST" & vbCrLf)
+                            LogEvent("setting HWND_TOPMOST")
                             SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
                         End If
                         If Game.Value.CaptureMouse Then
-                            RichTextBox_EventLog.AppendText("locking mouse to game window location" & vbCrLf)
+                            LogEvent("locking mouse to game window location")
                             __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
                         End If
                         Game.Value.State = 2
                     End If
                 Else
                     If Game.Value.State = 2 Then
-                        RichTextBox_EventLog.AppendText(Game.Key & " lost focus" & vbCrLf)
+                        LogEvent(Game.Key & " lost focus")
                         If Game.Value.ForceTopMost Then
-                            RichTextBox_EventLog.AppendText("setting HWND_NOTOPMOST" & vbCrLf)
+                            LogEvent("setting HWND_NOTOPMOST")
                             SetWindowPos(Window_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
                         End If
                         If Game.Value.CaptureMouse Then
-                            RichTextBox_EventLog.AppendText("releasing mouse lock from game window location" & vbCrLf)
+                            LogEvent("releasing mouse lock from game window location")
                             __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                         End If
                         Game.Value.State = 1
@@ -419,9 +433,9 @@ Public Class BetterFullscreen
                 End If
             Else
                 If Game.Value.State > 0 Then
-                    RichTextBox_EventLog.AppendText(Game.Key & " exited" & vbCrLf)
+                    LogEvent(Game.Key & " exited")
                     If Game.Value.CaptureMouse And Game.Value.State = 2 Then
-                        RichTextBox_EventLog.AppendText("releasing mouse lock from game window location" & vbCrLf)
+                        LogEvent("releasing mouse lock from game window location")
                         __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                     End If
                     Game.Value.State = 0
@@ -452,9 +466,9 @@ Public Class BetterFullscreen
                 WriteINI(Config, [title], "capture-mouse", False)
                 WriteINI(Config, [title], "force-topmost", False)
                 WriteINI(Config, [title], "profile-enabled", True)
-                RichTextBox_EventLog.AppendText([title] & " added" & vbCrLf)
-                RichTextBox_EventLog.AppendText("size " & [size].ToString & vbCrLf)
-                RichTextBox_EventLog.AppendText("location " & [location].ToString() & vbCrLf)
+                LogEvent([title] & " added")
+                LogEvent("size " & [size].ToString)
+                LogEvent("location " & [location].ToString())
                 LoadGame([title])
                 ComboBox_Games.Items.Add([title])
             End If
