@@ -18,6 +18,9 @@ Public Class BetterFullscreen
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLong")>
     Private Shared Function SetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As IntPtr) As Integer
     End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLong")>
+    Private Shared Function GetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer) As Integer
+    End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos")>
     Private Shared Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As Integer) As Boolean
     End Function
@@ -407,6 +410,10 @@ Public Class BetterFullscreen
                 If Window_HWND = GetForegroundWindow() Then
                     If Game.Value.State = 1 Then
                         LogEvent(Game.Key & " has focus")
+                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
+                            LogEvent("setting WS_VISIBLE")
+                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+                        End If
                         If Game.Value.ForceTopMost Then
                             LogEvent("setting HWND_TOPMOST")
                             SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
