@@ -414,6 +414,13 @@ Public Class BetterFullscreen
                             LogEvent("setting WS_VISIBLE")
                             SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                         End If
+                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
+                            LogEvent("setting WS_VISIBLE")
+                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+                            LogEvent("resizing window " & Game.Value.Size.ToString())
+                            LogEvent("repositioning window " & Game.Value.Location.ToString())
+                            SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
+                        End If
                         If Game.Value.ForceTopMost Then
                             LogEvent("setting HWND_TOPMOST")
                             SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
