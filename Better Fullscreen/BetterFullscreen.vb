@@ -408,20 +408,34 @@ Public Class BetterFullscreen
                     __CurrentGame = Game.Key
                 End If
                 If Window_HWND = GetForegroundWindow() Then
-                    If Game.Value.State = 1 Then
-                        LogEvent(Game.Key & " has focus")
-                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
-                            LogEvent("setting WS_VISIBLE")
-                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                        End If
-                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
-                            LogEvent("setting WS_VISIBLE")
-                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+                    If Game.Value.State > 0 Then
+                        Dim rect As New RECT
+                        Dim Window_Rect = New Rectangle()
+
+                        GetWindowRect(Window_HWND, rect)
+
+                        Window_Rect.X = rect.left
+                        Window_Rect.Y = rect.top
+                        Window_Rect.Width = rect.right - rect.left
+                        Window_Rect.Height = rect.bottom - rect.top
+
+                        Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Value.Location
+                        Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = Game.Value.Size
+
+                        If Not correctPos Or Not correctSize Then
                             LogEvent("resizing window " & Game.Value.Size.ToString())
                             LogEvent("repositioning window " & Game.Value.Location.ToString())
                             SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
                         End If
-                        If Game.Value.ForceTopMost Then
+
+                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
+                            LogEvent("setting WS_VISIBLE")
+                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+                        End If
+                    End If
+                    If Game.Value.State = 1 Then
+                        LogEvent(Game.Key & " has focus")
+                        If Game.Value.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
                             LogEvent("setting HWND_TOPMOST")
                             SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
                         End If
@@ -467,8 +481,8 @@ Public Class BetterFullscreen
         Dim _location As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
         Dim [size] As New Size(_size(0), _size(1))
         Dim [location] As New Point(_location(0), _location(1))
-        GetWindowText(hWnd, hWndTitle, 128)
-        GetClassName(hWnd, [class], 128)
+        GetWindowText(hWnd, hWndTitle, 256)
+        GetClassName(hWnd, [class], 256)
         Dim [title] = hWndTitle.ToString()
         If Not [title] = "" Then
             If Not Games.ContainsKey([title]) Then
