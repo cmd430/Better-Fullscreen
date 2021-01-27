@@ -152,7 +152,7 @@ Public Class BetterFullscreen
     Private __Cursor = New Cursor(Cursor.Current.Handle)
     Private __CurrentGame As String = Nothing
 
-    Private Sub WarframeBetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
         __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
         If LoadWithWindows() Then
@@ -164,7 +164,7 @@ Public Class BetterFullscreen
     Private Sub Timer_Scanner_Tick(sender As Object, e As EventArgs) Handles Timer_Scanner.Tick
         DoWork()
     End Sub
-    Private Sub WarframeBetterFullscreen_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
+    Private Sub BetterFullscreen_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         If __Loaded = 0 Then
             Hide()
             __Loaded = 1
@@ -484,21 +484,22 @@ Public Class BetterFullscreen
         GetWindowText(hWnd, hWndTitle, 256)
         GetClassName(hWnd, [class], 256)
         Dim [title] = hWndTitle.ToString()
+        Dim [section] = [title].Replace("[", "(").Replace("]", ")")
         If Not [title] = "" Then
-            If Not Games.ContainsKey([title]) Then
-                WriteINI(Config, [title], "title", [title])
-                WriteINI(Config, [title], "class", [class])
-                WriteINI(Config, [title], "size", [size].Width & "x" & [size].Height)
-                WriteINI(Config, [title], "location", [location].X & "x" & [location].Y)
-                WriteINI(Config, [title], "delay", 0)
-                WriteINI(Config, [title], "capture-mouse", False)
-                WriteINI(Config, [title], "force-topmost", False)
-                WriteINI(Config, [title], "profile-enabled", True)
-                LogEvent([title] & " added")
+            If Not Games.ContainsKey([section]) Then
+                WriteINI(Config, [section], "title", [title])
+                WriteINI(Config, [section], "class", [class])
+                WriteINI(Config, [section], "size", [size].Width & "x" & [size].Height)
+                WriteINI(Config, [section], "location", [location].X & "x" & [location].Y)
+                WriteINI(Config, [section], "delay", 0)
+                WriteINI(Config, [section], "capture-mouse", False)
+                WriteINI(Config, [section], "force-topmost", False)
+                WriteINI(Config, [section], "profile-enabled", True)
+                LogEvent([section] & " added")
                 LogEvent("size " & [size].ToString)
                 LogEvent("location " & [location].ToString())
-                LoadGame([title])
-                ComboBox_Games.Items.Add([title])
+                LoadGame([section])
+                ComboBox_Games.Items.Add([section])
             End If
         End If
     End Sub
