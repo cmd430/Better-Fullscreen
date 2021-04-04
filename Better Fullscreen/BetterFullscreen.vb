@@ -328,6 +328,7 @@ Public Class BetterFullscreen
 
     Private ReadOnly Config As String = Application.ExecutablePath.Replace(".exe", ".ini")
     Public Games As New Dictionary(Of String, WindowData)
+    Private WindowsScaleFactor As Int32 = 1
 
     Public Class WindowData
         Public Property [Title] As String
@@ -342,6 +343,15 @@ Public Class BetterFullscreen
     End Class
 
     Private Sub Init()
+        Using Key = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
+            If Key IsNot Nothing Then
+                Dim ADPI = Key.GetValue("AppliedDPI")
+                If ADPI IsNot Nothing Then
+                    WindowsScaleFactor = Convert.ToInt32(ADPI) / 96
+                End If
+            End If
+        End Using
+        LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
         Dim start As DateTime
         Dim [end] As DateTime
         Dim elapsed As TimeSpan
@@ -400,7 +410,8 @@ Public Class BetterFullscreen
                     SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                     LogEvent("resizing window " & Game.Value.Size.ToString())
                     LogEvent("repositioning window " & Game.Value.Location.ToString())
-                    SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
+                    'SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
+                    SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                     If Game.Value.CaptureMouse Then
                         __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
                     End If
@@ -420,12 +431,14 @@ Public Class BetterFullscreen
                         Window_Rect.Height = rect.bottom - rect.top
 
                         Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Value.Location
-                        Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = Game.Value.Size
+                        'Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = Game.Value.Size
+                        Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor)
 
                         If Not correctPos Or Not correctSize Then
                             LogEvent("resizing window " & Game.Value.Size.ToString())
                             LogEvent("repositioning window " & Game.Value.Location.ToString())
-                            SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
+                            'SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
+                            SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                         End If
 
                         If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
