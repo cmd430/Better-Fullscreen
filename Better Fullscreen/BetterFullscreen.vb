@@ -151,10 +151,18 @@ Public Class BetterFullscreen
     Private __SettingsChanged As Boolean = False
     Private __Cursor = New Cursor(Cursor.Current.Handle)
     Private __CurrentGame As String = Nothing
+    Private __TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
         __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
+
+        If __TaskSchedeuler.GetTask() Is Nothing Then
+            __TaskSchedeuler.AddTask()
+        Else
+            __TaskSchedeuler.UpdateTask()
+        End If
+
         If LoadWithWindows() Then
             CheckBox_startWithWindows.Checked = True
         End If
@@ -239,32 +247,24 @@ Public Class BetterFullscreen
             __SettingsChanged = True
         End If
     End Sub
+
+
     Public Function LoadWithWindows() As Boolean
-        Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
-        If key Is Nothing Then
-            Return False
-        End If
-
-        Dim value As Object = key.GetValue(Process.GetCurrentProcess().MainModule.FileName)
-        If TypeOf value Is String Then
-            Return value.StartsWith("""" & Application.ExecutablePath & """")
-        End If
-
-        Return False
+        Return __TaskSchedeuler.GetTask().Enabled
     End Function
     Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
         RemoveHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         If LoadWithWindows() Then
-            Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
-            key.DeleteValue(Process.GetCurrentProcess().MainModule.FileName, False)
+            __TaskSchedeuler.ToggleTask()
             CheckBox_startWithWindows.Checked = False
         Else
-            Dim key As RegistryKey = CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
-            key.SetValue(Process.GetCurrentProcess().MainModule.FileName, """" & Application.ExecutablePath & """")
+            __TaskSchedeuler.ToggleTask()
             CheckBox_startWithWindows.Checked = True
         End If
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
     End Sub
+
+
     Private Sub Button_ReloadApp_Click(sender As Object, e As EventArgs) Handles Button_ReloadApp.Click
         LoadSettings()
     End Sub
