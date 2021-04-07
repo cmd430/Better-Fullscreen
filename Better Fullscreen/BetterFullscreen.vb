@@ -3,7 +3,6 @@ Imports System.DateTime
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Threading
-Imports Microsoft.Win32
 Imports Microsoft.Win32.Registry
 
 Public Class BetterFullscreen
@@ -247,8 +246,6 @@ Public Class BetterFullscreen
             __SettingsChanged = True
         End If
     End Sub
-
-
     Public Function LoadWithWindows() As Boolean
         Return __TaskSchedeuler.GetTask().Enabled
     End Function
@@ -261,10 +258,9 @@ Public Class BetterFullscreen
             __TaskSchedeuler.ToggleTask()
             CheckBox_startWithWindows.Checked = True
         End If
+        LogEvent("Toggled start with windows")
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
     End Sub
-
-
     Private Sub Button_ReloadApp_Click(sender As Object, e As EventArgs) Handles Button_ReloadApp.Click
         LoadSettings()
     End Sub
@@ -311,6 +307,7 @@ Public Class BetterFullscreen
     End Sub
     Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
         Application.Restart()
+        Application.ExitThread()
     End Sub
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
         Application.Exit()
