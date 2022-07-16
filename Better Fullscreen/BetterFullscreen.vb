@@ -404,8 +404,6 @@ Public Class BetterFullscreen
         Dim _Size As String() = ReadINI(Config, Game, "size", "800x600").Split("x"c)
         Dim _Location As String() = ReadINI(Config, Game, "location", "0x0").Split("x"c)
 
-        Debug.WriteLine("TITLE: '" & _Title & "'")
-
         If Not _Title = "" Or Not _Class = "" Then
             Games.Add(Game, New WindowData With {
               .Title = If(_Title = "", Nothing, _Title),
@@ -569,8 +567,6 @@ Public Class BetterFullscreen
 
             hWndTitle = hWndTitleBuilder.ToString().Trim()
             hWndClass = hWndClassBuilder.ToString().Trim()
-
-            Debug.WriteLine("Title: " & hWndTitle & ", Class: " & hWndClass)
 
             RaiseEvent ActiveWindowChanged(Me, hWndTitle, hWndClass, hWnd)
         End If
