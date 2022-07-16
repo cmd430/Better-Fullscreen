@@ -23,14 +23,20 @@ Public Class BetterFullscreen
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos")>
     Private Shared Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As Integer) As Boolean
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowText")>
-    Private Shared Function GetWindowText(hWnd As Integer, text As StringBuilder, count As Long) As Long
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowText", CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function GetWindowText(ByVal hWnd As Integer, lpString As StringBuilder, count As Integer) As Integer
     End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetClassName")>
-    Public Shared Function GetClassName(ByVal hWnd As IntPtr, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
+    Public Shared Function GetClassName(ByVal hWnd As IntPtr, ByVal lpClassName As StringBuilder, ByVal nMaxCount As Integer) As Integer
     End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowRect")>
     Private Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function SetWinEventHook(ByVal eventMin As UInteger, ByVal eventMax As UInteger, ByVal hmodWinEventProc As IntPtr, ByVal lpfnWinEventProc As WinEventDelegate, ByVal idProcess As UInteger, ByVal idThread As UInteger, ByVal dwFlags As UInteger) As IntPtr
+    End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function UnhookWinEvent(ByVal hWinEventHook As IntPtr) As Boolean
     End Function
 #End Region
 
@@ -142,17 +148,37 @@ Public Class BetterFullscreen
         NOZORDER = 4
         SHOWWINDOW = 40
     End Enum
+    <FlagsAttribute()>
+    Public Enum WIN_EVENT As UInteger
+        WINEVENT_OUTOFCONTEXT = 0
+        ' Im missing some here
+    End Enum
+    <FlagsAttribute()>
+    Public Enum HOOK_EVENT As UInteger
+        EVENT_SYSTEM_FOREGROUND = 3
+        EVENT_SYSTEM_MINIMIZEEND = 17
+        ' Im missing some here
+    End Enum
 #End Region
 
 #Region "Form Events"
+    Public Delegate Sub WinEventDelegate(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)
+    Public Delegate Sub ActiveWindowChangedHandler(ByVal sender As Object, ByVal windowTitle As String, ByVal windowClass As String, ByVal hWnd As IntPtr)
+    Public Event ActiveWindowChanged As ActiveWindowChangedHandler
+
     Private __Loaded As Integer = 0
     Private __Hotkeys As New Hotkeys
     Private __SettingsChanged As Boolean = False
     Private __Cursor = New Cursor(Cursor.Current.Handle)
     Private __CurrentGame As String = Nothing
     Private __TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
+    Private __hWinHook As IntPtr
+    Private __winEventProc As WinEventDelegate
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
+        __winEventProc = New WinEventDelegate(AddressOf WinEventProc)
+        __hWinHook = SetWinEventHook(HOOK_EVENT.EVENT_SYSTEM_FOREGROUND, HOOK_EVENT.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT.WINEVENT_OUTOFCONTEXT)
+
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
         __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
 
@@ -168,8 +194,9 @@ Public Class BetterFullscreen
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         Init()
     End Sub
-    Private Sub Timer_Scanner_Tick(sender As Object, e As EventArgs) Handles Timer_Scanner.Tick
-        DoWork()
+    Private Sub BetterFullscreen_ActiveWindowChanged(ByVal sender As Object, ByVal windowTitle As String, ByVal windowClass As String, ByVal hWnd As IntPtr) Handles Me.ActiveWindowChanged
+        Debug.WriteLine("Active Window Title: " & windowTitle & ", Active Window Class: " & windowClass)
+        DoWork(windowTitle, windowClass, hWnd)
     End Sub
     Private Sub BetterFullscreen_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
         If __Loaded = 0 Then
@@ -318,6 +345,7 @@ Public Class BetterFullscreen
             ToggleWindowToolStripMenuItem.PerformClick()
         Else
             __Hotkeys.Dispose()
+            UnhookWinEvent(__hWinHook)
         End If
     End Sub
 
@@ -375,6 +403,9 @@ Public Class BetterFullscreen
         Dim _Class As String = ReadINI(Config, Game, "class", "")
         Dim _Size As String() = ReadINI(Config, Game, "size", "800x600").Split("x"c)
         Dim _Location As String() = ReadINI(Config, Game, "location", "0x0").Split("x"c)
+
+        Debug.WriteLine("TITLE: '" & _Title & "'")
+
         If Not _Title = "" Or Not _Class = "" Then
             Games.Add(Game, New WindowData With {
               .Title = If(_Title = "", Nothing, _Title),
@@ -393,10 +424,15 @@ Public Class BetterFullscreen
         End If
     End Sub
 
-    Private Sub DoWork()
+    Private Sub DoWork(ByVal windowTitle As String, ByVal windowClass As String, ByVal Window_HWND As IntPtr)
         For Each Game As KeyValuePair(Of String, WindowData) In Games
-            Dim Window_HWND As IntPtr = FindWindowW(Game.Value.Class, Game.Value.Title)
-            If Window_HWND <> IntPtr.Zero And Game.Value.ProfileEnabled Then
+            ' Part1. Remove whitespace from title/class because the windowClass/windowTitle is trimmed to account for the ini not loading the trailing whitespace, this is only
+            '        needed because of the part2 hack to allow FindWindowW to work by setting the class/title of the game to the true class/title (with whitespace) in memory so
+            '        we can remove the TOPMOST flag from the window, kinds ugly but it seems to do the trick
+            Dim GameClass = Game.Value.Class?.Trim()
+            Dim GameTitle = Game.Value.Title?.Trim()
+
+            If Game.Value.ProfileEnabled And ((Not GameClass = "" And GameClass = windowClass) Or GameClass = "") And ((Not GameTitle = "" And GameTitle = windowTitle) Or GameTitle = "") Then
                 If Game.Value.State = 0 Then
                     LogEvent(Game.Key & " started")
                     If Game.Value.Delay > 0 Then
@@ -407,77 +443,83 @@ Public Class BetterFullscreen
                     SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                     LogEvent("resizing window " & Game.Value.Size.ToString())
                     LogEvent("repositioning window " & Game.Value.Location.ToString())
-                    'SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
                     SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                     If Game.Value.CaptureMouse Then
                         __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
                     End If
                     Game.Value.State = 1
                     __CurrentGame = Game.Key
+
+                    ' Part2. Hack to fix for windows ending with whitespace by saving the class/title with any leading/trailing whitespace 
+                    '        back into the game object, fixes FindWindowW not working with the truncated class/titles of some games (example: Back 4 Blood)
+                    Dim hWndTitle As New StringBuilder("", 256)
+                    GetWindowText(Window_HWND, hWndTitle, 256)
+                    Game.Value.Title = hWndTitle.ToString()
                 End If
-                If Window_HWND = GetForegroundWindow() Then
-                    If Game.Value.State > 0 Then
-                        Dim rect As New RECT
-                        Dim Window_Rect = New Rectangle()
+                If Game.Value.State > 0 Then
+                    Dim rect As New RECT
+                    Dim Window_Rect = New Rectangle()
 
-                        GetWindowRect(Window_HWND, rect)
+                    GetWindowRect(Window_HWND, rect)
 
-                        Window_Rect.X = rect.left
-                        Window_Rect.Y = rect.top
-                        Window_Rect.Width = rect.right - rect.left
-                        Window_Rect.Height = rect.bottom - rect.top
+                    Window_Rect.X = rect.left
+                    Window_Rect.Y = rect.top
+                    Window_Rect.Width = rect.right - rect.left
+                    Window_Rect.Height = rect.bottom - rect.top
 
-                        Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Value.Location
-                        'Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = Game.Value.Size
-                        Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor)
+                    Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Value.Location
+                    Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor)
 
-                        If Not correctPos Or Not correctSize Then
-                            LogEvent("resizing window " & Game.Value.Size.ToString())
-                            LogEvent("repositioning window " & Game.Value.Location.ToString())
-                            'SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width, Game.Value.Size.Height, SWP.FRAMECHANGED)
-                            SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-                        End If
-
-                        If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
-                            LogEvent("setting WS_VISIBLE")
-                            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                        End If
+                    If Not correctPos Or Not correctSize Then
+                        LogEvent("resizing window " & Game.Value.Size.ToString())
+                        LogEvent("repositioning window " & Game.Value.Location.ToString())
+                        SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                     End If
-                    If Game.Value.State = 1 Then
-                        LogEvent(Game.Key & " has focus")
-                        If Game.Value.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
-                            LogEvent("setting HWND_TOPMOST")
-                            SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
-                        End If
-                        If Game.Value.CaptureMouse Then
-                            LogEvent("locking mouse to game window location")
-                            __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
-                        End If
-                        Game.Value.State = 2
+
+                    If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
+                        LogEvent("setting WS_VISIBLE")
+                        SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                     End If
-                Else
-                    If Game.Value.State = 2 Then
-                        LogEvent(Game.Key & " lost focus")
-                        If Game.Value.ForceTopMost Then
-                            LogEvent("setting HWND_NOTOPMOST")
-                            SetWindowPos(Window_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
-                        End If
-                        If Game.Value.CaptureMouse Then
-                            LogEvent("releasing mouse lock from game window location")
-                            __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
-                        End If
-                        Game.Value.State = 1
+                End If
+                If Game.Value.State = 1 Then
+                    LogEvent(Game.Key & " has focus")
+                    If Game.Value.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
+                        LogEvent("setting HWND_TOPMOST")
+                        SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
                     End If
+                    If Game.Value.CaptureMouse Then
+                        LogEvent("locking mouse to game window location")
+                        __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
+                    End If
+                    Game.Value.State = 2
                 End If
             Else
-                If Game.Value.State > 0 Then
-                    LogEvent(Game.Key & " exited")
-                    If Game.Value.CaptureMouse And Game.Value.State = 2 Then
-                        LogEvent("releasing mouse lock from game window location")
-                        __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                If __CurrentGame IsNot Nothing Then
+                    Dim Game_HWND = FindWindowW(Games.Item(__CurrentGame).Class, Games.Item(__CurrentGame).Title)
+                    If Game_HWND <> IntPtr.Zero Then
+                        If Game.Value.State = 2 Then
+                            LogEvent(Game.Key & " lost focus")
+                            If Game.Value.ForceTopMost Then
+                                LogEvent("setting HWND_NOTOPMOST")
+                                SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
+                            End If
+                            If Game.Value.CaptureMouse Then
+                                LogEvent("releasing mouse lock from game window location")
+                                __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                            End If
+                            Game.Value.State = 1
+                        End If
+                    Else
+                        If Game.Value.State > 0 Then
+                            LogEvent(Game.Key & " exited")
+                            If Game.Value.CaptureMouse And Game.Value.State = 2 Then
+                                LogEvent("releasing mouse lock from game window location")
+                                __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                            End If
+                            Game.Value.State = 0
+                            __CurrentGame = Nothing
+                        End If
                     End If
-                    Game.Value.State = 0
-                    __CurrentGame = Nothing
                 End If
             End If
         Next
@@ -485,16 +527,17 @@ Public Class BetterFullscreen
 
     Private Sub Add_Game()
         Dim hWnd = GetForegroundWindow()
-        Dim hWndTitle As New StringBuilder
-        Dim [class] As String = ""
+        Dim hWndTitle As New StringBuilder("", 256)
+        GetWindowText(hWnd, hWndTitle, 256)
+        Dim hWndClass As New StringBuilder("", 256)
+        GetClassName(hWnd, hWndClass, 256)
         Dim _size As String() = ReadINI(Config, "SETTINGS", "default_size", "800x600").Split("x"c)
         Dim _location As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
         Dim [size] As New Size(_size(0), _size(1))
         Dim [location] As New Point(_location(0), _location(1))
-        GetWindowText(hWnd, hWndTitle, 256)
-        GetClassName(hWnd, [class], 256)
-        Dim [title] = hWndTitle.ToString()
-        Dim [section] = [title].Replace("[", "(").Replace("]", ")")
+        Dim [title] = hWndTitle.ToString().Trim()
+        Dim [class] = hWndClass.ToString().Trim()
+        Dim [section] = [title].Replace("[", "(").Replace("]", ")").Trim()
         If Not [title] = "" Then
             If Not Games.ContainsKey([section]) Then
                 WriteINI(Config, [section], "title", [title])
@@ -511,6 +554,25 @@ Public Class BetterFullscreen
                 LoadGame([section])
                 ComboBox_Games.Items.Add([section])
             End If
+        End If
+    End Sub
+
+    Private Sub WinEventProc(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)
+        If eventType = HOOK_EVENT.EVENT_SYSTEM_FOREGROUND Then
+            Dim hWndTitleBuilder As New StringBuilder("", 256)
+            Dim hWndClassBuilder As New StringBuilder("", 256)
+            Dim hWndTitle As String = ""
+            Dim hWndClass As String = ""
+
+            GetWindowText(hWnd, hWndTitleBuilder, 256)
+            GetClassName(hWnd, hWndClassBuilder, 256)
+
+            hWndTitle = hWndTitleBuilder.ToString().Trim()
+            hWndClass = hWndClassBuilder.ToString().Trim()
+
+            Debug.WriteLine("Title: " & hWndTitle & ", Class: " & hWndClass)
+
+            RaiseEvent ActiveWindowChanged(Me, hWndTitle, hWndClass, hWnd)
         End If
     End Sub
 

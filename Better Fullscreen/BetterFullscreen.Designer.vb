@@ -24,7 +24,6 @@ Partial Class BetterFullscreen
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(BetterFullscreen))
-        Me.Timer_Scanner = New System.Windows.Forms.Timer(Me.components)
         Me.TrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.TrayMenu = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.ToggleWindowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -99,11 +98,6 @@ Partial Class BetterFullscreen
         CType(Me.NumericUpDown_Delay, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TableLayoutPanel4.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'Timer_Scanner
-        '
-        Me.Timer_Scanner.Enabled = True
-        Me.Timer_Scanner.Interval = 500
         '
         'TrayIcon
         '
@@ -574,7 +568,7 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox_ApplicationSettings.Location = New System.Drawing.Point(3, 3)
         Me.GroupBox_ApplicationSettings.Name = "GroupBox_ApplicationSettings"
-        Me.GroupBox_ApplicationSettings.Size = New System.Drawing.Size(336, 276)
+        Me.GroupBox_ApplicationSettings.Size = New System.Drawing.Size(337, 276)
         Me.GroupBox_ApplicationSettings.TabIndex = 0
         Me.GroupBox_ApplicationSettings.TabStop = False
         Me.GroupBox_ApplicationSettings.Text = "Application Settings"
@@ -619,9 +613,9 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.Controls.Add(Me.Label4)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label5)
         Me.GroupBox_GameSettings.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox_GameSettings.Location = New System.Drawing.Point(345, 3)
+        Me.GroupBox_GameSettings.Location = New System.Drawing.Point(346, 3)
         Me.GroupBox_GameSettings.Name = "GroupBox_GameSettings"
-        Me.GroupBox_GameSettings.Size = New System.Drawing.Size(291, 276)
+        Me.GroupBox_GameSettings.Size = New System.Drawing.Size(290, 276)
         Me.GroupBox_GameSettings.TabIndex = 1
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
@@ -753,8 +747,6 @@ Partial Class BetterFullscreen
         Me.ResumeLayout(False)
 
     End Sub
-
-    Friend WithEvents Timer_Scanner As Timer
     Friend WithEvents TrayIcon As NotifyIcon
     Friend WithEvents TrayMenu As ContextMenuStrip
     Friend WithEvents ExitToolStripMenuItem As ToolStripMenuItem
