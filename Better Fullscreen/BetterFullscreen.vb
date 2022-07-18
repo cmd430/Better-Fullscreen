@@ -412,7 +412,7 @@ Public Class BetterFullscreen
               .Location = New Point(_Location(0), _Location(1)),
               .Delay = ReadINI(Config, Game, "delay", 0),
               .CaptureMouse = ReadINI(Config, Game, "capture-mouse", False),
-              .ForceTopMost = ReadINI(Config, Game, "force-topmost", False),
+              .ForceTopMost = ReadINI(Config, Game, "force-topmost", True),
               .ProfileEnabled = ReadINI(Config, Game, "profile-enabled", True),
               .State = 0
             })
@@ -544,15 +544,17 @@ Public Class BetterFullscreen
                 WriteINI(Config, [section], "location", [location].X & "x" & [location].Y)
                 WriteINI(Config, [section], "delay", 0)
                 WriteINI(Config, [section], "capture-mouse", False)
-                WriteINI(Config, [section], "force-topmost", False)
+                WriteINI(Config, [section], "force-topmost", True)
                 WriteINI(Config, [section], "profile-enabled", True)
                 LogEvent([section] & " added")
                 LogEvent("size " & [size].ToString)
                 LogEvent("location " & [location].ToString())
+                LogEvent("top most " & [location].ToString())
                 LoadGame([section])
                 ComboBox_Games.Items.Add([section])
             End If
         End If
+        DoWork([title], [class], hWnd)
     End Sub
 
     Private Sub WinEventProc(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)

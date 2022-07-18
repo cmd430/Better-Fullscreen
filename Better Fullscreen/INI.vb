@@ -17,8 +17,8 @@ Module INI
     End Function
     Public Function ReadINISections(ByVal inipath As String) As Specialized.StringCollection
         Dim profiles As New Specialized.StringCollection
-        Dim ptr As IntPtr = Marshal.StringToHGlobalAnsi(New String(vbNullChar, 1024))
-        Dim len As Integer = GetPrivateProfileSectionNames(ptr, 1024, inipath)
+        Dim ptr As IntPtr = Marshal.StringToHGlobalAnsi(New String(vbNullChar, 32767))
+        Dim len As Integer = GetPrivateProfileSectionNames(ptr, 32767, inipath)
         Dim buff As String = Marshal.PtrToStringAnsi(ptr, len)
         Marshal.FreeHGlobal(ptr)
         Dim sb As New StringBuilder
