@@ -338,6 +338,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_Games.Location = New System.Drawing.Point(6, 19)
         Me.ComboBox_Games.Name = "ComboBox_Games"
         Me.ComboBox_Games.Size = New System.Drawing.Size(170, 21)
+        Me.ComboBox_Games.Sorted = True
         Me.ComboBox_Games.TabIndex = 0
         '
         'Button_ReloadApp
