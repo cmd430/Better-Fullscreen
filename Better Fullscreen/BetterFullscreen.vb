@@ -8,35 +8,38 @@ Imports Microsoft.Win32.Registry
 Public Class BetterFullscreen
 
 #Region "Native Methods"
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="FindWindowW")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="FindWindowW", CallingConvention:=CallingConvention.StdCall)>
     Public Shared Function FindWindowW(<MarshalAs(UnmanagedType.LPTStr)> ByVal lpClassName As String, <MarshalAs(UnmanagedType.LPTStr)> ByVal lpWindowName As String) As IntPtr
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetForegroundWindow")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function GetForegroundWindow() As IntPtr
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLong")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function SetForegroundWindow(ByVal hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLong", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function SetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As IntPtr) As Integer
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLong")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLong", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function GetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer) As Integer
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos")>
-    Private Shared Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As Integer) As Boolean
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos", CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As Integer) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowText", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function GetWindowText(ByVal hWnd As Integer, lpString As StringBuilder, count As Integer) As Integer
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetClassName")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetClassName", CallingConvention:=CallingConvention.StdCall)>
     Public Shared Function GetClassName(ByVal hWnd As IntPtr, ByVal lpClassName As StringBuilder, ByVal nMaxCount As Integer) As Integer
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowRect")>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowRect", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, CallingConvention:=CallingConvention.StdCall)>
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWinEventHook", CallingConvention:=CallingConvention.StdCall)>
     Private Shared Function SetWinEventHook(ByVal eventMin As UInteger, ByVal eventMax As UInteger, ByVal hmodWinEventProc As IntPtr, ByVal lpfnWinEventProc As WinEventDelegate, ByVal idProcess As UInteger, ByVal idThread As UInteger, ByVal dwFlags As UInteger) As IntPtr
     End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function UnhookWinEvent(ByVal hWinEventHook As IntPtr) As Boolean
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="UnhookWinEvent", CallingConvention:=CallingConvention.StdCall)>
+    Private Shared Function UnhookWinEvent(ByVal hWinEventHook As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 #End Region
 
@@ -149,15 +152,23 @@ Public Class BetterFullscreen
         SHOWWINDOW = 40
     End Enum
     <FlagsAttribute()>
-    Public Enum WIN_EVENT As UInteger
-        WINEVENT_OUTOFCONTEXT = 0
-        ' Im missing some here
+    Public Enum WIN_EVENT_FLAGS As UInteger
+        WINEVENT_OUTOFCONTEXT = 0 'Events are ASYNC
+        WINEVENT_SKIPOWNTHREAD = 1 'Dont call back for events on installer's thread
+        WINEVENT_SKIPOWNPROCESS = 2 'Dont call back for events on installer's process
+        WINEVENT_INCONTEXT = 4 'Events are SYNC, this causes your dll To be injected into every process
     End Enum
     <FlagsAttribute()>
-    Public Enum HOOK_EVENT As UInteger
-        EVENT_SYSTEM_FOREGROUND = 3
-        EVENT_SYSTEM_MINIMIZEEND = 17
-        ' Im missing some here
+    Public Enum WIN_EVENT As UInteger
+        EVENT_SYSTEM_FOREGROUND = &H3 ' The foreground window has changed.
+        EVENT_SYSTEM_CAPTUREEND = &H9 ' A window has lost mouse capture.
+        EVENT_SYSTEM_CAPTURESTART = &H8 ' A window has received mouse capture.
+        EVENT_SYSTEM_SWITCHSTART = &H14 ' The user has pressed ALT+TAB.
+        EVENT_SYSTEM_SWITCHEND = &H15 ' The user has released ALT+TAB.
+        EVENT_SYSTEM_MINIMIZESTART = &H16 ' A window object is about to be minimized.
+        EVENT_SYSTEM_MINIMIZEEND = &H17 ' A window object is about to be restored.
+        EVENT_SYSTEM_DESKTOPSWITCH = &H20 ' The active desktop has been switched.
+        ' Im missing a bunch that i probably dont care about
     End Enum
 #End Region
 
@@ -177,7 +188,7 @@ Public Class BetterFullscreen
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         __winEventProc = New WinEventDelegate(AddressOf WinEventProc)
-        __hWinHook = SetWinEventHook(HOOK_EVENT.EVENT_SYSTEM_FOREGROUND, HOOK_EVENT.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT.WINEVENT_OUTOFCONTEXT)
+        __hWinHook = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
 
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
         __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
@@ -377,19 +388,16 @@ Public Class BetterFullscreen
             End If
         End Using
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
-        Dim start As DateTime
-        Dim [end] As DateTime
-        Dim elapsed As TimeSpan
         LogEvent("Loading Games")
-        start = Now
+        Dim start As DateTime = Now
         For Each Section As String In ReadINISections(Config)
             If Not Section = "SETTINGS" Then
                 LoadGame(Section)
                 ComboBox_Games.Items.Add(Section)
             End If
         Next
-        [end] = Now
-        elapsed = [end].Subtract(start)
+        Dim [end] As DateTime = Now
+        Dim elapsed As TimeSpan = [end].Subtract(start)
         LogEvent("Loaded all games in " & elapsed.TotalSeconds.ToString("0.000") & "ms")
         LogEvent("Ready")
     End Sub
@@ -473,17 +481,12 @@ Public Class BetterFullscreen
                         LogEvent("repositioning window " & Game.Value.Location.ToString())
                         SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                     End If
-
-                    If Not GetWindowLong(Window_HWND, GWL.STYLE) = 335544320 Then
-                        LogEvent("setting WS_VISIBLE")
-                        SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                    End If
                 End If
                 If Game.Value.State = 1 Then
                     LogEvent(Game.Key & " has focus")
                     If Game.Value.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
                         LogEvent("setting HWND_TOPMOST")
-                        SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
+                        SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
                     End If
                     If Game.Value.CaptureMouse Then
                         LogEvent("locking mouse to game window location")
@@ -494,12 +497,31 @@ Public Class BetterFullscreen
             Else
                 If __CurrentGame IsNot Nothing Then
                     Dim Game_HWND = FindWindowW(Games.Item(__CurrentGame).Class, Games.Item(__CurrentGame).Title)
+                    Dim CurrentWindow_HWND = GetForegroundWindow()
+
                     If Game_HWND <> IntPtr.Zero Then
                         If Game.Value.State = 2 Then
                             LogEvent(Game.Key & " lost focus")
                             If Game.Value.ForceTopMost Then
                                 LogEvent("setting HWND_NOTOPMOST")
-                                SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
+                                SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
+
+                                ' Fix not bringing clicked on windows to foreground
+                                If CurrentWindow_HWND <> IntPtr.Zero Then
+                                    Dim hWndTitle As New StringBuilder("", 256)
+                                    Dim hWndClass As New StringBuilder("", 256)
+
+                                    GetWindowText(CurrentWindow_HWND, hWndTitle, 256)
+                                    GetClassName(CurrentWindow_HWND, hWndClass, 256)
+
+                                    Dim blackListTitles As New List(Of String)({"Task Switching", "Task View", "Start", "Search"})
+                                    Dim blackListClasses As New List(Of String)({"Shell_TrayWnd", "WindowsDashboard"})
+
+                                    If Not blackListTitles.Any(Function(s) hWndTitle.ToString().Contains(s)) And Not blackListClasses.Any(Function(s) hWndClass.ToString().Contains(s)) Then
+                                        SetForegroundWindow(FindWindowW("Shell_TrayWnd", Nothing))
+                                        SetForegroundWindow(CurrentWindow_HWND)
+                                    End If
+                                End If
                             End If
                             If Game.Value.CaptureMouse Then
                                 LogEvent("releasing mouse lock from game window location")
@@ -526,8 +548,8 @@ Public Class BetterFullscreen
     Private Sub Add_Game()
         Dim hWnd = GetForegroundWindow()
         Dim hWndTitle As New StringBuilder("", 256)
-        GetWindowText(hWnd, hWndTitle, 256)
         Dim hWndClass As New StringBuilder("", 256)
+        GetWindowText(hWnd, hWndTitle, 256)
         GetClassName(hWnd, hWndClass, 256)
         Dim _size As String() = ReadINI(Config, "SETTINGS", "default_size", "800x600").Split("x"c)
         Dim _location As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
@@ -558,19 +580,14 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub WinEventProc(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)
-        If eventType = HOOK_EVENT.EVENT_SYSTEM_FOREGROUND Then
+        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
             Dim hWndTitleBuilder As New StringBuilder("", 256)
             Dim hWndClassBuilder As New StringBuilder("", 256)
-            Dim hWndTitle As String = ""
-            Dim hWndClass As String = ""
 
             GetWindowText(hWnd, hWndTitleBuilder, 256)
             GetClassName(hWnd, hWndClassBuilder, 256)
 
-            hWndTitle = hWndTitleBuilder.ToString().Trim()
-            hWndClass = hWndClassBuilder.ToString().Trim()
-
-            RaiseEvent ActiveWindowChanged(Me, hWndTitle, hWndClass, hWnd)
+            RaiseEvent ActiveWindowChanged(Me, hWndTitleBuilder.ToString().Trim(), hWndClassBuilder.ToString().Trim(), hWnd)
         End If
     End Sub
 

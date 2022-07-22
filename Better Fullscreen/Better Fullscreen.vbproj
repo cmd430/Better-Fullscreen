@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fullscreen.ico" />
+    <Content Include="Fullscreen_Light.ico" />
     <Content Include="ILMergeOrder.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
