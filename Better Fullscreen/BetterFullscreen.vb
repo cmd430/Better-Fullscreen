@@ -571,7 +571,6 @@ Public Class BetterFullscreen
                 LogEvent([section] & " added")
                 LogEvent("size " & [size].ToString)
                 LogEvent("location " & [location].ToString())
-                LogEvent("top most " & [location].ToString())
                 LoadGame([section])
                 ComboBox_Games.Items.Add([section])
             End If
