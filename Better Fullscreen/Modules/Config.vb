@@ -29,9 +29,9 @@ Public Module Config
 
     <XmlRoot(ElementName:="Profile")>
     Public Class Profile
-        <XmlAttribute(AttributeName:="profile-name")>
+        <XmlAttribute(AttributeName:="name")>
         Public Property Name As String = ""
-        <XmlAttribute(AttributeName:="profile-enabled")>
+        <XmlAttribute(AttributeName:="enabled")>
         Public Property Enabled As Boolean = True
         <XmlElement(ElementName:="Title")>
         Public Property Title As String = ""
