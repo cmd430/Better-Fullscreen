@@ -32,7 +32,6 @@ Partial Class BetterFullscreen
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.RichTextBox_EventLog = New System.Windows.Forms.RichTextBox()
         Me.GroupBox_Events = New System.Windows.Forms.GroupBox()
-        Me.Button_Reload = New System.Windows.Forms.Button()
         Me.Button_Save = New System.Windows.Forms.Button()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -51,7 +50,6 @@ Partial Class BetterFullscreen
         Me.TextBox_Title = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.ComboBox_Games = New System.Windows.Forms.ComboBox()
-        Me.Button_ReloadApp = New System.Windows.Forms.Button()
         Me.Button_SaveApp = New System.Windows.Forms.Button()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
@@ -159,24 +157,13 @@ Partial Class BetterFullscreen
         Me.GroupBox_Events.TabStop = False
         Me.GroupBox_Events.Text = "Events"
         '
-        'Button_Reload
-        '
-        Me.Button_Reload.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Button_Reload.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Reload.Location = New System.Drawing.Point(256, 246)
-        Me.Button_Reload.Name = "Button_Reload"
-        Me.Button_Reload.Size = New System.Drawing.Size(29, 23)
-        Me.Button_Reload.TabIndex = 19
-        Me.Button_Reload.Text = ""
-        Me.Button_Reload.UseVisualStyleBackColor = True
-        '
         'Button_Save
         '
         Me.Button_Save.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Save.ForeColor = System.Drawing.SystemColors.WindowText
         Me.Button_Save.Location = New System.Drawing.Point(6, 246)
         Me.Button_Save.Name = "Button_Save"
-        Me.Button_Save.Size = New System.Drawing.Size(170, 23)
+        Me.Button_Save.Size = New System.Drawing.Size(204, 23)
         Me.Button_Save.TabIndex = 18
         Me.Button_Save.Text = "Save"
         Me.Button_Save.UseVisualStyleBackColor = True
@@ -341,24 +328,13 @@ Partial Class BetterFullscreen
         Me.ComboBox_Games.Sorted = True
         Me.ComboBox_Games.TabIndex = 0
         '
-        'Button_ReloadApp
-        '
-        Me.Button_ReloadApp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Button_ReloadApp.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_ReloadApp.Location = New System.Drawing.Point(290, 246)
-        Me.Button_ReloadApp.Name = "Button_ReloadApp"
-        Me.Button_ReloadApp.Size = New System.Drawing.Size(38, 23)
-        Me.Button_ReloadApp.TabIndex = 19
-        Me.Button_ReloadApp.Text = ""
-        Me.Button_ReloadApp.UseVisualStyleBackColor = True
-        '
         'Button_SaveApp
         '
         Me.Button_SaveApp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_SaveApp.ForeColor = System.Drawing.SystemColors.WindowText
         Me.Button_SaveApp.Location = New System.Drawing.Point(9, 246)
         Me.Button_SaveApp.Name = "Button_SaveApp"
-        Me.Button_SaveApp.Size = New System.Drawing.Size(275, 23)
+        Me.Button_SaveApp.Size = New System.Drawing.Size(319, 23)
         Me.Button_SaveApp.TabIndex = 18
         Me.Button_SaveApp.Text = "Save"
         Me.Button_SaveApp.UseVisualStyleBackColor = True
@@ -554,7 +530,6 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label18)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label19)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultWidth)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Button_ReloadApp)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultHeight)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Button_SaveApp)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label17)
@@ -594,7 +569,6 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Delay)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label23)
         Me.GroupBox_GameSettings.Controls.Add(Me.Button_Remove)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Button_Reload)
         Me.GroupBox_GameSettings.Controls.Add(Me.ComboBox_Games)
         Me.GroupBox_GameSettings.Controls.Add(Me.Button_Save)
         Me.GroupBox_GameSettings.Controls.Add(Me.Label1)
@@ -687,9 +661,9 @@ Partial Class BetterFullscreen
         '
         Me.Button_Remove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Remove.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Remove.Location = New System.Drawing.Point(182, 246)
+        Me.Button_Remove.Location = New System.Drawing.Point(216, 246)
         Me.Button_Remove.Name = "Button_Remove"
-        Me.Button_Remove.Size = New System.Drawing.Size(68, 23)
+        Me.Button_Remove.Size = New System.Drawing.Size(67, 23)
         Me.Button_Remove.TabIndex = 20
         Me.Button_Remove.Text = "Remove"
         Me.Button_Remove.UseVisualStyleBackColor = True
@@ -775,8 +749,6 @@ Partial Class BetterFullscreen
     Friend WithEvents NumericUpDown_Top As NumericUpDown
     Friend WithEvents Label10 As Label
     Friend WithEvents Button_Save As Button
-    Friend WithEvents Button_Reload As Button
-    Friend WithEvents Button_ReloadApp As Button
     Friend WithEvents Button_SaveApp As Button
     Friend WithEvents Label11 As Label
     Friend WithEvents Label12 As Label

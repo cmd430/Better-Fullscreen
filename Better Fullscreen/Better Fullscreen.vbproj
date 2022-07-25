@@ -102,8 +102,10 @@
       <DependentUpon>BetterFullscreen.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Hotkeys.vb" />
-    <Compile Include="INI.vb" />
+    <Compile Include="Modules\Config.vb" />
+    <Compile Include="Modules\Hotkeys.vb" />
+    <Compile Include="Modules\Utils.vb" />
+    <Compile Include="Modules\Win32.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -119,7 +121,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Scheduler.vb" />
+    <Compile Include="Modules\Scheduler.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BetterFullscreen.resx">
@@ -133,6 +135,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="ILMerge.props" />
     <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">

@@ -1,197 +1,31 @@
 ﻿Imports System.ComponentModel
-Imports System.DateTime
-Imports System.Runtime.InteropServices
-Imports System.Text
 Imports System.Threading
 Imports Microsoft.Win32.Registry
 
 Public Class BetterFullscreen
 
-#Region "Native Methods"
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="FindWindowW", CallingConvention:=CallingConvention.StdCall)>
-    Public Shared Function FindWindowW(<MarshalAs(UnmanagedType.LPTStr)> ByVal lpClassName As String, <MarshalAs(UnmanagedType.LPTStr)> ByVal lpWindowName As String) As IntPtr
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function GetForegroundWindow() As IntPtr
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function SetForegroundWindow(ByVal hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLong", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function SetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer, ByVal dwNewLong As IntPtr) As Integer
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLong", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function GetWindowLong(ByVal hWnd As IntPtr, ByVal nIndex As Integer) As Integer
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function SetWindowPos(ByVal hWnd As IntPtr, ByVal hWndInsertAfter As IntPtr, ByVal X As Integer, ByVal Y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal uFlags As Integer) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowText", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function GetWindowText(ByVal hWnd As Integer, lpString As StringBuilder, count As Integer) As Integer
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetClassName", CallingConvention:=CallingConvention.StdCall)>
-    Public Shared Function GetClassName(ByVal hWnd As IntPtr, ByVal lpClassName As StringBuilder, ByVal nMaxCount As Integer) As Integer
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowRect", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWinEventHook", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function SetWinEventHook(ByVal eventMin As UInteger, ByVal eventMax As UInteger, ByVal hmodWinEventProc As IntPtr, ByVal lpfnWinEventProc As WinEventDelegate, ByVal idProcess As UInteger, ByVal idThread As UInteger, ByVal dwFlags As UInteger) As IntPtr
-    End Function
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="UnhookWinEvent", CallingConvention:=CallingConvention.StdCall)>
-    Private Shared Function UnhookWinEvent(ByVal hWinEventHook As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
-#End Region
-
-#Region "Win32 Enums & Structures"
-    <StructLayout(LayoutKind.Sequential)>
-    Private Structure RECT
-        Public left, top, right, bottom As Integer
-    End Structure
-    <FlagsAttribute>
-    Public Enum ModifierKey As Long
-        None = 0
-        Alt = 1
-        Control = 2
-        Shift = 4
-        Win = 8
-    End Enum
-    <FlagsAttribute()>
-    Public Enum HWND As Long
-        TOP = 0
-        BOTTOM = 1
-        TOPMOST = -1
-        NOTOPMOST = -2
-    End Enum
-    <FlagsAttribute()>
-    Public Enum GWL As Long
-        WNDPROC = -4
-        HINSTANCE = -6
-        HWNDPARENT = -8
-        STYLE = -16
-        EXSTYLE = -20
-        USERDATA = -21
-        ID = -12
-    End Enum
-    <FlagsAttribute()>
-    Public Enum WS As Long
-        OVERLAPPED = 0
-        POPUP = 2147483648
-        CHILD = 1073741824
-        MINIMIZE = 536870912
-        VISIBLE = 268435456
-        DISABLED = 134217728
-        CLIPSIBLINGS = 67108864
-        CLIPCHILDREN = 33554432
-        MAXIMIZE = 16777216
-        BORDER = 8388608
-        DLGFRAME = 4194304
-        VSCROLL = 2097152
-        HSCROLL = 1048576
-        SYSMENU = 524288
-        THICKFRAME = 262144
-        GROUP = 131072
-        TABSTOP = 65536
-        MINIMIZEBOX = 131072
-        MAXIMIZEBOX = 65536
-        CAPTION = BORDER Or DLGFRAME
-        TILED = OVERLAPPED
-        ICONIC = MINIMIZE
-        SIZEBOX = THICKFRAME
-        TILEDWINDOW = OVERLAPPEDWINDOW
-        OVERLAPPEDWINDOW = OVERLAPPED Or CAPTION Or SYSMENU Or THICKFRAME Or MINIMIZEBOX Or MAXIMIZEBOX
-        POPUPWINDOW = POPUP Or BORDER Or SYSMENU
-        CHILDWINDOW = CHILD
-    End Enum
-    <FlagsAttribute()>
-    Public Enum WS_EX As Long
-        None = 0
-        DLGMODALFRAME = 1
-        NOPARENTNOTIFY = 4
-        TOPMOST = 8
-        ACCEPTFILES = 16
-        TRANSPARENT = 32
-        MDICHILD = 64
-        TOOLWINDOW = 128
-        WINDOWEDGE = 256
-        CLIENTEDGE = 512
-        CONTEXTHELP = 1024
-        RIGHT = 4096
-        LEFT = 0
-        RTLREADING = 8192
-        LTRREADING = 0
-        LEFTSCROLLBAR = 16384
-        RIGHTSCROLLBAR = 0
-        CONTROLPARENT = 65536
-        STATICEDGE = 131072
-        APPWINDOW = 262144
-        LAYERED = 524288
-        NOINHERITLAYOUT = 1048576
-        LAYOUTRTL = 4194304
-        COMPOSITED = 33554432
-        NOACTIVATE = 67108864
-        OVERLAPPEDWINDOW = WINDOWEDGE Or CLIENTEDGE
-        PALETTEWINDOW = WINDOWEDGE Or TOOLWINDOW Or TOPMOST
-    End Enum
-    <FlagsAttribute()>
-    Public Enum SWP As Long
-        ASYNCWINDOWPOS = 4000
-        DEFERERASE = 2000
-        DRAWFRAME = 20
-        FRAMECHANGED = 20
-        HIDEWINDOW = 80
-        NOACTIVATE = 10
-        NOCOPYBITS = 100
-        NOMOVE = 2
-        NOOWNERZORDER = 200
-        NOREDRAW = 8
-        NOREPOSITION = 200
-        NOSENDCHANGING = 400
-        NOSIZE = 1
-        NOZORDER = 4
-        SHOWWINDOW = 40
-    End Enum
-    <FlagsAttribute()>
-    Public Enum WIN_EVENT_FLAGS As UInteger
-        WINEVENT_OUTOFCONTEXT = 0 'Events are ASYNC
-        WINEVENT_SKIPOWNTHREAD = 1 'Dont call back for events on installer's thread
-        WINEVENT_SKIPOWNPROCESS = 2 'Dont call back for events on installer's process
-        WINEVENT_INCONTEXT = 4 'Events are SYNC, this causes your dll To be injected into every process
-    End Enum
-    <FlagsAttribute()>
-    Public Enum WIN_EVENT As UInteger
-        EVENT_SYSTEM_FOREGROUND = &H3 ' The foreground window has changed.
-        EVENT_SYSTEM_CAPTUREEND = &H9 ' A window has lost mouse capture.
-        EVENT_SYSTEM_CAPTURESTART = &H8 ' A window has received mouse capture.
-        EVENT_SYSTEM_SWITCHSTART = &H14 ' The user has pressed ALT+TAB.
-        EVENT_SYSTEM_SWITCHEND = &H15 ' The user has released ALT+TAB.
-        EVENT_SYSTEM_MINIMIZESTART = &H16 ' A window object is about to be minimized.
-        EVENT_SYSTEM_MINIMIZEEND = &H17 ' A window object is about to be restored.
-        EVENT_SYSTEM_DESKTOPSWITCH = &H20 ' The active desktop has been switched.
-        ' Im missing a bunch that i probably dont care about
-    End Enum
-#End Region
-
 #Region "Form Events"
-    Public Delegate Sub WinEventDelegate(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)
-    Public Delegate Sub ActiveWindowChangedHandler(ByVal sender As Object, ByVal windowTitle As String, ByVal windowClass As String, ByVal hWnd As IntPtr)
-    Public Event ActiveWindowChanged As ActiveWindowChangedHandler
+    Public Delegate Sub ActiveWindowChangedHandler(sender As Object, windowTitle As String, windowClass As String, HWND As IntPtr)
 
-    Private __Loaded As Integer = 0
-    Private __Hotkeys As New Hotkeys
+    Private WindowsScaleFactor As Int32 = 1
+
     Private __SettingsChanged As Boolean = False
-    Private __Cursor = New Cursor(Cursor.Current.Handle)
-    Private __CurrentGame As String = Nothing
-    Private __TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
     Private __hWinHook As IntPtr
     Private __winEventProc As WinEventDelegate
+
+    Private ReadOnly __Hotkeys As New Hotkeys
+    Private ReadOnly __TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
+
+    Private ReadOnly ConfigPath As String = Application.ExecutablePath.Replace(".exe", ".conf")
+    Private Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
+
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         __winEventProc = New WinEventDelegate(AddressOf WinEventProc)
         __hWinHook = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
 
         AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
-        __Hotkeys.RegisterHotKey(ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt), ReadINI(Config, "SETTINGS", "hotkey", Keys.F3))
+        __Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
 
         If __TaskSchedeuler.GetTask() Is Nothing Then
             __TaskSchedeuler.AddTask()
@@ -202,40 +36,54 @@ Public Class BetterFullscreen
         If LoadWithWindows() Then
             CheckBox_startWithWindows.Checked = True
         End If
+
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+
         Init()
     End Sub
-    Private Sub BetterFullscreen_ActiveWindowChanged(ByVal sender As Object, ByVal windowTitle As String, ByVal windowClass As String, ByVal hWnd As IntPtr) Handles Me.ActiveWindowChanged
-        Debug.WriteLine("Active Window Title: " & windowTitle & ", Active Window Class: " & windowClass)
-        DoWork(windowTitle, windowClass, hWnd)
+
+    Protected Overrides Sub SetVisibleCore(value As Boolean)
+        If Not IsHandleCreated Then
+            CreateHandle()
+            value = Debugger.IsAttached ' Start hidden (unless debugging)
+        End If
+        MyBase.SetVisibleCore(value)
     End Sub
-    Private Sub BetterFullscreen_Paint(sender As Object, e As PaintEventArgs) Handles Me.Paint
-        If __Loaded = 0 Then
-            Hide()
-            __Loaded = 1
+
+    Private Sub BetterFullscreen_VisibleChanged(sender As Object, e As EventArgs) Handles Me.VisibleChanged
+        If Visible Then
+            LoadSettings()
+            LoadGameSettings()
+
+            Dim CurrentProfile = GetCurrentProfile(Config)
+
+            If ComboBox_Games.SelectedIndex > -1 And GetCurrentProfile(Config) IsNot Nothing Then
+                ComboBox_Games.SelectedItem = CurrentProfile.Name
+            End If
         End If
     End Sub
+
     Private Sub Button_Save_Click(sender As Object, e As EventArgs) Handles Button_Save.Click
         SaveGameSettings()
     End Sub
+
     Private Sub Button_Remove_Click(sender As Object, e As EventArgs) Handles Button_Remove.Click
-        Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-        Dim confirm As Integer = MessageBox.Show("Remove Profile '" & Game.Key & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel)
+        Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
+        Dim confirm As Integer = MessageBox.Show("Remove Profile '" & Game.Name & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel)
+
         If confirm = DialogResult.OK Then
-            RemoveINISection(Config, Game.Key)
-            LogEvent("Removed '" & Game.Key & "' settings")
+            RemoveProfile(Game.Name, Config)
+            LogEvent("Removed '" & Game.Name & "' settings")
             ComboBox_Games.Items.RemoveAt(ComboBox_Games.SelectedIndex)
-            Games.Remove(Game.Key)
             LoadGameSettings()
         End If
     End Sub
-    Private Sub Button_Reload_Click(sender As Object, e As EventArgs) Handles Button_Reload.Click
-        LoadGameSettings(ComboBox_Games.SelectedIndex)
-    End Sub
+
     Private Sub ComboBox_Games_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox_Games.SelectedIndexChanged
         LoadGameSettings(ComboBox_Games.SelectedIndex)
     End Sub
-    Private Sub LoadGameSettings(Optional ByVal SelectedGame As String = Nothing)
+
+    Private Sub LoadGameSettings(Optional SelectedGame As String = Nothing)
         If SelectedGame Is Nothing And Not ComboBox_Games.SelectedIndex = 0 Then
             If ComboBox_Games.Items.Count > 0 Then
                 ComboBox_Games.SelectedIndex = 0
@@ -246,47 +94,44 @@ Public Class BetterFullscreen
         Else
             ComboBox_Games.SelectedIndex = SelectedGame
         End If
-        If ComboBox_Games.SelectedIndex > -1 Then
-            Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-            TextBox_Title.Text = Game.Value.Title
-            TextBox_Class.Text = Game.Value.Class
-            NumericUpDown_Width.Value = Game.Value.Size.Width
-            NumericUpDown_Height.Value = Game.Value.Size.Height
-            NumericUpDown_Top.Value = Game.Value.Location.Y
-            NumericUpDown_Left.Value = Game.Value.Location.X
-            NumericUpDown_Delay.Value = Game.Value.Delay
-            CheckBox_CaptureMouse.Checked = Game.Value.CaptureMouse
-            CheckBox_ForceTopMost.Checked = Game.Value.ForceTopMost
-            CheckBox_ProfileEnabled.Checked = Game.Value.ProfileEnabled
-            LogEvent("Loaded '" & Game.Key & "' settings")
+
+        If (SelectedGame Is Nothing And ComboBox_Games.SelectedIndex > 0) Or (SelectedGame IsNot Nothing And Not ComboBox_Games.SelectedItem = SelectedGame) Then
+            Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
+            TextBox_Title.Text = Game.Title
+            TextBox_Class.Text = Game.Class
+            NumericUpDown_Width.Value = Game.Size.Width
+            NumericUpDown_Height.Value = Game.Size.Height
+            NumericUpDown_Top.Value = Game.Location.Y
+            NumericUpDown_Left.Value = Game.Location.X
+            NumericUpDown_Delay.Value = Game.Delay
+            CheckBox_CaptureMouse.Checked = Game.CaptureMouse
+            CheckBox_ForceTopMost.Checked = Game.ForceTopMost
+            CheckBox_ProfileEnabled.Checked = Game.Enabled
+            LogEvent("Loaded '" & Game.Name & "' settings")
         End If
     End Sub
+
     Private Sub SaveGameSettings()
         If ComboBox_Games.SelectedIndex > -1 Then
-            Dim Game As KeyValuePair(Of String, WindowData) = Games.Single(Function(ByVal G) G.Key = ComboBox_Games.SelectedItem)
-            WriteINI(Config, Game.Key, "title", TextBox_Title.Text)
-            WriteINI(Config, Game.Key, "class", TextBox_Class.Text)
-            WriteINI(Config, Game.Key, "size", NumericUpDown_Width.Value & "x" & NumericUpDown_Height.Value)
-            WriteINI(Config, Game.Key, "location", NumericUpDown_Left.Value & "x" & NumericUpDown_Top.Value)
-            WriteINI(Config, Game.Key, "delay", NumericUpDown_Delay.Value)
-            WriteINI(Config, Game.Key, "capture-mouse", CheckBox_CaptureMouse.Checked)
-            WriteINI(Config, Game.Key, "force-topmost", CheckBox_ForceTopMost.Checked)
-            WriteINI(Config, Game.Key, "profile-enabled", CheckBox_ProfileEnabled.Checked)
-            Game.Value.Title = TextBox_Title.Text
-            Game.Value.Class = TextBox_Class.Text
-            Game.Value.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
-            Game.Value.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
-            Game.Value.Delay = NumericUpDown_Delay.Value
-            Game.Value.CaptureMouse = CheckBox_CaptureMouse.Checked
-            Game.Value.ProfileEnabled = CheckBox_ProfileEnabled.Checked
-            Game.Value.ForceTopMost = CheckBox_ForceTopMost.Checked
-            LogEvent("Saved '" & Game.Key & "' settings")
+            Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
+            Game.Title = TextBox_Title.Text
+            Game.Class = TextBox_Class.Text
+            Game.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
+            Game.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
+            Game.Delay = NumericUpDown_Delay.Value
+            Game.CaptureMouse = CheckBox_CaptureMouse.Checked
+            Game.Enabled = CheckBox_ProfileEnabled.Checked
+            Game.ForceTopMost = CheckBox_ForceTopMost.Checked
+            SaveConfig(ConfigPath, Config)
+            LogEvent("Saved '" & Game.Name & "' settings")
             __SettingsChanged = True
         End If
     End Sub
+
     Public Function LoadWithWindows() As Boolean
         Return __TaskSchedeuler.GetTask().Enabled
     End Function
+
     Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
         RemoveHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         If LoadWithWindows() Then
@@ -299,34 +144,35 @@ Public Class BetterFullscreen
         LogEvent("Toggled start with windows")
         AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
     End Sub
-    Private Sub Button_ReloadApp_Click(sender As Object, e As EventArgs) Handles Button_ReloadApp.Click
-        LoadSettings()
-    End Sub
+
     Private Sub Button_SaveApp_Click(sender As Object, e As EventArgs) Handles Button_SaveApp.Click
         SaveSettings()
     End Sub
+
     Private Sub LoadSettings()
-        ComboBox_Key.SelectedIndex = CType(ReadINI(Config, "SETTINGS", "hotkey", 114), Integer) - 112
-        ComboBox_Modifier.SelectedIndex = ReadINI(Config, "SETTINGS", "modifier", ModifierKey.Alt)
-        Dim [size] As String() = ReadINI(Config, "SETTINGS", "default_size", "800x600").Split("x"c)
-        Dim [location] As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
-        NumericUpDown_DefaultWidth.Value = [size](0)
-        NumericUpDown_DefaultHeight.Value = [size](1)
-        NumericUpDown_DefaultTop.Value = [location](1)
-        NumericUpDown_DefaultLeft.Value = [location](0)
+        ComboBox_Key.SelectedIndex = Config.Settings.Hotkey - 112
+        ComboBox_Modifier.SelectedIndex = Config.Settings.Modifier
+        NumericUpDown_DefaultWidth.Value = Config.Settings.DefaultSize.Width
+        NumericUpDown_DefaultHeight.Value = Config.Settings.DefaultSize.Height
+        NumericUpDown_DefaultLeft.Value = Config.Settings.DefaultLocation.X
+        NumericUpDown_DefaultTop.Value = Config.Settings.DefaultLocation.Y
         LogEvent("Loaded application settings")
     End Sub
+
     Private Sub SaveSettings()
-        WriteINI(Config, "SETTINGS", "hotkey", ComboBox_Key.SelectedIndex + 112)
-        WriteINI(Config, "SETTINGS", "modifier", ComboBox_Modifier.SelectedIndex)
-        WriteINI(Config, "SETTINGS", "default_size", NumericUpDown_DefaultWidth.Value & "x" & NumericUpDown_DefaultHeight.Value)
-        WriteINI(Config, "SETTINGS", "default_location", NumericUpDown_DefaultLeft.Value & "x" & NumericUpDown_DefaultTop.Value)
+        Config.Settings.Hotkey = CType(ComboBox_Key.SelectedIndex + 112, Keys)
+        Config.Settings.Modifier = CType(ComboBox_Modifier.SelectedIndex, ModifierKey)
+        Config.Settings.DefaultSize = New Size(NumericUpDown_DefaultWidth.Value, NumericUpDown_DefaultHeight.Value)
+        Config.Settings.DefaultLocation = New Point(NumericUpDown_DefaultLeft.Value, NumericUpDown_DefaultTop.Value)
+        SaveConfig(ConfigPath, Config)
         LogEvent("Saved application settings")
         __SettingsChanged = True
     End Sub
+
     Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
         ToggleWindowToolStripMenuItem.PerformClick()
     End Sub
+
     Private Sub ToggleWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleWindowToolStripMenuItem.Click
         If Visible Then
             Hide()
@@ -334,22 +180,20 @@ Public Class BetterFullscreen
                 Application.Restart()
             End If
         Else
-            LoadSettings()
-            LoadGameSettings()
-            If ComboBox_Games.SelectedIndex > -1 And __CurrentGame IsNot Nothing Then
-                ComboBox_Games.SelectedItem = __CurrentGame
-            End If
             Show()
             Focus()
         End If
     End Sub
+
     Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
         Application.Restart()
         Application.ExitThread()
     End Sub
+
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
         Application.Exit()
     End Sub
+
     Private Sub BetterFullscreen_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If Visible Then
             e.Cancel = True
@@ -362,22 +206,6 @@ Public Class BetterFullscreen
 
 #End Region
 
-    Private ReadOnly Config As String = Application.ExecutablePath.Replace(".exe", ".ini")
-    Public Games As New Dictionary(Of String, WindowData)
-    Private WindowsScaleFactor As Int32 = 1
-
-    Public Class WindowData
-        Public Property [Title] As String
-        Public Property [Class] As String
-        Public Property [Size] As Size
-        Public Property [Location] As Point
-        Public Property [Delay] As Integer
-        Public Property [CaptureMouse] As Boolean
-        Public Property [ForceTopMost] As Boolean
-        Public Property [ProfileEnabled] As Boolean
-        Public Property [State] As Integer
-    End Class
-
     Private Sub Init()
         Using Key = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
             If Key IsNot Nothing Then
@@ -389,80 +217,54 @@ Public Class BetterFullscreen
         End Using
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
         LogEvent("Loading Games")
-        Dim start As DateTime = Now
-        For Each Section As String In ReadINISections(Config)
-            If Not Section = "SETTINGS" Then
-                LoadGame(Section)
-                ComboBox_Games.Items.Add(Section)
-            End If
+        For Each profile As String In GetProfileNames(Config)
+            ComboBox_Games.Items.Add(profile)
         Next
-        Dim [end] As DateTime = Now
-        Dim elapsed As TimeSpan = [end].Subtract(start)
-        LogEvent("Loaded all games in " & elapsed.TotalSeconds.ToString("0.000") & "ms")
+        LogEvent("Loaded all games")
         LogEvent("Ready")
-    End Sub
 
-    Private Sub LogEvent(msg)
-        RichTextBox_EventLog.AppendText("[" & Now.ToString("HH:mm:ss") & "] " & msg & vbCrLf)
-    End Sub
+        LoadSettings()
+        LoadGameSettings()
 
-    Private Sub LoadGame(Game)
-        Dim _Title As String = ReadINI(Config, Game, "title", "")
-        Dim _Class As String = ReadINI(Config, Game, "class", "")
-        Dim _Size As String() = ReadINI(Config, Game, "size", "800x600").Split("x"c)
-        Dim _Location As String() = ReadINI(Config, Game, "location", "0x0").Split("x"c)
+        Dim CurrentProfile = GetCurrentProfile(Config)
 
-        If Not _Title = "" Or Not _Class = "" Then
-            Games.Add(Game, New WindowData With {
-              .Title = If(_Title = "", Nothing, _Title),
-              .Class = If(_Class = "", Nothing, _Class),
-              .Size = New Size(_Size(0), _Size(1)),
-              .Location = New Point(_Location(0), _Location(1)),
-              .Delay = ReadINI(Config, Game, "delay", 0),
-              .CaptureMouse = ReadINI(Config, Game, "capture-mouse", False),
-              .ForceTopMost = ReadINI(Config, Game, "force-topmost", True),
-              .ProfileEnabled = ReadINI(Config, Game, "profile-enabled", True),
-              .State = 0
-            })
-            LogEvent("Loaded " & Game)
-        Else
-            LogEvent("Skipped " & Game)
+        If ComboBox_Games.SelectedIndex > -1 And GetCurrentProfile(Config) IsNot Nothing Then
+            ComboBox_Games.SelectedItem = CurrentProfile.Name
         End If
     End Sub
 
-    Private Sub DoWork(ByVal windowTitle As String, ByVal windowClass As String, ByVal Window_HWND As IntPtr)
-        For Each Game As KeyValuePair(Of String, WindowData) In Games
-            ' Part1. Remove whitespace from title/class because the windowClass/windowTitle is trimmed to account for the ini not loading the trailing whitespace, this is only
-            '        needed because of the part2 hack to allow FindWindowW to work by setting the class/title of the game to the true class/title (with whitespace) in memory so
-            '        we can remove the TOPMOST flag from the window, kinds ugly but it seems to do the trick
-            Dim GameClass = Game.Value.Class?.Trim()
-            Dim GameTitle = Game.Value.Title?.Trim()
+    Private Sub LogEvent(msg As String)
+        Dim LogMsg = "[" & Now.ToString("HH:mm:ss") & "] " & msg
 
-            If Game.Value.ProfileEnabled And ((Not GameClass = "" And GameClass = windowClass) Or GameClass = "") And ((Not GameTitle = "" And GameTitle = windowTitle) Or GameTitle = "") Then
-                If Game.Value.State = 0 Then
-                    LogEvent(Game.Key & " started")
-                    If Game.Value.Delay > 0 Then
-                        LogEvent("delaying actions for " & Game.Value.Delay & "ms")
-                        Thread.Sleep(Game.Value.Delay)
+        RichTextBox_EventLog.AppendText(LogMsg & vbCrLf)
+        Debug.WriteLine("[" & Now.ToString("HH:mm:ss") & "] " & msg)
+    End Sub
+
+    Private Sub DoWork(windowTitle As String, windowClass As String, Window_HWND As IntPtr)
+        Debug.WriteLine("Active Window Title: " & windowTitle & ", Active Window Class: " & windowClass)
+
+        For Each Game As Profile In GetProfiles(Config)
+            If Game.Enabled And ((Not Game.Class = "" And Game.Class = windowClass) Or Game.Class = "") And ((Not Game.Title = "" And Game.Title = windowTitle) Or Game.Title = "") Then
+                If Game.State = GameState.None Then
+                    LogEvent(Game.Name & " started")
+                    If Game.Delay > 0 Then
+                        LogEvent("delaying actions for " & Game.Delay & "ms")
+                        Thread.Sleep(Game.Delay)
                     End If
                     LogEvent("setting WS_VISIBLE")
                     SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                    LogEvent("resizing window " & Game.Value.Size.ToString())
-                    LogEvent("repositioning window " & Game.Value.Location.ToString())
-                    SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-                    If Game.Value.CaptureMouse Then
-                        __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
+                    LogEvent("resizing window " & Game.Size.ToString())
+                    LogEvent("repositioning window " & Game.Location.ToString())
+                    SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
+                    If Game.CaptureMouse Then
+                        Cursor.Clip = New Rectangle(Game.Location, Game.Size)
                     End If
-                    Game.Value.State = 1
-                    __CurrentGame = Game.Key
-
-                    ' Part2. Hack to fix for windows ending with whitespace by saving the class/title with any leading/trailing whitespace 
-                    '        back into the game object, fixes FindWindowW not working with the truncated class/titles of some games (example: Back 4 Blood)
-                    Dim hWndTitle As New StringBuilder("", 256)
-                    GetWindowText(Window_HWND, hWndTitle, 256)
-                    Game.Value.Title = hWndTitle.ToString()
+                    Game.State = GameState.Focused
+                    Game.IsCurrentProfile = True
+                    Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
+                    Game.UnsafeClass = GetWindowClass(Window_HWND, False)
                 End If
-                If Game.Value.State > 0 Then
+                If Game.State <> GameState.None Then
                     Dim rect As New RECT
                     Dim Window_Rect = New Rectangle()
 
@@ -473,71 +275,66 @@ Public Class BetterFullscreen
                     Window_Rect.Width = rect.right - rect.left
                     Window_Rect.Height = rect.bottom - rect.top
 
-                    Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Value.Location
-                    Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor)
+                    Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Location
+                    Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor)
 
                     If Not correctPos Or Not correctSize Then
-                        LogEvent("resizing window " & Game.Value.Size.ToString())
-                        LogEvent("repositioning window " & Game.Value.Location.ToString())
-                        SetWindowPos(Window_HWND, HWND.TOP, Game.Value.Location.X, Game.Value.Location.Y, Game.Value.Size.Width / WindowsScaleFactor, Game.Value.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
+                        LogEvent("resizing window " & Game.Size.ToString())
+                        LogEvent("repositioning window " & Game.Location.ToString())
+                        SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
                     End If
                 End If
-                If Game.Value.State = 1 Then
-                    LogEvent(Game.Key & " has focus")
-                    If Game.Value.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
+                If Game.State = GameState.Focused Then
+                    LogEvent(Game.Name & " has focus")
+                    If Game.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
                         LogEvent("setting HWND_TOPMOST")
                         SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
                     End If
-                    If Game.Value.CaptureMouse Then
+                    If Game.CaptureMouse Then
                         LogEvent("locking mouse to game window location")
-                        __Cursor.Clip = New Rectangle(Game.Value.Location, Game.Value.Size)
+                        Cursor.Clip = New Rectangle(Game.Location, Game.Size)
                     End If
-                    Game.Value.State = 2
+                    Game.State = GameState.Unfocused
                 End If
             Else
-                If __CurrentGame IsNot Nothing Then
-                    Dim Game_HWND = FindWindowW(Games.Item(__CurrentGame).Class, Games.Item(__CurrentGame).Title)
+                Dim CurrentGame = GetCurrentProfile(Config)
+                If CurrentGame IsNot Nothing Then
+                    Dim Game_HWND = FindWindowW(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
                     Dim CurrentWindow_HWND = GetForegroundWindow()
 
                     If Game_HWND <> IntPtr.Zero Then
-                        If Game.Value.State = 2 Then
-                            LogEvent(Game.Key & " lost focus")
-                            If Game.Value.ForceTopMost Then
+                        If Game.State = GameState.Unfocused Then
+                            LogEvent(Game.Name & " lost focus")
+                            If Game.ForceTopMost Then
                                 LogEvent("setting HWND_NOTOPMOST")
                                 SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
 
                                 ' Fix not bringing clicked on windows to foreground
                                 If CurrentWindow_HWND <> IntPtr.Zero Then
-                                    Dim hWndTitle As New StringBuilder("", 256)
-                                    Dim hWndClass As New StringBuilder("", 256)
-
-                                    GetWindowText(CurrentWindow_HWND, hWndTitle, 256)
-                                    GetClassName(CurrentWindow_HWND, hWndClass, 256)
-
                                     Dim blackListTitles As New List(Of String)({"Task Switching", "Task View", "Start", "Search"})
                                     Dim blackListClasses As New List(Of String)({"Shell_TrayWnd", "WindowsDashboard"})
 
-                                    If Not blackListTitles.Any(Function(s) hWndTitle.ToString().Contains(s)) And Not blackListClasses.Any(Function(s) hWndClass.ToString().Contains(s)) Then
+                                    If Not blackListTitles.Any(Function(s) GetWindowTitle(CurrentWindow_HWND).Contains(s)) And Not blackListClasses.Any(Function(s) GetWindowClass(CurrentWindow_HWND).Contains(s)) Then
                                         SetForegroundWindow(FindWindowW("Shell_TrayWnd", Nothing))
                                         SetForegroundWindow(CurrentWindow_HWND)
                                     End If
                                 End If
                             End If
-                            If Game.Value.CaptureMouse Then
+                            If Game.CaptureMouse Then
                                 LogEvent("releasing mouse lock from game window location")
-                                __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                                Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                             End If
-                            Game.Value.State = 1
+                            Game.State = GameState.Focused
                         End If
                     Else
-                        If Game.Value.State > 0 Then
-                            LogEvent(Game.Key & " exited")
-                            If Game.Value.CaptureMouse And Game.Value.State = 2 Then
+                        If Game.State <> GameState.None Then
+                            LogEvent(Game.Name & " exited")
+                            If Game.CaptureMouse Then
                                 LogEvent("releasing mouse lock from game window location")
-                                __Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                                Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
                             End If
-                            Game.Value.State = 0
-                            __CurrentGame = Nothing
+                            Game.State = GameState.None
+                            Game.IsCurrentProfile = False
                         End If
                     End If
                 End If
@@ -546,47 +343,31 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub Add_Game()
-        Dim hWnd = GetForegroundWindow()
-        Dim hWndTitle As New StringBuilder("", 256)
-        Dim hWndClass As New StringBuilder("", 256)
-        GetWindowText(hWnd, hWndTitle, 256)
-        GetClassName(hWnd, hWndClass, 256)
-        Dim _size As String() = ReadINI(Config, "SETTINGS", "default_size", "800x600").Split("x"c)
-        Dim _location As String() = ReadINI(Config, "SETTINGS", "default_location", "0x0").Split("x"c)
-        Dim [size] As New Size(_size(0), _size(1))
-        Dim [location] As New Point(_location(0), _location(1))
-        Dim [title] = hWndTitle.ToString().Trim()
-        Dim [class] = hWndClass.ToString().Trim()
-        Dim [section] = [title].Replace("[", "(").Replace("]", ")").Trim()
-        If Not [title] = "" Then
-            If Not Games.ContainsKey([section]) Then
-                WriteINI(Config, [section], "title", [title])
-                WriteINI(Config, [section], "class", [class])
-                WriteINI(Config, [section], "size", [size].Width & "x" & [size].Height)
-                WriteINI(Config, [section], "location", [location].X & "x" & [location].Y)
-                WriteINI(Config, [section], "delay", 0)
-                WriteINI(Config, [section], "capture-mouse", False)
-                WriteINI(Config, [section], "force-topmost", True)
-                WriteINI(Config, [section], "profile-enabled", True)
-                LogEvent([section] & " added")
-                LogEvent("size " & [size].ToString)
-                LogEvent("location " & [location].ToString())
-                LoadGame([section])
-                ComboBox_Games.Items.Add([section])
-            End If
-        End If
-        DoWork([title], [class], hWnd)
+        Dim HWND = GetForegroundWindow()
+        Dim NewGame As New Profile With {
+            .Title = GetWindowTitle(HWND),
+            .[Class] = GetWindowClass(HWND),
+            .Size = Config.Settings.DefaultSize,
+            .Location = Config.Settings.DefaultLocation,
+            .Name = .Title.Replace("[", "(").Replace("]", ")")
+        }
+
+        If NewGame.Title = "" Or GetProfileNames(Config).Contains(NewGame.Name) Then Exit Sub
+
+        AddProfile(NewGame, Config)
+        ComboBox_Games.Items.Add(NewGame.Name)
+        ComboBox_Games.SelectedItem = NewGame.Name
+
+        LogEvent(NewGame.Name & " added")
+        LogEvent("size " & NewGame.Size.ToString)
+        LogEvent("location " & NewGame.Location.ToString())
+
+        DoWork(NewGame.Title, NewGame.[Class], HWND)
     End Sub
 
-    Private Sub WinEventProc(ByVal hWinEventHook As IntPtr, ByVal eventType As UInteger, ByVal hWnd As IntPtr, ByVal idObject As Integer, ByVal idChild As Integer, ByVal dwEventThread As UInteger, ByVal dwmsEventTime As UInteger)
+    Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
         If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
-            Dim hWndTitleBuilder As New StringBuilder("", 256)
-            Dim hWndClassBuilder As New StringBuilder("", 256)
-
-            GetWindowText(hWnd, hWndTitleBuilder, 256)
-            GetClassName(hWnd, hWndClassBuilder, 256)
-
-            RaiseEvent ActiveWindowChanged(Me, hWndTitleBuilder.ToString().Trim(), hWndClassBuilder.ToString().Trim(), hWnd)
+            DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
         End If
     End Sub
 
