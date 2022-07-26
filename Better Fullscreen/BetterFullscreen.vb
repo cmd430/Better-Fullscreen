@@ -24,7 +24,7 @@ Public Class BetterFullscreen
         __winEventProc = New WinEventDelegate(AddressOf WinEventProc)
         __hWinHook = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
 
-        AddHandler __Hotkeys.KeyPressed, AddressOf Add_Game
+        AddHandler __Hotkeys.KeyPressed, AddressOf AddGame
         __Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
 
         If __TaskSchedeuler.GetTask() Is Nothing Then
@@ -54,12 +54,7 @@ Public Class BetterFullscreen
         If Visible Then
             LoadSettings()
             LoadGameSettings()
-
-            Dim CurrentProfile = GetCurrentProfile(Config)
-
-            If ComboBox_Games.SelectedIndex > -1 And GetCurrentProfile(Config) IsNot Nothing Then
-                ComboBox_Games.SelectedItem = CurrentProfile.Name
-            End If
+            UpdateSelectedGame()
         End If
     End Sub
 
@@ -195,7 +190,7 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub BetterFullscreen_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        If Visible Then
+        If Visible And Not Debugger.IsAttached Then
             e.Cancel = True
             ToggleWindowToolStripMenuItem.PerformClick()
         Else
@@ -215,134 +210,139 @@ Public Class BetterFullscreen
                 End If
             End If
         End Using
+
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
         LogEvent("Loading Games")
-        For Each profile As String In GetProfileNames(Config)
-            ComboBox_Games.Items.Add(profile)
-        Next
+
+        ComboBox_Games.Items.AddRange(GetProfileNames(Config).ToArray())
+
         LogEvent("Loaded all games")
         LogEvent("Ready")
 
         LoadSettings()
         LoadGameSettings()
-
-        Dim CurrentProfile = GetCurrentProfile(Config)
-
-        If ComboBox_Games.SelectedIndex > -1 And GetCurrentProfile(Config) IsNot Nothing Then
-            ComboBox_Games.SelectedItem = CurrentProfile.Name
-        End If
+        UpdateSelectedGame()
     End Sub
 
     Private Sub LogEvent(msg As String)
         Dim LogMsg = "[" & Now.ToString("HH:mm:ss") & "] " & msg
 
-        RichTextBox_EventLog.AppendText(LogMsg & vbCrLf)
+        If Not RichTextBox_EventLog.IsDisposed Then
+            RichTextBox_EventLog.AppendText(LogMsg & vbCrLf)
+        End If
+
         Debug.WriteLine("[" & Now.ToString("HH:mm:ss") & "] " & msg)
     End Sub
 
     Private Sub DoWork(windowTitle As String, windowClass As String, Window_HWND As IntPtr)
         Debug.WriteLine("Active Window Title: " & windowTitle & ", Active Window Class: " & windowClass)
 
-        For Each Game As Profile In GetProfiles(Config)
-            If Game.Enabled And ((Not Game.Class = "" And Game.Class = windowClass) Or Game.Class = "") And ((Not Game.Title = "" And Game.Title = windowTitle) Or Game.Title = "") Then
-                If Game.State = GameState.None Then
-                    LogEvent(Game.Name & " started")
-                    If Game.Delay > 0 Then
-                        LogEvent("delaying actions for " & Game.Delay & "ms")
-                        Thread.Sleep(Game.Delay)
-                    End If
-                    LogEvent("setting WS_VISIBLE")
-                    SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-                    LogEvent("resizing window " & Game.Size.ToString())
-                    LogEvent("repositioning window " & Game.Location.ToString())
-                    SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-                    If Game.CaptureMouse Then
-                        Cursor.Clip = New Rectangle(Game.Location, Game.Size)
-                    End If
-                    Game.State = GameState.Focused
-                    Game.IsCurrentProfile = True
-                    Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
-                    Game.UnsafeClass = GetWindowClass(Window_HWND, False)
-                End If
-                If Game.State <> GameState.None Then
-                    Dim rect As New RECT
-                    Dim Window_Rect = New Rectangle()
+        Dim CurrentGame As Profile = GetCurrentProfile(Config)
+        Dim Game As Profile = FindProfile(windowTitle, windowClass, Config)
 
-                    GetWindowRect(Window_HWND, rect)
+        If CurrentGame Is Nothing And Game Is Nothing Then Exit Sub
 
-                    Window_Rect.X = rect.left
-                    Window_Rect.Y = rect.top
-                    Window_Rect.Width = rect.right - rect.left
-                    Window_Rect.Height = rect.bottom - rect.top
+        ' Game Started
+        If Game IsNot Nothing And CurrentGame Is Nothing Then
+            If Not Game.State = GameState.None Then Exit Sub
 
-                    Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Location
-                    Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor)
+            LogEvent(Game.Name & " started")
 
-                    If Not correctPos Or Not correctSize Then
-                        LogEvent("resizing window " & Game.Size.ToString())
-                        LogEvent("repositioning window " & Game.Location.ToString())
-                        SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-                    End If
-                End If
-                If Game.State = GameState.Focused Then
-                    LogEvent(Game.Name & " has focus")
-                    If Game.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
-                        LogEvent("setting HWND_TOPMOST")
-                        SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
-                    End If
-                    If Game.CaptureMouse Then
-                        LogEvent("locking mouse to game window location")
-                        Cursor.Clip = New Rectangle(Game.Location, Game.Size)
-                    End If
-                    Game.State = GameState.Unfocused
-                End If
-            Else
-                Dim CurrentGame = GetCurrentProfile(Config)
-                If CurrentGame IsNot Nothing Then
-                    Dim Game_HWND = FindWindowW(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
-                    Dim CurrentWindow_HWND = GetForegroundWindow()
-
-                    If Game_HWND <> IntPtr.Zero Then
-                        If Game.State = GameState.Unfocused Then
-                            LogEvent(Game.Name & " lost focus")
-                            If Game.ForceTopMost Then
-                                LogEvent("setting HWND_NOTOPMOST")
-                                SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
-
-                                ' Fix not bringing clicked on windows to foreground
-                                If CurrentWindow_HWND <> IntPtr.Zero Then
-                                    Dim blackListTitles As New List(Of String)({"Task Switching", "Task View", "Start", "Search"})
-                                    Dim blackListClasses As New List(Of String)({"Shell_TrayWnd", "WindowsDashboard"})
-
-                                    If Not blackListTitles.Any(Function(s) GetWindowTitle(CurrentWindow_HWND).Contains(s)) And Not blackListClasses.Any(Function(s) GetWindowClass(CurrentWindow_HWND).Contains(s)) Then
-                                        SetForegroundWindow(FindWindowW("Shell_TrayWnd", Nothing))
-                                        SetForegroundWindow(CurrentWindow_HWND)
-                                    End If
-                                End If
-                            End If
-                            If Game.CaptureMouse Then
-                                LogEvent("releasing mouse lock from game window location")
-                                Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
-                            End If
-                            Game.State = GameState.Focused
-                        End If
-                    Else
-                        If Game.State <> GameState.None Then
-                            LogEvent(Game.Name & " exited")
-                            If Game.CaptureMouse Then
-                                LogEvent("releasing mouse lock from game window location")
-                                Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
-                            End If
-                            Game.State = GameState.None
-                            Game.IsCurrentProfile = False
-                        End If
-                    End If
-                End If
+            If Game.Delay > 0 Then
+                LogEvent("delaying actions for " & Game.Delay & "ms")
+                Thread.Sleep(Game.Delay)
             End If
-        Next
+
+            LogEvent("setting WS_VISIBLE")
+            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+            LogEvent("resizing window " & Game.Size.ToString())
+            LogEvent("repositioning window " & Game.Location.ToString())
+            SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
+
+            If Game.CaptureMouse Then
+                Cursor.Clip = New Rectangle(Game.Location, Game.Size)
+            End If
+
+            Game.IsCurrentProfile = True
+            Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
+            Game.UnsafeClass = GetWindowClass(Window_HWND, False)
+            Game.State = GameState.Started
+            CurrentGame = Game
+        End If
+
+        ' Window Has Focus
+        If Game IsNot Nothing And CurrentGame IsNot Nothing Then
+            If Not Game.State = GameState.Started And Not Game.State = GameState.Unfocused Then Exit Sub
+
+            LogEvent(Game.Name & " has focus")
+
+            If Game.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
+                LogEvent("setting HWND_TOPMOST")
+                SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
+            End If
+            If Game.CaptureMouse Then
+                LogEvent("locking mouse to game window location")
+                Cursor.Clip = New Rectangle(Game.Location, Game.Size)
+            End If
+
+            Dim rect As New RECT
+            Dim Window_Rect = New Rectangle()
+
+            GetWindowRect(Window_HWND, rect)
+
+            Window_Rect.X = rect.left
+            Window_Rect.Y = rect.top
+            Window_Rect.Width = rect.right - rect.left
+            Window_Rect.Height = rect.bottom - rect.top
+
+            Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Location
+            Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor)
+
+            If Not correctPos Or Not correctSize Then
+                LogEvent("resizing window " & Game.Size.ToString())
+                LogEvent("repositioning window " & Game.Location.ToString())
+                SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
+            End If
+
+            Game.State = GameState.Focused
+        End If
+
+        ' Window Unfocused / Closed
+        If Game Is Nothing And CurrentGame IsNot Nothing Then
+
+            Dim Game_HWND = FindWindowW(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
+            Dim CurrentWindow_HWND = GetForegroundWindow()
+
+            If Game_HWND <> IntPtr.Zero Then ' Window Unfocused
+                If Not CurrentGame.State = GameState.Focused Then Exit Sub
+
+                LogEvent(CurrentGame.Name & " lost focus")
+
+                If CurrentGame.ForceTopMost Then
+                    LogEvent("setting HWND_NOTOPMOST")
+                    SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
+                End If
+                If CurrentGame.CaptureMouse Then
+                    LogEvent("releasing mouse lock from game window location")
+                    Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                End If
+
+                CurrentGame.State = GameState.Unfocused
+            Else ' Window Closed
+                LogEvent(CurrentGame.Name & " exited")
+
+                If CurrentGame.CaptureMouse Then
+                    LogEvent("releasing mouse lock from game window location")
+                    Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                End If
+
+                CurrentGame.IsCurrentProfile = False
+                CurrentGame.State = GameState.None
+            End If
+        End If
     End Sub
 
-    Private Sub Add_Game()
+    Private Sub AddGame()
         Dim HWND = GetForegroundWindow()
         Dim NewGame As New Profile With {
             .Title = GetWindowTitle(HWND),
@@ -356,7 +356,7 @@ Public Class BetterFullscreen
 
         AddProfile(NewGame, Config)
         ComboBox_Games.Items.Add(NewGame.Name)
-        ComboBox_Games.SelectedItem = NewGame.Name
+        UpdateSelectedGame()
 
         LogEvent(NewGame.Name & " added")
         LogEvent("size " & NewGame.Size.ToString)
@@ -365,8 +365,20 @@ Public Class BetterFullscreen
         DoWork(NewGame.Title, NewGame.[Class], HWND)
     End Sub
 
+    Private Sub UpdateSelectedGame()
+        If ComboBox_Games.Items.Count = 0 Then Exit Sub
+
+        Dim CurrentProfile = GetCurrentProfile(Config)
+
+        If ComboBox_Games.SelectedIndex > -1 And CurrentProfile IsNot Nothing Then
+            ComboBox_Games.SelectedItem = CurrentProfile.Name
+        Else
+            ComboBox_Games.SelectedIndex = 0
+        End If
+    End Sub
+
     Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
-        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
+        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
         End If
     End Sub

@@ -59,8 +59,9 @@ Public Module Config
 
     Public Enum GameState As Integer
         None = 0
-        Focused = 1
-        Unfocused = 2
+        Started = 1
+        Focused = 2
+        Unfocused = 3
     End Enum
 
     Public Function LoadConfig(configPath As String) As BetterFullscreenConfig
@@ -94,7 +95,28 @@ Public Module Config
     End Function
 
     Public Function GetProfile(profileName As String, ByRef config As BetterFullscreenConfig) As Profile
-        Return config.Profile.SingleOrDefault(Function(p) p.Name = profileName)
+        Return config.Profile.FirstOrDefault(Function(p) p.Name = profileName)
+    End Function
+
+    Public Function FindProfile(title As String, [class] As String, ByRef config As BetterFullscreenConfig) As Profile
+        Dim profile = config.Profile.FirstOrDefault(Function(p) p.Title = title And p.Class = [class])
+        If profile IsNot Nothing Then
+            Return profile
+        End If
+
+        ' Titleless Profile
+        profile = config.Profile.FirstOrDefault(Function(p) Not p.Class = "" And p.Class = [class])
+        If profile IsNot Nothing Then
+            Return profile
+        End If
+
+        ' Classless profile
+        profile = config.Profile.FirstOrDefault(Function(p) Not p.Title = "" And p.Title = title)
+        If profile IsNot Nothing Then
+            Return profile
+        End If
+
+        Return Nothing
     End Function
 
     Public Function GetProfiles(ByRef config As BetterFullscreenConfig) As List(Of Profile)
@@ -102,7 +124,7 @@ Public Module Config
     End Function
 
     Public Function GetCurrentProfile(ByRef config As BetterFullscreenConfig) As Profile
-        Return config.Profile.SingleOrDefault(Function(p) p.IsCurrentProfile = True)
+        Return config.Profile.FirstOrDefault(Function(p) p.IsCurrentProfile = True)
     End Function
 
     Public Sub RemoveProfile(profileName As String, ByRef config As BetterFullscreenConfig)
