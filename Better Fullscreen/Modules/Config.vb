@@ -99,19 +99,19 @@ Public Module Config
     End Function
 
     Public Function FindProfile(title As String, [class] As String, ByRef config As BetterFullscreenConfig) As Profile
-        Dim profile = config.Profile.FirstOrDefault(Function(p) p.Title = title And p.Class = [class])
+        Dim profile = config.Profile.FirstOrDefault(Function(p) p.Title = title And p.Class = [class] And p.Enabled = True)
         If profile IsNot Nothing Then
             Return profile
         End If
 
         ' Titleless Profile
-        profile = config.Profile.FirstOrDefault(Function(p) Not p.Class = "" And p.Class = [class])
+        profile = config.Profile.FirstOrDefault(Function(p) p.Title = "" And Not p.Class = "" And p.Class = [class] And p.Enabled = True)
         If profile IsNot Nothing Then
             Return profile
         End If
 
         ' Classless profile
-        profile = config.Profile.FirstOrDefault(Function(p) Not p.Title = "" And p.Title = title)
+        profile = config.Profile.FirstOrDefault(Function(p) p.Class = "" And Not p.Title = "" And p.Title = title And p.Enabled = True)
         If profile IsNot Nothing Then
             Return profile
         End If
