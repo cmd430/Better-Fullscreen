@@ -18,4 +18,14 @@ Module Utils
         Return If(clean, [class].ToString().Trim(), [class].ToString())
     End Function
 
+    Public Function GetRadioButton(panel As Panel) As RadioButton
+        Return panel.Controls.OfType(Of RadioButton).Where(Function(r) r.Checked = True).FirstOrDefault()
+    End Function
+
+    Public Sub SetRadioButton(panel As Panel, value As Integer)
+        panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) = value).FirstOrDefault().Checked = True
+        panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) <> value).FirstOrDefault().Checked = False
+    End Sub
+
+
 End Module

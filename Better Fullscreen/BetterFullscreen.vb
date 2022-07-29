@@ -92,7 +92,8 @@ Public Class BetterFullscreen
 
         If (SelectedGame Is Nothing And ComboBox_Games.SelectedIndex > 0) Or (SelectedGame IsNot Nothing And Not ComboBox_Games.SelectedItem = SelectedGame) Then
             Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
-            TextBox_Title.Text = Game.Title
+            TextBox_Title.Text = Game.Title.Text
+            SetRadioButton(Panel_titleRadioButtonContainer, Game.Title.Match)
             TextBox_Class.Text = Game.Class
             NumericUpDown_Width.Value = Game.Size.Width
             NumericUpDown_Height.Value = Game.Size.Height
@@ -109,7 +110,8 @@ Public Class BetterFullscreen
     Private Sub SaveGameSettings()
         If ComboBox_Games.SelectedIndex > -1 Then
             Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
-            Game.Title = TextBox_Title.Text
+            Game.Title.Text = TextBox_Title.Text
+            Game.Title.Match = CType(GetRadioButton(Panel_titleRadioButtonContainer).Tag, MatchType)
             Game.Class = TextBox_Class.Text
             Game.Size = New Size(NumericUpDown_Width.Value, NumericUpDown_Height.Value)
             Game.Location = New Point(NumericUpDown_Left.Value, NumericUpDown_Top.Value)
@@ -345,14 +347,17 @@ Public Class BetterFullscreen
     Private Sub AddGame()
         Dim HWND = GetForegroundWindow()
         Dim NewGame As New Profile With {
-            .Title = GetWindowTitle(HWND),
+            .Title = New Title With {
+                .Text = GetWindowTitle(HWND),
+                .Match = MatchType.Full
+            },
             .[Class] = GetWindowClass(HWND),
             .Size = Config.Settings.DefaultSize,
             .Location = Config.Settings.DefaultLocation,
-            .Name = .Title.Replace("[", "(").Replace("]", ")")
+            .Name = .Title.Text.Replace("[", "(").Replace("]", ")")
         }
 
-        If NewGame.Title = "" Or GetProfileNames(Config).Contains(NewGame.Name) Then Exit Sub
+        If NewGame.Title.Text = "" Or GetProfileNames(Config).Contains(NewGame.Name) Then Exit Sub
 
         AddProfile(NewGame, Config)
         ComboBox_Games.Items.Add(NewGame.Name)
@@ -362,7 +367,7 @@ Public Class BetterFullscreen
         LogEvent("size " & NewGame.Size.ToString)
         LogEvent("location " & NewGame.Location.ToString())
 
-        DoWork(NewGame.Title, NewGame.[Class], HWND)
+        DoWork(NewGame.Title.Text, NewGame.[Class], HWND)
     End Sub
 
     Private Sub UpdateSelectedGame()
@@ -378,7 +383,7 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
-        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then
+        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then 'Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
         End If
     End Sub

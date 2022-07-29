@@ -34,7 +34,7 @@ Public Module Config
         <XmlAttribute(AttributeName:="enabled")>
         Public Property Enabled As Boolean = True
         <XmlElement(ElementName:="Title")>
-        Public Property Title As String = ""
+        Public Property Title As Title
         <XmlElement(ElementName:="Class")>
         Public Property [Class] As String = ""
         <XmlElement(ElementName:="Size")>
@@ -56,6 +56,20 @@ Public Module Config
         <XmlIgnore>
         Public Property IsCurrentProfile As Boolean = False
     End Class
+
+    <XmlRoot(ElementName:="Title")>
+    Public Class Title
+        <XmlAttribute(AttributeName:="match")>
+        Public Property Match As MatchType = MatchType.Full
+        <XmlText>
+        Public Property Text As String = ""
+    End Class
+
+    Public Enum MatchType As Integer
+        Full = 0
+        Start = 1
+        Includes = 2
+    End Enum
 
     Public Enum GameState As Integer
         None = 0
@@ -99,22 +113,27 @@ Public Module Config
     End Function
 
     Public Function FindProfile(title As String, [class] As String, ByRef config As BetterFullscreenConfig) As Profile
-        Dim profile = config.Profile.FirstOrDefault(Function(p) p.Title = title And p.Class = [class] And p.Enabled = True)
-        If profile IsNot Nothing Then
-            Return profile
-        End If
+        ' Helpers
+        Dim TitleMatches = Function(p) As Boolean
+                               Return (p.Title.Match = MatchType.Full And p.Title.Text = title) Or
+                                    (p.Title.Match = MatchType.Start And title.StartsWith(p.Title.Text)) Or
+                                    (p.Title.Match = MatchType.Includes And title.Contains(p.Title.Text))
+                           End Function
+        Dim ClassMatches = Function(p) As Boolean
+                               Return p.Class = [class]
+                           End Function
+
+        ' Title & Class Profile
+        Dim profile = config.Profile.FirstOrDefault(Function(p) p.Enabled = True And ClassMatches(p) And TitleMatches(p))
+        If profile IsNot Nothing Then Return profile
 
         ' Titleless Profile
-        profile = config.Profile.FirstOrDefault(Function(p) p.Title = "" And Not p.Class = "" And p.Class = [class] And p.Enabled = True)
-        If profile IsNot Nothing Then
-            Return profile
-        End If
+        profile = config.Profile.FirstOrDefault(Function(p) p.Enabled = True And p.Title.Text = "" And Not p.Class = "" And ClassMatches(p))
+        If profile IsNot Nothing Then Return profile
 
         ' Classless profile
-        profile = config.Profile.FirstOrDefault(Function(p) p.Class = "" And Not p.Title = "" And p.Title = title And p.Enabled = True)
-        If profile IsNot Nothing Then
-            Return profile
-        End If
+        profile = config.Profile.FirstOrDefault(Function(p) p.Enabled = True And p.Class = "" And Not p.Title.Text = "" And TitleMatches(p))
+        If profile IsNot Nothing Then Return profile
 
         Return Nothing
     End Function
