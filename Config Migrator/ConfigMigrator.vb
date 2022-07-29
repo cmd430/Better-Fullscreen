@@ -50,7 +50,10 @@ Public Module ConfigMigrator
                 Conf.Profile.Add(New Profile With {
                     .Size = New Size(size(0), size(1)),
                     .Location = New Point(location(0), location(1)),
-                    .Title = ReadINI(INIPath, Section, "title", ""),
+                    .Title = New Title With {
+                        .Text = ReadINI(INIPath, Section, "title", ""),
+                        .Match = MatchType.Full
+                    },
                     .Class = ReadINI(INIPath, Section, "class", ""),
                     .Delay = ReadINI(INIPath, Section, "delay", 0),
                     .CaptureMouse = ReadINI(INIPath, Section, "capture-mouse", False),
@@ -124,7 +127,7 @@ Public Module ConfigMigrator
         <XmlAttribute(AttributeName:="enabled")>
         Public Property Enabled As Boolean = True
         <XmlElement(ElementName:="Title")>
-        Public Property Title As String = ""
+        Public Property Title As Title
         <XmlElement(ElementName:="Class")>
         Public Property [Class] As String = ""
         <XmlElement(ElementName:="Size")>
@@ -139,11 +142,25 @@ Public Module ConfigMigrator
         Public Property ForceTopMost As Boolean = True
     End Class
 
+    <XmlRoot(ElementName:="Title")>
+    Public Class Title
+        <XmlAttribute(AttributeName:="match")>
+        Public Property Match As MatchType = MatchType.Full
+        <XmlText>
+        Public Property Text As String = ""
+    End Class
+
     Public Enum ModifierKey As UInteger
         Alt = 1
         Control = 2
         Shift = 4
         Win = 8
+    End Enum
+
+    Public Enum MatchType As Integer
+        Full = 0
+        Start = 1
+        Includes = 2
     End Enum
 
     Public Sub SaveConfig(configPath As String, ByRef config As BetterFullscreenConfig)
