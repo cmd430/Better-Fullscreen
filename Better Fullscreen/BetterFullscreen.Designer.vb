@@ -74,9 +74,6 @@ Partial Class BetterFullscreen
         Me.CheckBox_startHidden = New System.Windows.Forms.CheckBox()
         Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
-        Me.RadioButton_titleIncludes = New System.Windows.Forms.RadioButton()
-        Me.RadioButton_titleStartsWith = New System.Windows.Forms.RadioButton()
-        Me.RadioButton_titleFullMatch = New System.Windows.Forms.RadioButton()
         Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
         Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
@@ -85,6 +82,9 @@ Partial Class BetterFullscreen
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Button_Remove = New System.Windows.Forms.Button()
         Me.Panel_titleRadioButtonContainer = New System.Windows.Forms.Panel()
+        Me.RadioButton_titleIncludes = New System.Windows.Forms.RadioButton()
+        Me.RadioButton_titleFullMatch = New System.Windows.Forms.RadioButton()
+        Me.RadioButton_titleStartsWith = New System.Windows.Forms.RadioButton()
         Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
@@ -630,42 +630,6 @@ Partial Class BetterFullscreen
         Me.GroupBox_GameSettings.TabStop = False
         Me.GroupBox_GameSettings.Text = "Game Settings"
         '
-        'RadioButton_titleIncludes
-        '
-        Me.RadioButton_titleIncludes.AutoSize = True
-        Me.RadioButton_titleIncludes.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleIncludes.Location = New System.Drawing.Point(166, 2)
-        Me.RadioButton_titleIncludes.Name = "RadioButton_titleIncludes"
-        Me.RadioButton_titleIncludes.Size = New System.Drawing.Size(65, 17)
-        Me.RadioButton_titleIncludes.TabIndex = 30
-        Me.RadioButton_titleIncludes.Tag = "2"
-        Me.RadioButton_titleIncludes.Text = "Includes"
-        Me.RadioButton_titleIncludes.UseVisualStyleBackColor = True
-        '
-        'RadioButton_titleStartsWith
-        '
-        Me.RadioButton_titleStartsWith.AutoSize = True
-        Me.RadioButton_titleStartsWith.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleStartsWith.Location = New System.Drawing.Point(83, 2)
-        Me.RadioButton_titleStartsWith.Name = "RadioButton_titleStartsWith"
-        Me.RadioButton_titleStartsWith.Size = New System.Drawing.Size(77, 17)
-        Me.RadioButton_titleStartsWith.TabIndex = 29
-        Me.RadioButton_titleStartsWith.Tag = "1"
-        Me.RadioButton_titleStartsWith.Text = "Starts With"
-        Me.RadioButton_titleStartsWith.UseVisualStyleBackColor = True
-        '
-        'RadioButton_titleFullMatch
-        '
-        Me.RadioButton_titleFullMatch.AutoSize = True
-        Me.RadioButton_titleFullMatch.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleFullMatch.Location = New System.Drawing.Point(3, 2)
-        Me.RadioButton_titleFullMatch.Name = "RadioButton_titleFullMatch"
-        Me.RadioButton_titleFullMatch.Size = New System.Drawing.Size(74, 17)
-        Me.RadioButton_titleFullMatch.TabIndex = 28
-        Me.RadioButton_titleFullMatch.Tag = "0"
-        Me.RadioButton_titleFullMatch.Text = "Full Match"
-        Me.RadioButton_titleFullMatch.UseVisualStyleBackColor = True
-        '
         'CheckBox_ForceTopMost
         '
         Me.CheckBox_ForceTopMost.AutoSize = True
@@ -748,6 +712,42 @@ Partial Class BetterFullscreen
         Me.Panel_titleRadioButtonContainer.Name = "Panel_titleRadioButtonContainer"
         Me.Panel_titleRadioButtonContainer.Size = New System.Drawing.Size(228, 22)
         Me.Panel_titleRadioButtonContainer.TabIndex = 31
+        '
+        'RadioButton_titleIncludes
+        '
+        Me.RadioButton_titleIncludes.AutoSize = True
+        Me.RadioButton_titleIncludes.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_titleIncludes.Location = New System.Drawing.Point(166, 2)
+        Me.RadioButton_titleIncludes.Name = "RadioButton_titleIncludes"
+        Me.RadioButton_titleIncludes.Size = New System.Drawing.Size(65, 17)
+        Me.RadioButton_titleIncludes.TabIndex = 30
+        Me.RadioButton_titleIncludes.Tag = "2"
+        Me.RadioButton_titleIncludes.Text = "Includes"
+        Me.RadioButton_titleIncludes.UseVisualStyleBackColor = True
+        '
+        'RadioButton_titleFullMatch
+        '
+        Me.RadioButton_titleFullMatch.AutoSize = True
+        Me.RadioButton_titleFullMatch.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_titleFullMatch.Location = New System.Drawing.Point(3, 2)
+        Me.RadioButton_titleFullMatch.Name = "RadioButton_titleFullMatch"
+        Me.RadioButton_titleFullMatch.Size = New System.Drawing.Size(74, 17)
+        Me.RadioButton_titleFullMatch.TabIndex = 28
+        Me.RadioButton_titleFullMatch.Tag = "0"
+        Me.RadioButton_titleFullMatch.Text = "Full Match"
+        Me.RadioButton_titleFullMatch.UseVisualStyleBackColor = True
+        '
+        'RadioButton_titleStartsWith
+        '
+        Me.RadioButton_titleStartsWith.AutoSize = True
+        Me.RadioButton_titleStartsWith.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_titleStartsWith.Location = New System.Drawing.Point(83, 2)
+        Me.RadioButton_titleStartsWith.Name = "RadioButton_titleStartsWith"
+        Me.RadioButton_titleStartsWith.Size = New System.Drawing.Size(77, 17)
+        Me.RadioButton_titleStartsWith.TabIndex = 29
+        Me.RadioButton_titleStartsWith.Tag = "1"
+        Me.RadioButton_titleStartsWith.Text = "Starts With"
+        Me.RadioButton_titleStartsWith.UseVisualStyleBackColor = True
         '
         'TableLayoutPanel4
         '

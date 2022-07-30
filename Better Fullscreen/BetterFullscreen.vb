@@ -92,6 +92,7 @@ Public Class BetterFullscreen
 
         If (SelectedGame Is Nothing And ComboBox_Games.SelectedIndex > 0) Or (SelectedGame IsNot Nothing And Not ComboBox_Games.SelectedItem = SelectedGame) Then
             Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
+            If Game Is Nothing Then Exit Sub
             TextBox_Title.Text = Game.Title.Text
             SetRadioButton(Panel_titleRadioButtonContainer, Game.Title.Match)
             TextBox_Class.Text = Game.Class
@@ -198,6 +199,35 @@ Public Class BetterFullscreen
         Else
             __Hotkeys.Dispose()
             UnhookWinEvent(__hWinHook)
+        End If
+    End Sub
+
+
+    ' Allow editing profile name without editing .conf file
+    Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
+        If Control.ModifierKeys <> Keys.Shift Then Exit Sub
+        ComboBox_Games.Enabled = False
+        ComboBox_Games.Enabled = True
+
+        ToggleEditProfile()
+    End Sub
+
+    Private Sub ComboBox_Games_KeyDown(sender As Object, e As KeyEventArgs) Handles ComboBox_Games.KeyDown
+        If e.KeyCode <> Keys.Enter Then Exit Sub
+        ToggleEditProfile()
+    End Sub
+
+    Private Sub ToggleEditProfile()
+        If ComboBox_Games.DropDownStyle = ComboBoxStyle.Simple Then
+            GetProfile(ComboBox_Games.Items.Item(ComboBox_Games.Tag.Split(","c)(0)), Config).Name = ComboBox_Games.Text
+            ComboBox_Games.Items.Add(ComboBox_Games.Text)
+            ComboBox_Games.Items.Remove(ComboBox_Games.Tag.Split(","c)(1))
+            ComboBox_Games.SelectedItem = ComboBox_Games.Text
+            ComboBox_Games.Tag = Nothing
+            ComboBox_Games.DropDownStyle = ComboBoxStyle.DropDownList
+        Else
+            ComboBox_Games.Tag = ComboBox_Games.SelectedIndex & "," & ComboBox_Games.SelectedItem
+            ComboBox_Games.DropDownStyle = ComboBoxStyle.Simple
         End If
     End Sub
 
