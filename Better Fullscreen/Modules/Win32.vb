@@ -49,11 +49,15 @@ Module Win32
     Public Function UnhookWinEvent(hWinEventHook As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SendMessage", CallingConvention:=CallingConvention.StdCall)>
+    Public Function SendMessage(hWnd As IntPtr, Msg As UInteger, wParam As Integer, lParam As IntPtr) As IntPtr
+    End Function
+
 #End Region
 
     Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hWnd As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
 
-#Region "Win32 Structs & Enums"
+#Region "Win32 Structs, Enums & Varibles"
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure RECT
@@ -185,6 +189,14 @@ Module Win32
         EVENT_SYSTEM_MINIMIZEEND = &H17 ' A window object is about to be restored.
         EVENT_SYSTEM_DESKTOPSWITCH = &H20 ' The active desktop has been switched.
         ' Im missing a bunch that i probably dont care about
+    End Enum
+
+    Public Enum WIN_MESSAGE As UInteger
+        WM_SETICON = &H80UI
+    End Enum
+    Public Enum ICON_SIZE As Integer
+        ICON_SMALL = 0
+        ICON_BIG = 1
     End Enum
 
 #End Region

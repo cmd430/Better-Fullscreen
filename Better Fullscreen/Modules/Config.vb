@@ -23,6 +23,10 @@ Public Module Config
         Public Property DefaultSize As Size = New Size(800, 600)
         <XmlElement(ElementName:="Default-Location")>
         Public Property DefaultLocation As Point = New Point(0, 0)
+        <XmlElement(ElementName:="Trigger-Events")>
+        Public Property TriggerEvents As TriggerEvent = TriggerEvent.ForegroundWindowChanged
+        <XmlElement(ElementName:="Start-Hidden")>
+        Public Property StartHidden As Boolean = True
         <XmlIgnore>
         Public Property ConfigPath As String = ""
     End Class
@@ -64,6 +68,12 @@ Public Module Config
         <XmlText>
         Public Property Text As String = ""
     End Class
+
+    Public Enum TriggerEvent As Integer
+        ForegroundWindowChanged = 0
+        MouseCaptureStart = 1
+        Both = 2
+    End Enum
 
     Public Enum MatchType As Integer
         Full = 0

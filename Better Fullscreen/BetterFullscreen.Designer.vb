@@ -70,9 +70,12 @@ Partial Class BetterFullscreen
         Me.ComboBox_Key = New System.Windows.Forms.ComboBox()
         Me.TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
         Me.GroupBox_ApplicationSettings = New System.Windows.Forms.GroupBox()
+        Me.Label26 = New System.Windows.Forms.Label()
+        Me.Label25 = New System.Windows.Forms.Label()
+        Me.ComboBox_TriggerEvents = New System.Windows.Forms.ComboBox()
         Me.Label24 = New System.Windows.Forms.Label()
-        Me.CheckBox_startHidden = New System.Windows.Forms.CheckBox()
-        Me.CheckBox_startWithWindows = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_StartHidden = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_StartWithWindows = New System.Windows.Forms.CheckBox()
         Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
         Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
@@ -82,9 +85,9 @@ Partial Class BetterFullscreen
         Me.Label23 = New System.Windows.Forms.Label()
         Me.Button_Remove = New System.Windows.Forms.Button()
         Me.Panel_titleRadioButtonContainer = New System.Windows.Forms.Panel()
-        Me.RadioButton_titleIncludes = New System.Windows.Forms.RadioButton()
-        Me.RadioButton_titleFullMatch = New System.Windows.Forms.RadioButton()
-        Me.RadioButton_titleStartsWith = New System.Windows.Forms.RadioButton()
+        Me.RadioButton_TitleIncludes = New System.Windows.Forms.RadioButton()
+        Me.RadioButton_TitleFullMatch = New System.Windows.Forms.RadioButton()
+        Me.RadioButton_TitleStartsWith = New System.Windows.Forms.RadioButton()
         Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
         Me.TrayMenu.SuspendLayout()
         Me.GroupBox_Events.SuspendLayout()
@@ -529,9 +532,12 @@ Partial Class BetterFullscreen
         '
         'GroupBox_ApplicationSettings
         '
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label26)
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label25)
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_TriggerEvents)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label24)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_startHidden)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_startWithWindows)
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_StartHidden)
+        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_StartWithWindows)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label21)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Key)
         Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Modifier)
@@ -559,6 +565,35 @@ Partial Class BetterFullscreen
         Me.GroupBox_ApplicationSettings.TabStop = False
         Me.GroupBox_ApplicationSettings.Text = "Application Settings"
         '
+        'Label26
+        '
+        Me.Label26.AutoSize = True
+        Me.Label26.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.Label26.Location = New System.Drawing.Point(103, 140)
+        Me.Label26.Name = "Label26"
+        Me.Label26.Size = New System.Drawing.Size(40, 13)
+        Me.Label26.TabIndex = 28
+        Me.Label26.Text = "Events"
+        '
+        'Label25
+        '
+        Me.Label25.AutoSize = True
+        Me.Label25.Location = New System.Drawing.Point(6, 160)
+        Me.Label25.Name = "Label25"
+        Me.Label25.Size = New System.Drawing.Size(76, 13)
+        Me.Label25.TabIndex = 27
+        Me.Label25.Text = "Trigger Events"
+        '
+        'ComboBox_TriggerEvents
+        '
+        Me.ComboBox_TriggerEvents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.ComboBox_TriggerEvents.FormattingEnabled = True
+        Me.ComboBox_TriggerEvents.Items.AddRange(New Object() {"Foreground Window Changed", "Mouse Capture Start", "Foreground Window Changed & Mouse Capture Start"})
+        Me.ComboBox_TriggerEvents.Location = New System.Drawing.Point(106, 156)
+        Me.ComboBox_TriggerEvents.Name = "ComboBox_TriggerEvents"
+        Me.ComboBox_TriggerEvents.Size = New System.Drawing.Size(222, 21)
+        Me.ComboBox_TriggerEvents.TabIndex = 0
+        '
         'Label24
         '
         Me.Label24.AutoSize = True
@@ -569,29 +604,28 @@ Partial Class BetterFullscreen
         Me.Label24.TabIndex = 26
         Me.Label24.Text = "+"
         '
-        'CheckBox_startHidden
+        'CheckBox_StartHidden
         '
-        Me.CheckBox_startHidden.AutoSize = True
-        Me.CheckBox_startHidden.Checked = True
-        Me.CheckBox_startHidden.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox_startHidden.Enabled = False
-        Me.CheckBox_startHidden.Location = New System.Drawing.Point(9, 180)
-        Me.CheckBox_startHidden.Name = "CheckBox_startHidden"
-        Me.CheckBox_startHidden.Size = New System.Drawing.Size(85, 17)
-        Me.CheckBox_startHidden.TabIndex = 25
-        Me.CheckBox_startHidden.Text = "Start Hidden"
-        Me.CheckBox_startHidden.UseVisualStyleBackColor = True
+        Me.CheckBox_StartHidden.AutoSize = True
+        Me.CheckBox_StartHidden.Checked = True
+        Me.CheckBox_StartHidden.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox_StartHidden.Location = New System.Drawing.Point(106, 206)
+        Me.CheckBox_StartHidden.Name = "CheckBox_StartHidden"
+        Me.CheckBox_StartHidden.Size = New System.Drawing.Size(85, 17)
+        Me.CheckBox_StartHidden.TabIndex = 25
+        Me.CheckBox_StartHidden.Text = "Start Hidden"
+        Me.CheckBox_StartHidden.UseVisualStyleBackColor = True
         '
-        'CheckBox_startWithWindows
+        'CheckBox_StartWithWindows
         '
-        Me.CheckBox_startWithWindows.AutoSize = True
-        Me.CheckBox_startWithWindows.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_startWithWindows.Location = New System.Drawing.Point(9, 157)
-        Me.CheckBox_startWithWindows.Name = "CheckBox_startWithWindows"
-        Me.CheckBox_startWithWindows.Size = New System.Drawing.Size(117, 17)
-        Me.CheckBox_startWithWindows.TabIndex = 24
-        Me.CheckBox_startWithWindows.Text = "Start with Windows"
-        Me.CheckBox_startWithWindows.UseVisualStyleBackColor = True
+        Me.CheckBox_StartWithWindows.AutoSize = True
+        Me.CheckBox_StartWithWindows.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.CheckBox_StartWithWindows.Location = New System.Drawing.Point(106, 183)
+        Me.CheckBox_StartWithWindows.Name = "CheckBox_StartWithWindows"
+        Me.CheckBox_StartWithWindows.Size = New System.Drawing.Size(117, 17)
+        Me.CheckBox_StartWithWindows.TabIndex = 24
+        Me.CheckBox_StartWithWindows.Text = "Start with Windows"
+        Me.CheckBox_StartWithWindows.UseVisualStyleBackColor = True
         '
         'GroupBox_GameSettings
         '
@@ -634,7 +668,7 @@ Partial Class BetterFullscreen
         '
         Me.CheckBox_ForceTopMost.AutoSize = True
         Me.CheckBox_ForceTopMost.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(6, 266)
+        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(6, 264)
         Me.CheckBox_ForceTopMost.Name = "CheckBox_ForceTopMost"
         Me.CheckBox_ForceTopMost.Size = New System.Drawing.Size(101, 17)
         Me.CheckBox_ForceTopMost.TabIndex = 27
@@ -656,7 +690,7 @@ Partial Class BetterFullscreen
         '
         Me.CheckBox_CaptureMouse.AutoSize = True
         Me.CheckBox_CaptureMouse.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 243)
+        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 241)
         Me.CheckBox_CaptureMouse.Name = "CheckBox_CaptureMouse"
         Me.CheckBox_CaptureMouse.Size = New System.Drawing.Size(98, 17)
         Me.CheckBox_CaptureMouse.TabIndex = 25
@@ -705,49 +739,49 @@ Partial Class BetterFullscreen
         '
         'Panel_titleRadioButtonContainer
         '
-        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_titleIncludes)
-        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_titleFullMatch)
-        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_titleStartsWith)
+        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleIncludes)
+        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleFullMatch)
+        Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleStartsWith)
         Me.Panel_titleRadioButtonContainer.Location = New System.Drawing.Point(57, 71)
         Me.Panel_titleRadioButtonContainer.Name = "Panel_titleRadioButtonContainer"
         Me.Panel_titleRadioButtonContainer.Size = New System.Drawing.Size(228, 22)
         Me.Panel_titleRadioButtonContainer.TabIndex = 31
         '
-        'RadioButton_titleIncludes
+        'RadioButton_TitleIncludes
         '
-        Me.RadioButton_titleIncludes.AutoSize = True
-        Me.RadioButton_titleIncludes.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleIncludes.Location = New System.Drawing.Point(166, 2)
-        Me.RadioButton_titleIncludes.Name = "RadioButton_titleIncludes"
-        Me.RadioButton_titleIncludes.Size = New System.Drawing.Size(65, 17)
-        Me.RadioButton_titleIncludes.TabIndex = 30
-        Me.RadioButton_titleIncludes.Tag = "2"
-        Me.RadioButton_titleIncludes.Text = "Includes"
-        Me.RadioButton_titleIncludes.UseVisualStyleBackColor = True
+        Me.RadioButton_TitleIncludes.AutoSize = True
+        Me.RadioButton_TitleIncludes.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_TitleIncludes.Location = New System.Drawing.Point(166, 2)
+        Me.RadioButton_TitleIncludes.Name = "RadioButton_TitleIncludes"
+        Me.RadioButton_TitleIncludes.Size = New System.Drawing.Size(65, 17)
+        Me.RadioButton_TitleIncludes.TabIndex = 30
+        Me.RadioButton_TitleIncludes.Tag = "2"
+        Me.RadioButton_TitleIncludes.Text = "Includes"
+        Me.RadioButton_TitleIncludes.UseVisualStyleBackColor = True
         '
-        'RadioButton_titleFullMatch
+        'RadioButton_TitleFullMatch
         '
-        Me.RadioButton_titleFullMatch.AutoSize = True
-        Me.RadioButton_titleFullMatch.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleFullMatch.Location = New System.Drawing.Point(3, 2)
-        Me.RadioButton_titleFullMatch.Name = "RadioButton_titleFullMatch"
-        Me.RadioButton_titleFullMatch.Size = New System.Drawing.Size(74, 17)
-        Me.RadioButton_titleFullMatch.TabIndex = 28
-        Me.RadioButton_titleFullMatch.Tag = "0"
-        Me.RadioButton_titleFullMatch.Text = "Full Match"
-        Me.RadioButton_titleFullMatch.UseVisualStyleBackColor = True
+        Me.RadioButton_TitleFullMatch.AutoSize = True
+        Me.RadioButton_TitleFullMatch.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_TitleFullMatch.Location = New System.Drawing.Point(3, 2)
+        Me.RadioButton_TitleFullMatch.Name = "RadioButton_TitleFullMatch"
+        Me.RadioButton_TitleFullMatch.Size = New System.Drawing.Size(74, 17)
+        Me.RadioButton_TitleFullMatch.TabIndex = 28
+        Me.RadioButton_TitleFullMatch.Tag = "0"
+        Me.RadioButton_TitleFullMatch.Text = "Full Match"
+        Me.RadioButton_TitleFullMatch.UseVisualStyleBackColor = True
         '
-        'RadioButton_titleStartsWith
+        'RadioButton_TitleStartsWith
         '
-        Me.RadioButton_titleStartsWith.AutoSize = True
-        Me.RadioButton_titleStartsWith.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_titleStartsWith.Location = New System.Drawing.Point(83, 2)
-        Me.RadioButton_titleStartsWith.Name = "RadioButton_titleStartsWith"
-        Me.RadioButton_titleStartsWith.Size = New System.Drawing.Size(77, 17)
-        Me.RadioButton_titleStartsWith.TabIndex = 29
-        Me.RadioButton_titleStartsWith.Tag = "1"
-        Me.RadioButton_titleStartsWith.Text = "Starts With"
-        Me.RadioButton_titleStartsWith.UseVisualStyleBackColor = True
+        Me.RadioButton_TitleStartsWith.AutoSize = True
+        Me.RadioButton_TitleStartsWith.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.RadioButton_TitleStartsWith.Location = New System.Drawing.Point(83, 2)
+        Me.RadioButton_TitleStartsWith.Name = "RadioButton_TitleStartsWith"
+        Me.RadioButton_TitleStartsWith.Size = New System.Drawing.Size(77, 17)
+        Me.RadioButton_TitleStartsWith.TabIndex = 29
+        Me.RadioButton_TitleStartsWith.Tag = "1"
+        Me.RadioButton_TitleStartsWith.Text = "Starts With"
+        Me.RadioButton_TitleStartsWith.UseVisualStyleBackColor = True
         '
         'TableLayoutPanel4
         '
@@ -779,7 +813,6 @@ Partial Class BetterFullscreen
         Me.MinimumSize = New System.Drawing.Size(667, 578)
         Me.Name = "BetterFullscreen"
         Me.Padding = New System.Windows.Forms.Padding(3)
-        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Better Fullscreen"
         Me.TopMost = True
@@ -855,17 +888,20 @@ Partial Class BetterFullscreen
     Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
     Friend WithEvents GroupBox_GameSettings As GroupBox
     Friend WithEvents Button_Remove As Button
-    Friend WithEvents CheckBox_startWithWindows As CheckBox
+    Friend WithEvents CheckBox_StartWithWindows As CheckBox
     Friend WithEvents Label22 As Label
     Friend WithEvents NumericUpDown_Delay As NumericUpDown
     Friend WithEvents Label23 As Label
     Friend WithEvents CheckBox_CaptureMouse As CheckBox
     Friend WithEvents CheckBox_ProfileEnabled As CheckBox
     Friend WithEvents CheckBox_ForceTopMost As CheckBox
-    Friend WithEvents RadioButton_titleIncludes As RadioButton
-    Friend WithEvents RadioButton_titleStartsWith As RadioButton
-    Friend WithEvents RadioButton_titleFullMatch As RadioButton
-    Friend WithEvents CheckBox_startHidden As CheckBox
+    Friend WithEvents RadioButton_TitleIncludes As RadioButton
+    Friend WithEvents RadioButton_TitleStartsWith As RadioButton
+    Friend WithEvents RadioButton_TitleFullMatch As RadioButton
+    Friend WithEvents CheckBox_StartHidden As CheckBox
     Friend WithEvents Label24 As Label
     Friend WithEvents Panel_titleRadioButtonContainer As Panel
+    Friend WithEvents Label25 As Label
+    Friend WithEvents ComboBox_TriggerEvents As ComboBox
+    Friend WithEvents Label26 As Label
 End Class

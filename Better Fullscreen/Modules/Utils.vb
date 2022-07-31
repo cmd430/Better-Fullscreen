@@ -1,4 +1,6 @@
 ﻿Imports System.Text
+Imports Microsoft.Win32
+Imports Microsoft.Win32.Registry
 
 Module Utils
 
@@ -27,5 +29,23 @@ Module Utils
         panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) <> value).FirstOrDefault().Checked = False
     End Sub
 
+
+    Public Enum WindowsTheme
+        Light
+        Dark
+    End Enum
+
+    Public Function GetWindowsTheme() As WindowsTheme
+        Using Key As RegistryKey = CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
+            If Key IsNot Nothing Then
+                Dim Value As Object = Key.GetValue("AppsUseLightTheme")
+                If Value IsNot Nothing Then
+                    Return If(CInt(Value) > 0, WindowsTheme.Light, WindowsTheme.Dark)
+                End If
+            End If
+
+            Return WindowsTheme.Light
+        End Using
+    End Function
 
 End Module

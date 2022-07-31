@@ -57,7 +57,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Fullscreen.ico</ApplicationIcon>
+    <ApplicationIcon>Fullscreen_Light.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Fullscreen.ico" />
+    <Content Include="Fullscreen_Dark.ico" />
     <Content Include="Fullscreen_Light.ico" />
     <Content Include="ILMergeOrder.txt" />
   </ItemGroup>

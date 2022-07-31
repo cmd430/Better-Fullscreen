@@ -1,5 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.Threading
+Imports Microsoft.Win32
 Imports Microsoft.Win32.Registry
 
 Public Class BetterFullscreen
@@ -9,7 +10,6 @@ Public Class BetterFullscreen
 
     Private WindowsScaleFactor As Int32 = 1
 
-    Private __SettingsChanged As Boolean = False
     Private __hWinHook As IntPtr
     Private __winEventProc As WinEventDelegate
 
@@ -34,28 +34,50 @@ Public Class BetterFullscreen
         End If
 
         If LoadWithWindows() Then
-            CheckBox_startWithWindows.Checked = True
+            CheckBox_StartWithWindows.Checked = True
         End If
 
-        AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
 
+        If GetWindowsTheme() = WindowsTheme.Light Then
+            Icon = My.Resources.Fullscreen_Dark
+            TrayIcon.Icon = My.Resources.Fullscreen_Dark
+        Else
+            Icon = My.Resources.Fullscreen_Light
+            TrayIcon.Icon = My.Resources.Fullscreen_Light
+            SendMessage(Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
+        End If
+
+        If Debugger.IsAttached Or Not Config.Settings.StartHidden Then
+            WindowState = FormWindowState.Normal
+        Else
+            WindowState = FormWindowState.Minimized
+        End If
+
+        Show()
         Init()
     End Sub
 
     Protected Overrides Sub SetVisibleCore(value As Boolean)
         If Not IsHandleCreated Then
             CreateHandle()
-            value = Debugger.IsAttached ' Start hidden (unless debugging)
+            value = False
         End If
         MyBase.SetVisibleCore(value)
     End Sub
 
-    Private Sub BetterFullscreen_VisibleChanged(sender As Object, e As EventArgs) Handles Me.VisibleChanged
-        If Visible Then
+    Private Sub BetterFullscreen_Resize(sender As Object, e As EventArgs) Handles Me.Resize
+        If WindowState = FormWindowState.Normal Then
+            'Shown
             LoadSettings()
             LoadGameSettings()
             UpdateSelectedGame()
+            ShowInTaskbar = True
+        ElseIf WindowState = FormWindowState.Minimized Then
+            ' Hidden
+            ShowInTaskbar = False
         End If
+        SendMessage(Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
     End Sub
 
     Private Sub Button_Save_Click(sender As Object, e As EventArgs) Handles Button_Save.Click
@@ -122,7 +144,6 @@ Public Class BetterFullscreen
             Game.ForceTopMost = CheckBox_ForceTopMost.Checked
             SaveConfig(ConfigPath, Config)
             LogEvent("Saved '" & Game.Name & "' settings")
-            __SettingsChanged = True
         End If
     End Sub
 
@@ -131,16 +152,16 @@ Public Class BetterFullscreen
     End Function
 
     Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
-        RemoveHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+        RemoveHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         If LoadWithWindows() Then
             __TaskSchedeuler.ToggleTask()
-            CheckBox_startWithWindows.Checked = False
+            CheckBox_StartWithWindows.Checked = False
         Else
             __TaskSchedeuler.ToggleTask()
-            CheckBox_startWithWindows.Checked = True
+            CheckBox_StartWithWindows.Checked = True
         End If
         LogEvent("Toggled start with windows")
-        AddHandler CheckBox_startWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
     End Sub
 
     Private Sub Button_SaveApp_Click(sender As Object, e As EventArgs) Handles Button_SaveApp.Click
@@ -154,6 +175,8 @@ Public Class BetterFullscreen
         NumericUpDown_DefaultHeight.Value = Config.Settings.DefaultSize.Height
         NumericUpDown_DefaultLeft.Value = Config.Settings.DefaultLocation.X
         NumericUpDown_DefaultTop.Value = Config.Settings.DefaultLocation.Y
+        ComboBox_TriggerEvents.SelectedIndex = Config.Settings.TriggerEvents
+        CheckBox_StartHidden.Checked = Config.Settings.StartHidden
         LogEvent("Loaded application settings")
     End Sub
 
@@ -162,9 +185,10 @@ Public Class BetterFullscreen
         Config.Settings.Modifier = CType(ComboBox_Modifier.SelectedIndex, ModifierKey)
         Config.Settings.DefaultSize = New Size(NumericUpDown_DefaultWidth.Value, NumericUpDown_DefaultHeight.Value)
         Config.Settings.DefaultLocation = New Point(NumericUpDown_DefaultLeft.Value, NumericUpDown_DefaultTop.Value)
+        Config.Settings.TriggerEvents = CType(ComboBox_TriggerEvents.SelectedIndex, TriggerEvent)
+        Config.Settings.StartHidden = CheckBox_StartHidden.Checked
         SaveConfig(ConfigPath, Config)
         LogEvent("Saved application settings")
-        __SettingsChanged = True
     End Sub
 
     Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
@@ -172,14 +196,10 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub ToggleWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleWindowToolStripMenuItem.Click
-        If Visible Then
-            Hide()
-            If __SettingsChanged Then
-                Application.Restart()
-            End If
+        If WindowState = FormWindowState.Normal Then
+            WindowState = FormWindowState.Minimized
         Else
-            Show()
-            Focus()
+            WindowState = FormWindowState.Normal
         End If
     End Sub
 
@@ -234,9 +254,9 @@ Public Class BetterFullscreen
 #End Region
 
     Private Sub Init()
-        Using Key = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
+        Using Key As RegistryKey = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
             If Key IsNot Nothing Then
-                Dim ADPI = Key.GetValue("AppliedDPI")
+                Dim ADPI As Object = Key.GetValue("AppliedDPI")
                 If ADPI IsNot Nothing Then
                     WindowsScaleFactor = Convert.ToInt32(ADPI) / 96
                 End If
@@ -381,7 +401,7 @@ Public Class BetterFullscreen
                 .Text = GetWindowTitle(HWND),
                 .Match = MatchType.Full
             },
-            .[Class] = GetWindowClass(HWND),
+            .Class = GetWindowClass(HWND),
             .Size = Config.Settings.DefaultSize,
             .Location = Config.Settings.DefaultLocation,
             .Name = .Title.Text.Replace("[", "(").Replace("]", ")")
@@ -411,8 +431,16 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
-        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
+        Dim TriggerEvents = Config.Settings.TriggerEvents
+
+        If (TriggerEvents = TriggerEvent.ForegroundWindowChanged Or TriggerEvents = TriggerEvent.Both) And eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then
+            Debug.WriteLine("Event: EVENT_SYSTEM_FOREGROUND")
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
+            Exit Sub
+        ElseIf (TriggerEvents = TriggerEvent.MouseCaptureStart Or TriggerEvents = TriggerEvent.Both) And eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
+            Debug.WriteLine("Event: EVENT_SYSTEM_CAPTURESTART")
+            DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
+            Exit Sub
         End If
     End Sub
 
