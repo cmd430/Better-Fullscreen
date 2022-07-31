@@ -387,8 +387,6 @@ Public Class BetterFullscreen
             .Name = .Title.Text.Replace("[", "(").Replace("]", ")")
         }
 
-        If NewGame.Title.Text = "" Or GetProfileNames(Config).Contains(NewGame.Name) Then Exit Sub
-
         AddProfile(NewGame, Config)
         ComboBox_Games.Items.Add(NewGame.Name)
         UpdateSelectedGame()
@@ -413,7 +411,7 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
-        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then 'Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
+        If eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Or eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
         End If
     End Sub
