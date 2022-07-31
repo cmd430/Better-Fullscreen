@@ -809,7 +809,6 @@ Partial Class BetterFullscreen
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MaximumSize = New System.Drawing.Size(667, 578)
-        Me.MinimizeBox = False
         Me.MinimumSize = New System.Drawing.Size(667, 578)
         Me.Name = "BetterFullscreen"
         Me.Padding = New System.Windows.Forms.Padding(3)

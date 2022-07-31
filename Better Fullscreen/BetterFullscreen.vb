@@ -204,24 +204,30 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
+        CleanUp()
         Application.Restart()
         Application.ExitThread()
     End Sub
 
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        CleanUp()
         Application.Exit()
     End Sub
 
     Private Sub BetterFullscreen_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        If Visible And Not Debugger.IsAttached Then
-            e.Cancel = True
-            ToggleWindowToolStripMenuItem.PerformClick()
+        Dim shouldExit As Boolean = MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.OK
+
+        If shouldExit Then
+            CleanUp()
         Else
-            __Hotkeys.Dispose()
-            UnhookWinEvent(__hWinHook)
+            e.Cancel = True
         End If
     End Sub
 
+    Private Sub CleanUp()
+        __Hotkeys.Dispose()
+        UnhookWinEvent(__hWinHook)
+    End Sub
 
     ' Allow editing profile name without editing .conf file
     Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
