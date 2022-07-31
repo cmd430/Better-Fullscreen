@@ -10,6 +10,7 @@ Public Class BetterFullscreen
 
     Private WindowsScaleFactor As Int32 = 1
 
+    Private __SilentClose As Boolean = False
     Private __hWinHook As IntPtr
     Private __winEventProc As WinEventDelegate
 
@@ -204,30 +205,33 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
-        CleanUp()
-        Application.Restart()
-        Application.ExitThread()
-    End Sub
-
-    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
-        CleanUp()
+        Process.Start(New ProcessStartInfo With {
+            .FileName = "cmd",
+            .Arguments = "/C timeout 1 && """ & Application.ExecutablePath & """",
+            .UseShellExecute = True,
+            .WindowStyle = ProcessWindowStyle.Hidden,
+            .CreateNoWindow = True
+        })
+        __SilentClose = True
         Application.Exit()
     End Sub
 
-    Private Sub BetterFullscreen_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
-        Dim shouldExit As Boolean = MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.OK
-
-        If shouldExit Then
-            CleanUp()
-        Else
-            e.Cancel = True
-        End If
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        __SilentClose = True
+        Close()
     End Sub
 
-    Private Sub CleanUp()
+    Private Sub BetterFullscreen_Closing(sender As Object, e As FormClosingEventArgs) Handles Me.Closing
+        If e.CloseReason = CloseReason.UserClosing And Not __SilentClose = True Then
+            If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
+                e.Cancel = True
+            End If
+        End If
+
         __Hotkeys.Dispose()
         UnhookWinEvent(__hWinHook)
     End Sub
+
 
     ' Allow editing profile name without editing .conf file
     Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
