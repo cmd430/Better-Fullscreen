@@ -5,7 +5,8 @@ Public Class BetterFullscreen
     Private ReadOnly WindowsScaleFactor As Int32 = GetWindowsScaleFactor()
     Private ReadOnly Hotkeys As New Hotkeys
     Private ReadOnly TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
-    Private ReadOnly WinEventHook As IntPtr = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, New WinEventDelegate(AddressOf WinEventProc), 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
+    Private ReadOnly WinEventProcDelegate As New WinEventDelegate(AddressOf WinEventProc)
+    Private ReadOnly WinEventHook As IntPtr = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, WinEventProcDelegate, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
     Private ReadOnly ConfigPath As String = Application.ExecutablePath.Replace(".exe", ".conf")
     Private ReadOnly Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
 
@@ -14,6 +15,8 @@ Public Class BetterFullscreen
 #Region "Form Events"
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
+
+
         AddHandler Hotkeys.KeyPressed, AddressOf AddGame
 
         Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
