@@ -2,7 +2,6 @@
 
 Public Class BetterFullscreen
 
-#Region "Form Events"
     Private ReadOnly WindowsScaleFactor As Int32 = GetWindowsScaleFactor()
     Private ReadOnly Hotkeys As New Hotkeys
     Private ReadOnly TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
@@ -11,6 +10,8 @@ Public Class BetterFullscreen
     Private ReadOnly Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
 
     Private CloseSilently As Boolean = False
+
+#Region "Form Events"
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
         AddHandler Hotkeys.KeyPressed, AddressOf AddGame
@@ -38,12 +39,7 @@ Public Class BetterFullscreen
             SendMessage(Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
         End If
 
-        If Debugger.IsAttached Or Not Config.Settings.StartHidden Then
-            WindowState = FormWindowState.Normal
-        Else
-            WindowState = FormWindowState.Minimized
-        End If
-
+        ToggleWindowState(Me, IIf(Debugger.IsAttached Or Not Config.Settings.StartHidden, FormWindowState.Normal, FormWindowState.Minimized))
         Show()
         Init()
     End Sub
@@ -88,6 +84,75 @@ Public Class BetterFullscreen
     Private Sub ComboBox_Games_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox_Games.SelectedIndexChanged
         LoadGameSettings(ComboBox_Games.SelectedIndex)
     End Sub
+
+    Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
+        RemoveHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+        If LoadWithWindows() Then
+            TaskSchedeuler.ToggleTask()
+            CheckBox_StartWithWindows.Checked = False
+        Else
+            TaskSchedeuler.ToggleTask()
+            CheckBox_StartWithWindows.Checked = True
+        End If
+        LogEvent("Toggled start with windows")
+        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
+    End Sub
+
+    Private Sub Button_SaveApp_Click(sender As Object, e As EventArgs) Handles Button_SaveApp.Click
+        SaveSettings()
+    End Sub
+
+    Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
+        ToggleWindowState(Me)
+    End Sub
+
+    Private Sub ToggleWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleWindowToolStripMenuItem.Click
+        ToggleWindowState(Me)
+    End Sub
+
+    Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
+        Process.Start(New ProcessStartInfo With {
+            .FileName = "cmd",
+            .Arguments = "/C timeout 1 && """ & Application.ExecutablePath & """",
+            .UseShellExecute = True,
+            .WindowStyle = ProcessWindowStyle.Hidden,
+            .CreateNoWindow = True
+        })
+        CloseSilently = True
+        Application.Exit()
+    End Sub
+
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        CloseSilently = True
+        Application.Exit()
+    End Sub
+
+    Private Sub BetterFullscreen_Closing(sender As Object, e As FormClosingEventArgs) Handles Me.Closing
+        If e.CloseReason = CloseReason.UserClosing And Not CloseSilently = True Then
+            If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
+                e.Cancel = True
+                Exit Sub
+            End If
+        End If
+
+        Hotkeys.Dispose()
+        UnhookWinEvent(WinEventHook)
+    End Sub
+
+    Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
+        If Control.ModifierKeys <> Keys.Shift Then Exit Sub
+        ComboBox_Games.Enabled = False
+        ComboBox_Games.Enabled = True
+
+        ToggleEditProfile()
+    End Sub
+
+    Private Sub ComboBox_Games_KeyDown(sender As Object, e As KeyEventArgs) Handles ComboBox_Games.KeyDown
+        If e.KeyCode <> Keys.Enter Then Exit Sub
+        ToggleEditProfile()
+    End Sub
+
+#End Region
 
     Private Sub LoadGameSettings(Optional SelectedGame As String = Nothing)
         If SelectedGame Is Nothing And Not ComboBox_Games.SelectedIndex = 0 Then
@@ -140,23 +205,6 @@ Public Class BetterFullscreen
         Return TaskSchedeuler.GetTask().Enabled
     End Function
 
-    Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
-        RemoveHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
-        If LoadWithWindows() Then
-            TaskSchedeuler.ToggleTask()
-            CheckBox_StartWithWindows.Checked = False
-        Else
-            TaskSchedeuler.ToggleTask()
-            CheckBox_StartWithWindows.Checked = True
-        End If
-        LogEvent("Toggled start with windows")
-        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
-    End Sub
-
-    Private Sub Button_SaveApp_Click(sender As Object, e As EventArgs) Handles Button_SaveApp.Click
-        SaveSettings()
-    End Sub
-
     Private Sub LoadSettings()
         ComboBox_Key.SelectedIndex = Config.Settings.Hotkey - 112
         ComboBox_Modifier.SelectedIndex = Config.Settings.Modifier
@@ -180,58 +228,6 @@ Public Class BetterFullscreen
         LogEvent("Saved application settings")
     End Sub
 
-    Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
-        ToggleWindowState(Me)
-    End Sub
-
-    Private Sub ToggleWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleWindowToolStripMenuItem.Click
-        ToggleWindowState(Me)
-    End Sub
-
-    Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click
-        Process.Start(New ProcessStartInfo With {
-            .FileName = "cmd",
-            .Arguments = "/C timeout 1 && """ & Application.ExecutablePath & """",
-            .UseShellExecute = True,
-            .WindowStyle = ProcessWindowStyle.Hidden,
-            .CreateNoWindow = True
-        })
-        CloseSilently = True
-        Application.Exit()
-    End Sub
-
-    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
-        CloseSilently = True
-        Application.Exit()
-    End Sub
-
-    Private Sub BetterFullscreen_Closing(sender As Object, e As FormClosingEventArgs) Handles Me.Closing
-        If e.CloseReason = CloseReason.UserClosing And Not CloseSilently = True Then
-            If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
-                e.Cancel = True
-                Exit Sub
-            End If
-        End If
-
-        Hotkeys.Dispose()
-        UnhookWinEvent(WinEventHook)
-    End Sub
-
-
-    ' Allow editing profile name without editing .conf file
-    Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
-        If Control.ModifierKeys <> Keys.Shift Then Exit Sub
-        ComboBox_Games.Enabled = False
-        ComboBox_Games.Enabled = True
-
-        ToggleEditProfile()
-    End Sub
-
-    Private Sub ComboBox_Games_KeyDown(sender As Object, e As KeyEventArgs) Handles ComboBox_Games.KeyDown
-        If e.KeyCode <> Keys.Enter Then Exit Sub
-        ToggleEditProfile()
-    End Sub
-
     Private Sub ToggleEditProfile()
         If ComboBox_Games.DropDownStyle = ComboBoxStyle.Simple Then
             GetProfile(ComboBox_Games.Items.Item(ComboBox_Games.Tag.Split(","c)(0)), Config).Name = ComboBox_Games.Text
@@ -245,8 +241,6 @@ Public Class BetterFullscreen
             ComboBox_Games.DropDownStyle = ComboBoxStyle.Simple
         End If
     End Sub
-
-#End Region
 
     Private Sub Init()
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)

@@ -4,7 +4,11 @@ Imports Microsoft.Win32.Registry
 
 Module Utils
 
-    Public Sub ToggleWindowState(window As Form)
+    Public Sub ToggleWindowState(window As Form, Optional state As FormWindowState = Nothing)
+        If Not state = Nothing Then
+            window.WindowState = state
+            Exit Sub
+        End If
         If window.WindowState = FormWindowState.Normal Then
             window.WindowState = FormWindowState.Minimized
         Else
