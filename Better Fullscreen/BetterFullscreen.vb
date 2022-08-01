@@ -193,15 +193,11 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub TrayIcon_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles TrayIcon.MouseDoubleClick
-        ToggleWindowToolStripMenuItem.PerformClick()
+        ToggleWindowState(Me)
     End Sub
 
     Private Sub ToggleWindowToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ToggleWindowToolStripMenuItem.Click
-        If WindowState = FormWindowState.Normal Then
-            WindowState = FormWindowState.Minimized
-        Else
-            WindowState = FormWindowState.Normal
-        End If
+        ToggleWindowState(Me)
     End Sub
 
     Private Sub ReloadToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ReloadToolStripMenuItem.Click

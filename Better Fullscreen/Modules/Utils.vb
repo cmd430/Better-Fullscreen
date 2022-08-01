@@ -4,6 +4,14 @@ Imports Microsoft.Win32.Registry
 
 Module Utils
 
+    Public Sub ToggleWindowState(window As Form)
+        If window.WindowState = FormWindowState.Normal Then
+            window.WindowState = FormWindowState.Minimized
+        Else
+            window.WindowState = FormWindowState.Normal
+        End If
+    End Sub
+
     Public Function GetWindowTitle(HWND As IntPtr, Optional clean As Boolean = True) As String
         Dim title As New StringBuilder("", 256)
 
