@@ -221,6 +221,7 @@ Public Class BetterFullscreen
         If e.CloseReason = CloseReason.UserClosing And Not __SilentClose = True Then
             If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
                 e.Cancel = True
+                Exit Sub
             End If
         End If
 
