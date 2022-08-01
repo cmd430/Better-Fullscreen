@@ -19,9 +19,9 @@ Public NotInheritable Class Hotkeys
   Private Class Window
     Inherits NativeWindow
     Implements IDisposable
-    Private Shared WM_HOTKEY As Integer = &H312
+        Private Shared ReadOnly WM_HOTKEY As Integer = &H312
 
-    Public Sub New()
+        Public Sub New()
       ' create the handle for the window.
       Me.CreateHandle(New CreateParams())
     End Sub
@@ -55,8 +55,8 @@ Public NotInheritable Class Hotkeys
 #End Region
   End Class
 
-  Private _window As New Window()
-  Private _currentId As Integer
+    Private ReadOnly _window As New Window()
+    Private _currentId As Integer
 
   Public Sub New()
     ' register the event of the inner native window.
@@ -71,11 +71,11 @@ Public NotInheritable Class Hotkeys
   ''' <param name="modifier">The modifiers that are associated with the hot key.</param>
   ''' <param name="key">The key itself that is associated with the hot key.</param>
   Public Sub RegisterHotKey(modifier As ModifierKey, key As Keys)
-    ' increment the counter.
-    _currentId = _currentId + 1
+        ' increment the counter.
+        _currentId += 1
 
-    ' register the hot key.
-    If Not RegisterHotKey(_window.Handle, _currentId, DirectCast(modifier, UInteger), CUInt(key)) Then
+        ' register the hot key.
+        If Not RegisterHotKey(_window.Handle, _currentId, DirectCast(modifier, UInteger), CUInt(key)) Then
       'Throw New InvalidOperationException("Couldn’t register the hot key.")
       'or use MsgBox("Couldn’t register the hot key.")
     End If
@@ -107,11 +107,11 @@ End Class
 ''' Event Args for the event that is fired after the hot key has been pressed.
 ''' </summary>
 Public Class KeyPressedEventArgs
-  Inherits EventArgs
-  Private _modifier As ModifierKey
-  Private _key As Keys
+    Inherits EventArgs
+    Private ReadOnly _modifier As ModifierKey
+    Private ReadOnly _key As Keys
 
-  Friend Sub New(modifier As ModifierKey, key As Keys)
+    Friend Sub New(modifier As ModifierKey, key As Keys)
     _modifier = modifier
     _key = key
   End Sub

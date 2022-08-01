@@ -56,4 +56,16 @@ Module Utils
         End Using
     End Function
 
+    Public Function GetWindowsScaleFactor() As Int32
+        Using Key As RegistryKey = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
+            If Key IsNot Nothing Then
+                Dim ADPI As Object = Key.GetValue("AppliedDPI")
+                If ADPI IsNot Nothing Then
+                    Return Convert.ToInt32(ADPI) / 96
+                End If
+            End If
+            Return 1
+        End Using
+    End Function
+
 End Module

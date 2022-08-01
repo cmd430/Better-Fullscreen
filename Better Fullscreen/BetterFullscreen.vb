@@ -1,37 +1,26 @@
-﻿Imports System.ComponentModel
-Imports System.Threading
-Imports Microsoft.Win32
-Imports Microsoft.Win32.Registry
+﻿Imports System.Threading
 
 Public Class BetterFullscreen
 
 #Region "Form Events"
-    Public Delegate Sub ActiveWindowChangedHandler(sender As Object, windowTitle As String, windowClass As String, HWND As IntPtr)
-
-    Private WindowsScaleFactor As Int32 = 1
-
-    Private __SilentClose As Boolean = False
-    Private __hWinHook As IntPtr
-    Private __winEventProc As WinEventDelegate
-
-    Private ReadOnly __Hotkeys As New Hotkeys
-    Private ReadOnly __TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
-
+    Private ReadOnly WindowsScaleFactor As Int32 = GetWindowsScaleFactor()
+    Private ReadOnly Hotkeys As New Hotkeys
+    Private ReadOnly TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
+    Private ReadOnly WinEventHook As IntPtr = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, New WinEventDelegate(AddressOf WinEventProc), 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
     Private ReadOnly ConfigPath As String = Application.ExecutablePath.Replace(".exe", ".conf")
-    Private Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
+    Private ReadOnly Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
 
+    Private CloseSilently As Boolean = False
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
-        __winEventProc = New WinEventDelegate(AddressOf WinEventProc)
-        __hWinHook = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, __winEventProc, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
+        AddHandler Hotkeys.KeyPressed, AddressOf AddGame
 
-        AddHandler __Hotkeys.KeyPressed, AddressOf AddGame
-        __Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
+        Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
 
-        If __TaskSchedeuler.GetTask() Is Nothing Then
-            __TaskSchedeuler.AddTask()
+        If TaskSchedeuler.GetTask() Is Nothing Then
+            TaskSchedeuler.AddTask()
         Else
-            __TaskSchedeuler.UpdateTask()
+            TaskSchedeuler.UpdateTask()
         End If
 
         If LoadWithWindows() Then
@@ -87,9 +76,8 @@ Public Class BetterFullscreen
 
     Private Sub Button_Remove_Click(sender As Object, e As EventArgs) Handles Button_Remove.Click
         Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
-        Dim confirm As Integer = MessageBox.Show("Remove Profile '" & Game.Name & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel)
 
-        If confirm = DialogResult.OK Then
+        If MessageBox.Show("Remove Profile '" & Game.Name & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel) = DialogResult.OK Then
             RemoveProfile(Game.Name, Config)
             LogEvent("Removed '" & Game.Name & "' settings")
             ComboBox_Games.Items.RemoveAt(ComboBox_Games.SelectedIndex)
@@ -149,16 +137,16 @@ Public Class BetterFullscreen
     End Sub
 
     Public Function LoadWithWindows() As Boolean
-        Return __TaskSchedeuler.GetTask().Enabled
+        Return TaskSchedeuler.GetTask().Enabled
     End Function
 
     Private Sub CheckBox_startWithWindows_CheckedChanged(sender As Object, e As EventArgs)
         RemoveHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         If LoadWithWindows() Then
-            __TaskSchedeuler.ToggleTask()
+            TaskSchedeuler.ToggleTask()
             CheckBox_StartWithWindows.Checked = False
         Else
-            __TaskSchedeuler.ToggleTask()
+            TaskSchedeuler.ToggleTask()
             CheckBox_StartWithWindows.Checked = True
         End If
         LogEvent("Toggled start with windows")
@@ -208,25 +196,25 @@ Public Class BetterFullscreen
             .WindowStyle = ProcessWindowStyle.Hidden,
             .CreateNoWindow = True
         })
-        __SilentClose = True
+        CloseSilently = True
         Application.Exit()
     End Sub
 
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
-        __SilentClose = True
-        Close()
+        CloseSilently = True
+        Application.Exit()
     End Sub
 
     Private Sub BetterFullscreen_Closing(sender As Object, e As FormClosingEventArgs) Handles Me.Closing
-        If e.CloseReason = CloseReason.UserClosing And Not __SilentClose = True Then
+        If e.CloseReason = CloseReason.UserClosing And Not CloseSilently = True Then
             If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
                 e.Cancel = True
                 Exit Sub
             End If
         End If
 
-        __Hotkeys.Dispose()
-        UnhookWinEvent(__hWinHook)
+        Hotkeys.Dispose()
+        UnhookWinEvent(WinEventHook)
     End Sub
 
 
@@ -261,15 +249,6 @@ Public Class BetterFullscreen
 #End Region
 
     Private Sub Init()
-        Using Key As RegistryKey = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
-            If Key IsNot Nothing Then
-                Dim ADPI As Object = Key.GetValue("AppliedDPI")
-                If ADPI IsNot Nothing Then
-                    WindowsScaleFactor = Convert.ToInt32(ADPI) / 96
-                End If
-            End If
-        End Using
-
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
         LogEvent("Loading Games")
 

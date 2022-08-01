@@ -4,14 +4,14 @@ Imports System.Security.Principal
 Imports Microsoft.Win32.TaskScheduler
 
 Public Class Scheduler
-    Private Name As String
-    Private Author As String
-    Private Description As String
-    Private FilePath As String
-    Private Arguments As String
-    Private Enabled As Boolean
+    Private ReadOnly Name As String
+    Private ReadOnly Author As String
+    Private ReadOnly Description As String
+    Private ReadOnly FilePath As String
+    Private ReadOnly Arguments As String
+    Private ReadOnly Enabled As Boolean
 
-    Public Sub New(TaskName As String, ByVal TaskAuthor As String, ByVal TaskDescription As String, ByVal TaskFile As String, ByVal TaskArguments As String, ByVal TaskEnabled As Boolean)
+    Public Sub New(TaskName As String, TaskAuthor As String, TaskDescription As String, TaskFile As String, TaskArguments As String, TaskEnabled As Boolean)
         Name = TaskName
         Author = TaskAuthor
         Description = TaskDescription
