@@ -4,9 +4,10 @@ Imports Microsoft.Win32.Registry
 
 Module Utils
 
-    Public Sub ToggleWindowState(window As Form, Optional state As FormWindowState = Nothing)
-        If Not state = Nothing Then
+    Public Sub ToggleWindowState(window As Form, Optional state As FormWindowState = -1)
+        If state <> -1 Then
             window.WindowState = state
+            window.Show()
             Exit Sub
         End If
         If window.WindowState = FormWindowState.Normal Then

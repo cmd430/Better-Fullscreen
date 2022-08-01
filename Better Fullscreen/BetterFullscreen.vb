@@ -15,8 +15,6 @@ Public Class BetterFullscreen
 #Region "Form Events"
 
     Private Sub BetterFullscreen_Load(sender As Object, e As EventArgs) Handles Me.Load
-
-
         AddHandler Hotkeys.KeyPressed, AddressOf AddGame
 
         Hotkeys.RegisterHotKey(Config.Settings.Modifier, Config.Settings.Hotkey)
@@ -45,7 +43,7 @@ Public Class BetterFullscreen
         End If
 
         ToggleWindowState(Me, IIf(Debugger.IsAttached Or Not Config.Settings.StartHidden, FormWindowState.Normal, FormWindowState.Minimized))
-        Show()
+
         Init()
     End Sub
 
