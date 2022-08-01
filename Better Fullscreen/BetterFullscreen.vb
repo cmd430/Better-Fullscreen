@@ -23,8 +23,10 @@ Public Class BetterFullscreen
 
         If TaskSchedeuler.GetTask() Is Nothing Then
             TaskSchedeuler.AddTask()
+            LogEvent("Added startup task")
         Else
             TaskSchedeuler.UpdateTask()
+            LogEvent("Updated startup task")
         End If
 
         If LoadWithWindows() Then
@@ -58,8 +60,6 @@ Public Class BetterFullscreen
     Private Sub BetterFullscreen_Resize(sender As Object, e As EventArgs) Handles Me.Resize
         If WindowState = FormWindowState.Normal Then
             'Shown
-            LoadSettings()
-            LoadGameSettings()
             UpdateSelectedGame()
             ShowInTaskbar = True
         ElseIf WindowState = FormWindowState.Minimized Then
@@ -247,16 +247,12 @@ Public Class BetterFullscreen
 
     Private Sub Init()
         LogEvent("Using Windows DPI scale factor of " & WindowsScaleFactor)
-        LogEvent("Loading Games")
-
         ComboBox_Games.Items.AddRange(GetProfileNames(Config).ToArray())
-
         LogEvent("Loaded all games")
-        LogEvent("Ready")
-
         LoadSettings()
         LoadGameSettings()
         UpdateSelectedGame()
+        LogEvent("Ready")
     End Sub
 
     Private Sub LogEvent(msg As String)
@@ -283,6 +279,14 @@ Public Class BetterFullscreen
 
             LogEvent(Game.Name & " started")
 
+            Game.IsCurrentProfile = True
+            Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
+            Game.UnsafeClass = GetWindowClass(Window_HWND, False)
+            Game.State = GameState.Started
+            CurrentGame = Game
+
+            UpdateSelectedGame()
+
             If Game.Delay > 0 Then
                 LogEvent("delaying actions for " & Game.Delay & "ms")
                 Thread.Sleep(Game.Delay)
@@ -297,12 +301,6 @@ Public Class BetterFullscreen
             If Game.CaptureMouse Then
                 Cursor.Clip = New Rectangle(Game.Location, Game.Size)
             End If
-
-            Game.IsCurrentProfile = True
-            Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
-            Game.UnsafeClass = GetWindowClass(Window_HWND, False)
-            Game.State = GameState.Started
-            CurrentGame = Game
         End If
 
         ' Window Has Focus
