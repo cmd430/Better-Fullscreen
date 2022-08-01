@@ -2,7 +2,7 @@
 
 Public Class BetterFullscreen
 
-    Private ReadOnly WindowsScaleFactor As Int32 = GetWindowsScaleFactor()
+    Private ReadOnly WindowsScaleFactor As Integer = GetWindowsScaleFactor()
     Private ReadOnly Hotkeys As New Hotkeys
     Private ReadOnly TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
     Private ReadOnly WinEventProcDelegate As New WinEventDelegate(AddressOf WinEventProc)
@@ -143,7 +143,7 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub ComboBox_Games_Enter(sender As Object, e As EventArgs) Handles ComboBox_Games.Enter
-        If Control.ModifierKeys <> Keys.Shift Then Exit Sub
+        If ModifierKeys <> Keys.Shift Then Exit Sub
         ComboBox_Games.Enabled = False
         ComboBox_Games.Enabled = True
 
