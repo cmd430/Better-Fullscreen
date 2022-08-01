@@ -42,7 +42,6 @@ Module Utils
         panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) <> value).FirstOrDefault().Checked = False
     End Sub
 
-
     Public Enum WindowsTheme
         Light
         Dark
