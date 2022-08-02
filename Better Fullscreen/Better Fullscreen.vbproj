@@ -115,7 +115,6 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationEvents.vb" />
     <Compile Include="BetterFullscreen.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -174,7 +173,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Fullscreen.ico" />
     <Content Include="Fullscreen_Dark.ico" />
     <Content Include="Fullscreen_Light.ico" />
     <Content Include="ILMergeOrder.txt" />
