@@ -11,6 +11,7 @@ Public Class BetterFullscreen
     Private ReadOnly Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
 
     Private CloseSilently As Boolean = False
+    Private DebounceTrigger As New KeyValuePair(Of Date, IntPtr)(Now, IntPtr.Zero)
 
 #Region "Form Events"
 
@@ -292,83 +293,67 @@ Public Class BetterFullscreen
 
             LogEvent("setting WS_VISIBLE")
             SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-            LogEvent("resizing window " & Game.Size.ToString())
-            LogEvent("repositioning window " & Game.Location.ToString())
-            SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-
-            If Game.CaptureMouse Then
-                Cursor.Clip = New Rectangle(Game.Location, Game.Size)
-            End If
+            SetWindowPos(Window_HWND, HWND.TOP, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
         End If
 
         ' Window Has Focus
         If Game IsNot Nothing And CurrentGame IsNot Nothing Then
-            If Not Game.State = GameState.Started And Not Game.State = GameState.Unfocused Then Exit Sub
+            Dim scaledWidth As Integer = Game.Size.Width / WindowsScaleFactor
+            Dim scaledHeight As Integer = Game.Size.Height / WindowsScaleFactor
+            Dim windowRect = GetWindowRectangle(Window_HWND)
+            Dim correctPos = New Point(windowRect.X, windowRect.Y) = Game.Location
+            Dim correctSize = New Size(windowRect.Width, windowRect.Height) = New Size(scaledWidth, scaledHeight)
 
-            LogEvent(Game.Name & " has focus")
-
-            If Game.ForceTopMost And Not GetWindowLong(Window_HWND, GWL.EXSTYLE) = 262152 Then
-                LogEvent("setting HWND_TOPMOST")
-                SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
+            If Not correctSize Then
+                LogEvent("resizing window " & Game.Size.ToString())
+                SetWindowPos(Window_HWND, HWND.TOP, 0, 0, scaledWidth, scaledHeight, SWP.NOMOVE)
             End If
-            If Game.CaptureMouse Then
+            If Not correctPos Then
+                LogEvent("repositioning window " & Game.Location.ToString())
+                SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, 0, 0, SWP.NOSIZE)
+            End If
+            If Game.ForceTopMost And Not IsWindowTopMost(Window_HWND) Then
+                LogEvent("setting HWND_TOPMOST")
+                SetWindowPos(Window_HWND, HWND.TOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE)
+            End If
+            If Game.CaptureMouse And Not IsCursorClipped() Then
                 LogEvent("locking mouse to game window location")
                 Cursor.Clip = New Rectangle(Game.Location, Game.Size)
             End If
-
-            Dim rect As New RECT
-            Dim Window_Rect = New Rectangle()
-
-            GetWindowRect(Window_HWND, rect)
-
-            Window_Rect.X = rect.left
-            Window_Rect.Y = rect.top
-            Window_Rect.Width = rect.right - rect.left
-            Window_Rect.Height = rect.bottom - rect.top
-
-            Dim correctPos = New Point(Window_Rect.X, Window_Rect.Y) = Game.Location
-            Dim correctSize = New Size(Window_Rect.Width, Window_Rect.Height) = New Size(Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor)
-
-            If Not correctPos Or Not correctSize Then
-                LogEvent("resizing window " & Game.Size.ToString())
-                LogEvent("repositioning window " & Game.Location.ToString())
-                SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, Game.Size.Width / WindowsScaleFactor, Game.Size.Height / WindowsScaleFactor, SWP.FRAMECHANGED)
-            End If
+            If Game.State = GameState.Focused Then Exit Sub
 
             Game.State = GameState.Focused
+            LogEvent(Game.Name & " has focus")
         End If
 
         ' Window Unfocused / Closed
         If Game Is Nothing And CurrentGame IsNot Nothing Then
 
-            Dim Game_HWND = FindWindowW(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
+            Dim Game_HWND = FindWindow(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
             Dim CurrentWindow_HWND = GetForegroundWindow()
 
             If Game_HWND <> IntPtr.Zero Then ' Window Unfocused
-                If Not CurrentGame.State = GameState.Focused Then Exit Sub
-
-                LogEvent(CurrentGame.Name & " lost focus")
-
-                If CurrentGame.ForceTopMost Then
+                If CurrentGame.ForceTopMost And IsWindowTopMost(Game_HWND) Then
                     LogEvent("setting HWND_NOTOPMOST")
                     SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
                 End If
-                If CurrentGame.CaptureMouse Then
+                If CurrentGame.CaptureMouse And IsCursorClipped() Then
                     LogEvent("releasing mouse lock from game window location")
-                    Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                    Cursor.Clip = New Rectangle()
                 End If
+                If CurrentGame.State = GameState.Unfocused Then Exit Sub
 
                 CurrentGame.State = GameState.Unfocused
+                LogEvent(CurrentGame.Name & " lost focus")
             Else ' Window Closed
-                LogEvent(CurrentGame.Name & " exited")
-
-                If CurrentGame.CaptureMouse Then
+                If CurrentGame.CaptureMouse And IsCursorClipped() Then
                     LogEvent("releasing mouse lock from game window location")
-                    Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+                    Cursor.Clip = New Rectangle()
                 End If
 
                 CurrentGame.IsCurrentProfile = False
                 CurrentGame.State = GameState.None
+                LogEvent(CurrentGame.Name & " exited")
             End If
         End If
     End Sub
@@ -410,6 +395,9 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
+        If Now.Subtract(DebounceTrigger.Key).TotalSeconds < 1.0 And DebounceTrigger.Value = HWND Then Exit Sub
+
+        DebounceTrigger = New KeyValuePair(Of Date, IntPtr)(Now, HWND)
         Dim TriggerEvents = Config.Settings.TriggerEvents
 
         If (TriggerEvents = TriggerEvent.ForegroundWindowChanged Or TriggerEvents = TriggerEvent.Both) And eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then
