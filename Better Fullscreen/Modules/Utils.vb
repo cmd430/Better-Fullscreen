@@ -33,6 +33,19 @@ Module Utils
         Return If(clean, [class].ToString().Trim(), [class].ToString())
     End Function
 
+    Public Function GetWindowRectangle(HWND As IntPtr) As Rectangle
+        Dim rect As New RECT
+        If GetWindowRect(HWND, rect) Then
+            Return New Rectangle() With {
+            .X = rect.left,
+            .Y = rect.top,
+            .Width = rect.right - rect.left,
+            .Height = rect.bottom - rect.top
+        }
+        End If
+        Return New Rectangle()
+    End Function
+
     Public Function GetRadioButton(panel As Panel) As RadioButton
         Return panel.Controls.OfType(Of RadioButton).Where(Function(r) r.Checked = True).FirstOrDefault()
     End Function
@@ -41,11 +54,6 @@ Module Utils
         panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) = value).FirstOrDefault().Checked = True
         panel.Controls.OfType(Of RadioButton).Where(Function(r) CType(r.Tag, Integer) <> value).FirstOrDefault().Checked = False
     End Sub
-
-    Public Enum WindowsTheme
-        Light
-        Dark
-    End Enum
 
     Public Function GetWindowsTheme() As WindowsTheme
         Using Key As RegistryKey = CurrentUser.OpenSubKey("Software\Microsoft\Windows\CurrentVersion\Themes\Personalize")
@@ -70,6 +78,14 @@ Module Utils
             End If
             Return 1
         End Using
+    End Function
+
+    Public Function IsWindowTopMost(HWND As IntPtr) As Boolean
+        Return (GetWindowLong(HWND, GWL.EXSTYLE) And WS_EX.TOPMOST) = WS_EX.TOPMOST
+    End Function
+
+    Public Function IsCursorClipped() As Boolean
+        Return Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
     End Function
 
 End Module
