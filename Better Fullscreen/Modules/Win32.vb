@@ -5,8 +5,8 @@ Module Win32
 
 #Region "Native Methods"
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="FindWindowW", CallingConvention:=CallingConvention.StdCall)>
-    Public Function FindWindowW(<MarshalAs(UnmanagedType.LPTStr)> lpClassName As String, <MarshalAs(UnmanagedType.LPTStr)> lpWindowName As String) As IntPtr
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="FindWindow", CallingConvention:=CallingConvention.StdCall)>
+    Public Function FindWindow(<MarshalAs(UnmanagedType.LPTStr)> lpClassName As String, <MarshalAs(UnmanagedType.LPTStr)> lpWindowName As String) As IntPtr
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
@@ -17,12 +17,12 @@ Module Win32
     Public Function SetForegroundWindow(hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLong", CallingConvention:=CallingConvention.StdCall)>
-    Public Function SetWindowLong(hWnd As IntPtr, nIndex As Integer, dwNewLong As IntPtr) As Integer
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLongPtr", CallingConvention:=CallingConvention.StdCall)>
+    Public Function SetWindowLong(hWnd As IntPtr, nIndex As Integer, dwNewLong As IntPtr) As Long
     End Function
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLong", CallingConvention:=CallingConvention.StdCall)>
-    Public Function GetWindowLong(hWnd As IntPtr, nIndex As Integer) As Integer
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="GetWindowLongPtr", CallingConvention:=CallingConvention.StdCall)>
+    Public Function GetWindowLong(hWnd As IntPtr, nIndex As Integer) As Long
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowPos", CallingConvention:=CallingConvention.StdCall)>
@@ -58,6 +58,11 @@ Module Win32
     Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hWnd As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
 
 #Region "Win32 Structs, Enums & Varibles"
+
+    Public Enum WindowsTheme
+        Light
+        Dark
+    End Enum
 
     <StructLayout(LayoutKind.Sequential)>
     Public Structure RECT
