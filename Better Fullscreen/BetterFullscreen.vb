@@ -48,24 +48,15 @@ Public Class BetterFullscreen
         Init()
     End Sub
 
-    Protected Overrides Sub SetVisibleCore(value As Boolean)
-        If Not IsHandleCreated Then
-            CreateHandle()
-            value = False
-        End If
-        MyBase.SetVisibleCore(value)
-    End Sub
-
     Private Sub BetterFullscreen_Resize(sender As Object, e As EventArgs) Handles Me.Resize
         If WindowState = FormWindowState.Normal Then
             'Shown
             UpdateSelectedGame()
-            ShowInTaskbar = True
+            ToggleWindowState(Me, FormWindowState.Normal)
         ElseIf WindowState = FormWindowState.Minimized Then
             ' Hidden
-            ShowInTaskbar = False
+            ToggleWindowState(Me, FormWindowState.Minimized)
         End If
-        SendMessage(Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
     End Sub
 
     Private Sub Button_Save_Click(sender As Object, e As EventArgs) Handles Button_Save.Click

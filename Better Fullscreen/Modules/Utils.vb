@@ -5,16 +5,21 @@ Imports Microsoft.Win32.Registry
 Module Utils
 
     Public Sub ToggleWindowState(window As Form, Optional state As FormWindowState = -1)
-        If state <> -1 Then
-            window.WindowState = state
-            window.Show()
-            Exit Sub
+        If state = -1 Then
+            If window.WindowState = FormWindowState.Normal Then
+                state = FormWindowState.Minimized
+            Else
+                state = FormWindowState.Normal
+            End If
         End If
-        If window.WindowState = FormWindowState.Normal Then
-            window.WindowState = FormWindowState.Minimized
-        Else
-            window.WindowState = FormWindowState.Normal
-        End If
+
+        Dim IsVisible = (state = FormWindowState.Normal)
+
+        window.WindowState = state
+        window.ShowInTaskbar = IsVisible
+        window.Visible = IsVisible
+
+        If IsVisible Then SendMessage(window.Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
     End Sub
 
     Public Function GetWindowTitle(HWND As IntPtr, Optional clean As Boolean = True) As String
