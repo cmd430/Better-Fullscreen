@@ -53,6 +53,18 @@ Module Win32
     Public Function SendMessage(hWnd As IntPtr, Msg As UInteger, wParam As Integer, lParam As IntPtr) As IntPtr
     End Function
 
+    <DllImport("dwmapi.dll", PreserveSig:=True)>
+    Public Function DwmSetWindowAttribute(hwnd As IntPtr, attr As DwmWindowAttribute, ByRef attrValue As Integer, attrSize As Integer) As Integer
+    End Function
+
+    <DllImport("dwmapi.dll", PreserveSig:=True)>
+    Public Function DwmExtendFrameIntoClientArea(ByVal hwnd As IntPtr, ByRef margins As MARGINS) As Integer
+    End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="ReleaseCapture", CallingConvention:=CallingConvention.StdCall)>
+    Public Function ReleaseCapture() As Boolean
+    End Function
+
 #End Region
 
     Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hWnd As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
@@ -64,9 +76,61 @@ Module Win32
         Dark
     End Enum
 
+    Enum DwmWindowAttribute As UInteger
+        NCRenderingEnabled = 1
+        NCRenderingPolicy
+        TransitionsForceDisabled
+        AllowNCPaint
+        CaptionButtonBounds
+        NonClientRtlLayout
+        ForceIconicRepresentation
+        Flip3DPolicy
+        ExtendedFrameBounds
+        HasIconicBitmap
+        DisallowPeek
+        ExcludedFromPeek
+        Cloak
+        Cloaked
+        FreezeRepresentation
+        PassiveUpdateMode
+        UseHostBackdropBrush
+        UseImmersiveDarkMode = 20
+        WindowCornerPreference = 33
+        BorderColor
+        CaptionColor
+        TextColor
+        VisibleFrameBorderThickness
+        SystemBackdropType
+        Last
+    End Enum
+
+    Enum DwmWindowCornerPreference As Long
+        DoNotRound = &H1
+        Round = &H2
+        SemiRound = &H3
+    End Enum
+
+    Public Enum DwmWASystemBackdropType As Long
+        Disable = &H1
+        Mica = &H2
+        Acrylic = &H3
+        Tabbed = &H4
+    End Enum
+
     <StructLayout(LayoutKind.Sequential)>
     Public Structure RECT
-        Public left, top, right, bottom As Integer
+        Public left As Integer
+        Public top As Integer
+        Public right As Integer
+        Public bottom As Integer
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure MARGINS
+        Public leftWidth As Integer
+        Public rightWidth As Integer
+        Public topHeight As Integer
+        Public bottomHeight As Integer
     End Structure
 
     <Flags>
@@ -198,10 +262,14 @@ Module Win32
 
     Public Enum WIN_MESSAGE As UInteger
         WM_SETICON = &H80UI
+        WM_NCLBUTTONDOWN = &HA1
     End Enum
     Public Enum ICON_SIZE As Integer
         ICON_SMALL = 0
         ICON_BIG = 1
+    End Enum
+    Public Enum CURSOR_HOTSPOT As Integer
+        HTCAPTION = 2
     End Enum
 
 #End Region

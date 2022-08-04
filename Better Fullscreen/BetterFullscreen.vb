@@ -40,11 +40,10 @@ Public Class BetterFullscreen
         Else
             Icon = My.Resources.Fullscreen_Light
             TrayIcon.Icon = My.Resources.Fullscreen_Light
-            SendMessage(Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
         End If
 
+        SetTitleBarTheme(Handle)
         ToggleWindowState(Me, IIf(Debugger.IsAttached Or Not Config.Settings.StartHidden, FormWindowState.Normal, FormWindowState.Minimized))
-
         Init()
     End Sub
 
@@ -64,6 +63,13 @@ Public Class BetterFullscreen
         ElseIf WindowState = FormWindowState.Minimized Then
             ' Hidden
             ToggleWindowState(Me, FormWindowState.Minimized)
+        End If
+    End Sub
+
+    Private Sub Panel_DragZone_MouseDown(sender As Object, e As MouseEventArgs) Handles Panel_DragZone.MouseDown
+        If e.Button = MouseButtons.Left Then
+            ReleaseCapture()
+            SendMessage(Handle, WIN_MESSAGE.WM_NCLBUTTONDOWN, CURSOR_HOTSPOT.HTCAPTION, 0)
         End If
     End Sub
 
@@ -159,9 +165,9 @@ Public Class BetterFullscreen
         If SelectedGame Is Nothing And Not ComboBox_Games.SelectedIndex = 0 Then
             If ComboBox_Games.Items.Count > 0 Then
                 ComboBox_Games.SelectedIndex = 0
-                GroupBox_GameSettings.Enabled = True
+                TabPage_ProfileSettings.Enabled = True
             Else
-                GroupBox_GameSettings.Enabled = False
+                TabPage_ProfileSettings.Enabled = False
             End If
         Else
             ComboBox_Games.SelectedIndex = SelectedGame

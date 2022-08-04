@@ -31,7 +31,6 @@ Partial Class BetterFullscreen
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.RichTextBox_EventLog = New System.Windows.Forms.RichTextBox()
-        Me.GroupBox_Events = New System.Windows.Forms.GroupBox()
         Me.Button_Save = New System.Windows.Forms.Button()
         Me.Label7 = New System.Windows.Forms.Label()
         Me.Label8 = New System.Windows.Forms.Label()
@@ -68,15 +67,12 @@ Partial Class BetterFullscreen
         Me.Label20 = New System.Windows.Forms.Label()
         Me.Label21 = New System.Windows.Forms.Label()
         Me.ComboBox_Key = New System.Windows.Forms.ComboBox()
-        Me.TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
-        Me.GroupBox_ApplicationSettings = New System.Windows.Forms.GroupBox()
         Me.Label26 = New System.Windows.Forms.Label()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.ComboBox_TriggerEvents = New System.Windows.Forms.ComboBox()
         Me.Label24 = New System.Windows.Forms.Label()
         Me.CheckBox_StartHidden = New System.Windows.Forms.CheckBox()
         Me.CheckBox_StartWithWindows = New System.Windows.Forms.CheckBox()
-        Me.GroupBox_GameSettings = New System.Windows.Forms.GroupBox()
         Me.CheckBox_ForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_ProfileEnabled = New System.Windows.Forms.CheckBox()
         Me.CheckBox_CaptureMouse = New System.Windows.Forms.CheckBox()
@@ -88,9 +84,12 @@ Partial Class BetterFullscreen
         Me.RadioButton_TitleIncludes = New System.Windows.Forms.RadioButton()
         Me.RadioButton_TitleFullMatch = New System.Windows.Forms.RadioButton()
         Me.RadioButton_TitleStartsWith = New System.Windows.Forms.RadioButton()
-        Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
+        Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage_ProfileSettings = New System.Windows.Forms.TabPage()
+        Me.TabPage_AppSettings = New System.Windows.Forms.TabPage()
+        Me.TabPage_EventLog = New System.Windows.Forms.TabPage()
+        Me.Panel_DragZone = New System.Windows.Forms.Panel()
         Me.TrayMenu.SuspendLayout()
-        Me.GroupBox_Events.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_Top, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_Height, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -99,12 +98,12 @@ Partial Class BetterFullscreen
         CType(Me.NumericUpDown_DefaultTop, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_DefaultHeight, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_DefaultWidth, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TableLayoutPanel3.SuspendLayout()
-        Me.GroupBox_ApplicationSettings.SuspendLayout()
-        Me.GroupBox_GameSettings.SuspendLayout()
         CType(Me.NumericUpDown_Delay, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel_titleRadioButtonContainer.SuspendLayout()
-        Me.TableLayoutPanel4.SuspendLayout()
+        Me.TabControl1.SuspendLayout()
+        Me.TabPage_ProfileSettings.SuspendLayout()
+        Me.TabPage_AppSettings.SuspendLayout()
+        Me.TabPage_EventLog.SuspendLayout()
         Me.SuspendLayout()
         '
         'TrayIcon
@@ -149,31 +148,20 @@ Partial Class BetterFullscreen
         Me.RichTextBox_EventLog.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.RichTextBox_EventLog.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RichTextBox_EventLog.HideSelection = False
-        Me.RichTextBox_EventLog.Location = New System.Drawing.Point(3, 16)
+        Me.RichTextBox_EventLog.Location = New System.Drawing.Point(3, 3)
         Me.RichTextBox_EventLog.Name = "RichTextBox_EventLog"
         Me.RichTextBox_EventLog.ReadOnly = True
-        Me.RichTextBox_EventLog.Size = New System.Drawing.Size(633, 177)
+        Me.RichTextBox_EventLog.Size = New System.Drawing.Size(324, 359)
         Me.RichTextBox_EventLog.TabIndex = 1
         Me.RichTextBox_EventLog.Text = ""
-        '
-        'GroupBox_Events
-        '
-        Me.GroupBox_Events.Controls.Add(Me.RichTextBox_EventLog)
-        Me.GroupBox_Events.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox_Events.Location = New System.Drawing.Point(3, 334)
-        Me.GroupBox_Events.Name = "GroupBox_Events"
-        Me.GroupBox_Events.Size = New System.Drawing.Size(639, 196)
-        Me.GroupBox_Events.TabIndex = 3
-        Me.GroupBox_Events.TabStop = False
-        Me.GroupBox_Events.Text = "Events"
         '
         'Button_Save
         '
         Me.Button_Save.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Save.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Save.Location = New System.Drawing.Point(6, 289)
+        Me.Button_Save.Location = New System.Drawing.Point(6, 335)
         Me.Button_Save.Name = "Button_Save"
-        Me.Button_Save.Size = New System.Drawing.Size(176, 23)
+        Me.Button_Save.Size = New System.Drawing.Size(218, 23)
         Me.Button_Save.TabIndex = 18
         Me.Button_Save.Text = "Save Profile"
         Me.Button_Save.UseVisualStyleBackColor = True
@@ -182,7 +170,7 @@ Partial Class BetterFullscreen
         '
         Me.Label7.AutoSize = True
         Me.Label7.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label7.Location = New System.Drawing.Point(185, 160)
+        Me.Label7.Location = New System.Drawing.Point(210, 151)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(25, 13)
         Me.Label7.TabIndex = 16
@@ -192,7 +180,7 @@ Partial Class BetterFullscreen
         '
         Me.Label8.AutoSize = True
         Me.Label8.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label8.Location = New System.Drawing.Point(54, 160)
+        Me.Label8.Location = New System.Drawing.Point(54, 151)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(26, 13)
         Me.Label8.TabIndex = 15
@@ -202,7 +190,7 @@ Partial Class BetterFullscreen
         '
         Me.Label9.AutoSize = True
         Me.Label9.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label9.Location = New System.Drawing.Point(164, 178)
+        Me.Label9.Location = New System.Drawing.Point(184, 169)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(12, 13)
         Me.Label9.TabIndex = 14
@@ -210,27 +198,27 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_Left
         '
-        Me.NumericUpDown_Left.Location = New System.Drawing.Point(188, 176)
+        Me.NumericUpDown_Left.Location = New System.Drawing.Point(213, 167)
         Me.NumericUpDown_Left.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Left.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Left.Name = "NumericUpDown_Left"
-        Me.NumericUpDown_Left.Size = New System.Drawing.Size(97, 20)
+        Me.NumericUpDown_Left.Size = New System.Drawing.Size(111, 20)
         Me.NumericUpDown_Left.TabIndex = 13
         '
         'NumericUpDown_Top
         '
-        Me.NumericUpDown_Top.Location = New System.Drawing.Point(57, 176)
+        Me.NumericUpDown_Top.Location = New System.Drawing.Point(57, 167)
         Me.NumericUpDown_Top.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Top.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Top.Name = "NumericUpDown_Top"
-        Me.NumericUpDown_Top.Size = New System.Drawing.Size(97, 20)
+        Me.NumericUpDown_Top.Size = New System.Drawing.Size(111, 20)
         Me.NumericUpDown_Top.TabIndex = 12
         '
         'Label10
         '
         Me.Label10.AutoSize = True
         Me.Label10.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label10.Location = New System.Drawing.Point(3, 178)
+        Me.Label10.Location = New System.Drawing.Point(3, 169)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(44, 13)
         Me.Label10.TabIndex = 11
@@ -240,7 +228,7 @@ Partial Class BetterFullscreen
         '
         Me.Label6.AutoSize = True
         Me.Label6.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label6.Location = New System.Drawing.Point(185, 121)
+        Me.Label6.Location = New System.Drawing.Point(210, 107)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(38, 13)
         Me.Label6.TabIndex = 10
@@ -250,7 +238,7 @@ Partial Class BetterFullscreen
         '
         Me.Label5.AutoSize = True
         Me.Label5.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label5.Location = New System.Drawing.Point(54, 121)
+        Me.Label5.Location = New System.Drawing.Point(54, 107)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(35, 13)
         Me.Label5.TabIndex = 9
@@ -260,7 +248,7 @@ Partial Class BetterFullscreen
         '
         Me.Label4.AutoSize = True
         Me.Label4.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label4.Location = New System.Drawing.Point(164, 139)
+        Me.Label4.Location = New System.Drawing.Point(184, 125)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(12, 13)
         Me.Label4.TabIndex = 8
@@ -268,27 +256,27 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_Height
         '
-        Me.NumericUpDown_Height.Location = New System.Drawing.Point(188, 137)
+        Me.NumericUpDown_Height.Location = New System.Drawing.Point(213, 123)
         Me.NumericUpDown_Height.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Height.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Height.Name = "NumericUpDown_Height"
-        Me.NumericUpDown_Height.Size = New System.Drawing.Size(97, 20)
+        Me.NumericUpDown_Height.Size = New System.Drawing.Size(111, 20)
         Me.NumericUpDown_Height.TabIndex = 7
         '
         'NumericUpDown_Width
         '
-        Me.NumericUpDown_Width.Location = New System.Drawing.Point(57, 137)
+        Me.NumericUpDown_Width.Location = New System.Drawing.Point(57, 123)
         Me.NumericUpDown_Width.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_Width.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_Width.Name = "NumericUpDown_Width"
-        Me.NumericUpDown_Width.Size = New System.Drawing.Size(97, 20)
+        Me.NumericUpDown_Width.Size = New System.Drawing.Size(111, 20)
         Me.NumericUpDown_Width.TabIndex = 6
         '
         'Label3
         '
         Me.Label3.AutoSize = True
         Me.Label3.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label3.Location = New System.Drawing.Point(3, 139)
+        Me.Label3.Location = New System.Drawing.Point(3, 125)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(27, 13)
         Me.Label3.TabIndex = 5
@@ -296,16 +284,16 @@ Partial Class BetterFullscreen
         '
         'TextBox_Class
         '
-        Me.TextBox_Class.Location = New System.Drawing.Point(57, 98)
+        Me.TextBox_Class.Location = New System.Drawing.Point(57, 79)
         Me.TextBox_Class.Name = "TextBox_Class"
-        Me.TextBox_Class.Size = New System.Drawing.Size(228, 20)
+        Me.TextBox_Class.Size = New System.Drawing.Size(268, 20)
         Me.TextBox_Class.TabIndex = 4
         '
         'Label2
         '
         Me.Label2.AutoSize = True
         Me.Label2.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label2.Location = New System.Drawing.Point(3, 101)
+        Me.Label2.Location = New System.Drawing.Point(3, 82)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(32, 13)
         Me.Label2.TabIndex = 3
@@ -313,16 +301,16 @@ Partial Class BetterFullscreen
         '
         'TextBox_Title
         '
-        Me.TextBox_Title.Location = New System.Drawing.Point(57, 52)
+        Me.TextBox_Title.Location = New System.Drawing.Point(57, 33)
         Me.TextBox_Title.Name = "TextBox_Title"
-        Me.TextBox_Title.Size = New System.Drawing.Size(228, 20)
+        Me.TextBox_Title.Size = New System.Drawing.Size(268, 20)
         Me.TextBox_Title.TabIndex = 2
         '
         'Label1
         '
         Me.Label1.AutoSize = True
         Me.Label1.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label1.Location = New System.Drawing.Point(3, 55)
+        Me.Label1.Location = New System.Drawing.Point(3, 36)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(27, 13)
         Me.Label1.TabIndex = 1
@@ -332,19 +320,18 @@ Partial Class BetterFullscreen
         '
         Me.ComboBox_Games.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_Games.FormattingEnabled = True
-        Me.ComboBox_Games.Location = New System.Drawing.Point(6, 19)
+        Me.ComboBox_Games.Location = New System.Drawing.Point(6, 6)
         Me.ComboBox_Games.Name = "ComboBox_Games"
-        Me.ComboBox_Games.Size = New System.Drawing.Size(170, 21)
+        Me.ComboBox_Games.Size = New System.Drawing.Size(216, 21)
         Me.ComboBox_Games.Sorted = True
         Me.ComboBox_Games.TabIndex = 0
         '
         'Button_SaveApp
         '
         Me.Button_SaveApp.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.Button_SaveApp.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_SaveApp.Location = New System.Drawing.Point(9, 289)
+        Me.Button_SaveApp.Location = New System.Drawing.Point(6, 336)
         Me.Button_SaveApp.Name = "Button_SaveApp"
-        Me.Button_SaveApp.Size = New System.Drawing.Size(319, 23)
+        Me.Button_SaveApp.Size = New System.Drawing.Size(318, 23)
         Me.Button_SaveApp.TabIndex = 18
         Me.Button_SaveApp.Text = "Save Settings"
         Me.Button_SaveApp.UseVisualStyleBackColor = True
@@ -352,8 +339,7 @@ Partial Class BetterFullscreen
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label11.Location = New System.Drawing.Point(228, 101)
+        Me.Label11.Location = New System.Drawing.Point(224, 92)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(25, 13)
         Me.Label11.TabIndex = 16
@@ -362,8 +348,7 @@ Partial Class BetterFullscreen
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label12.Location = New System.Drawing.Point(103, 101)
+        Me.Label12.Location = New System.Drawing.Point(99, 92)
         Me.Label12.Name = "Label12"
         Me.Label12.Size = New System.Drawing.Size(26, 13)
         Me.Label12.TabIndex = 15
@@ -372,8 +357,7 @@ Partial Class BetterFullscreen
         'Label13
         '
         Me.Label13.AutoSize = True
-        Me.Label13.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label13.Location = New System.Drawing.Point(210, 119)
+        Me.Label13.Location = New System.Drawing.Point(206, 110)
         Me.Label13.Name = "Label13"
         Me.Label13.Size = New System.Drawing.Size(12, 13)
         Me.Label13.TabIndex = 14
@@ -381,7 +365,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_DefaultLeft
         '
-        Me.NumericUpDown_DefaultLeft.Location = New System.Drawing.Point(231, 117)
+        Me.NumericUpDown_DefaultLeft.Location = New System.Drawing.Point(227, 108)
         Me.NumericUpDown_DefaultLeft.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_DefaultLeft.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_DefaultLeft.Name = "NumericUpDown_DefaultLeft"
@@ -390,7 +374,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_DefaultTop
         '
-        Me.NumericUpDown_DefaultTop.Location = New System.Drawing.Point(106, 117)
+        Me.NumericUpDown_DefaultTop.Location = New System.Drawing.Point(102, 108)
         Me.NumericUpDown_DefaultTop.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_DefaultTop.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_DefaultTop.Name = "NumericUpDown_DefaultTop"
@@ -400,8 +384,7 @@ Partial Class BetterFullscreen
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label14.Location = New System.Drawing.Point(6, 119)
+        Me.Label14.Location = New System.Drawing.Point(6, 110)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(81, 13)
         Me.Label14.TabIndex = 11
@@ -410,8 +393,7 @@ Partial Class BetterFullscreen
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label15.Location = New System.Drawing.Point(228, 62)
+        Me.Label15.Location = New System.Drawing.Point(224, 49)
         Me.Label15.Name = "Label15"
         Me.Label15.Size = New System.Drawing.Size(38, 13)
         Me.Label15.TabIndex = 10
@@ -420,8 +402,7 @@ Partial Class BetterFullscreen
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label16.Location = New System.Drawing.Point(103, 62)
+        Me.Label16.Location = New System.Drawing.Point(99, 49)
         Me.Label16.Name = "Label16"
         Me.Label16.Size = New System.Drawing.Size(35, 13)
         Me.Label16.TabIndex = 9
@@ -430,8 +411,7 @@ Partial Class BetterFullscreen
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label17.Location = New System.Drawing.Point(210, 80)
+        Me.Label17.Location = New System.Drawing.Point(206, 67)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(12, 13)
         Me.Label17.TabIndex = 8
@@ -439,7 +419,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_DefaultHeight
         '
-        Me.NumericUpDown_DefaultHeight.Location = New System.Drawing.Point(231, 78)
+        Me.NumericUpDown_DefaultHeight.Location = New System.Drawing.Point(227, 65)
         Me.NumericUpDown_DefaultHeight.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_DefaultHeight.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_DefaultHeight.Name = "NumericUpDown_DefaultHeight"
@@ -448,7 +428,7 @@ Partial Class BetterFullscreen
         '
         'NumericUpDown_DefaultWidth
         '
-        Me.NumericUpDown_DefaultWidth.Location = New System.Drawing.Point(106, 78)
+        Me.NumericUpDown_DefaultWidth.Location = New System.Drawing.Point(102, 65)
         Me.NumericUpDown_DefaultWidth.Maximum = New Decimal(New Integer() {6480, 0, 0, 0})
         Me.NumericUpDown_DefaultWidth.Minimum = New Decimal(New Integer() {6480, 0, 0, -2147483648})
         Me.NumericUpDown_DefaultWidth.Name = "NumericUpDown_DefaultWidth"
@@ -458,8 +438,7 @@ Partial Class BetterFullscreen
         'Label18
         '
         Me.Label18.AutoSize = True
-        Me.Label18.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label18.Location = New System.Drawing.Point(6, 80)
+        Me.Label18.Location = New System.Drawing.Point(6, 67)
         Me.Label18.Name = "Label18"
         Me.Label18.Size = New System.Drawing.Size(64, 13)
         Me.Label18.TabIndex = 5
@@ -470,7 +449,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_Modifier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_Modifier.FormattingEnabled = True
         Me.ComboBox_Modifier.Items.AddRange(New Object() {"None", "Alt", "Ctrl", "Shift"})
-        Me.ComboBox_Modifier.Location = New System.Drawing.Point(106, 38)
+        Me.ComboBox_Modifier.Location = New System.Drawing.Point(227, 21)
         Me.ComboBox_Modifier.Name = "ComboBox_Modifier"
         Me.ComboBox_Modifier.Size = New System.Drawing.Size(97, 21)
         Me.ComboBox_Modifier.TabIndex = 0
@@ -478,8 +457,7 @@ Partial Class BetterFullscreen
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label19.Location = New System.Drawing.Point(103, 22)
+        Me.Label19.Location = New System.Drawing.Point(99, 5)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(44, 13)
         Me.Label19.TabIndex = 20
@@ -488,8 +466,7 @@ Partial Class BetterFullscreen
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label20.Location = New System.Drawing.Point(6, 41)
+        Me.Label20.Location = New System.Drawing.Point(6, 24)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(94, 13)
         Me.Label20.TabIndex = 21
@@ -498,8 +475,7 @@ Partial Class BetterFullscreen
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label21.Location = New System.Drawing.Point(228, 22)
+        Me.Label21.Location = New System.Drawing.Point(224, 5)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(25, 13)
         Me.Label21.TabIndex = 23
@@ -510,66 +486,15 @@ Partial Class BetterFullscreen
         Me.ComboBox_Key.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_Key.FormattingEnabled = True
         Me.ComboBox_Key.Items.AddRange(New Object() {"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"})
-        Me.ComboBox_Key.Location = New System.Drawing.Point(231, 38)
+        Me.ComboBox_Key.Location = New System.Drawing.Point(102, 21)
         Me.ComboBox_Key.Name = "ComboBox_Key"
         Me.ComboBox_Key.Size = New System.Drawing.Size(97, 21)
         Me.ComboBox_Key.TabIndex = 22
         '
-        'TableLayoutPanel3
-        '
-        Me.TableLayoutPanel3.ColumnCount = 2
-        Me.TableLayoutPanel3.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.67762!))
-        Me.TableLayoutPanel3.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.32238!))
-        Me.TableLayoutPanel3.Controls.Add(Me.GroupBox_ApplicationSettings, 0, 0)
-        Me.TableLayoutPanel3.Controls.Add(Me.GroupBox_GameSettings, 1, 0)
-        Me.TableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel3.Location = New System.Drawing.Point(3, 3)
-        Me.TableLayoutPanel3.Name = "TableLayoutPanel3"
-        Me.TableLayoutPanel3.RowCount = 1
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel3.Size = New System.Drawing.Size(639, 325)
-        Me.TableLayoutPanel3.TabIndex = 6
-        '
-        'GroupBox_ApplicationSettings
-        '
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label26)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label25)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_TriggerEvents)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label24)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_StartHidden)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.CheckBox_StartWithWindows)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label21)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Key)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.ComboBox_Modifier)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label20)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label18)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label19)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultWidth)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultHeight)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Button_SaveApp)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label17)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label11)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label16)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label12)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label15)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label13)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.Label14)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultLeft)
-        Me.GroupBox_ApplicationSettings.Controls.Add(Me.NumericUpDown_DefaultTop)
-        Me.GroupBox_ApplicationSettings.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox_ApplicationSettings.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.GroupBox_ApplicationSettings.Location = New System.Drawing.Point(3, 3)
-        Me.GroupBox_ApplicationSettings.Name = "GroupBox_ApplicationSettings"
-        Me.GroupBox_ApplicationSettings.Size = New System.Drawing.Size(337, 319)
-        Me.GroupBox_ApplicationSettings.TabIndex = 0
-        Me.GroupBox_ApplicationSettings.TabStop = False
-        Me.GroupBox_ApplicationSettings.Text = "Application Settings"
-        '
         'Label26
         '
         Me.Label26.AutoSize = True
-        Me.Label26.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label26.Location = New System.Drawing.Point(103, 140)
+        Me.Label26.Location = New System.Drawing.Point(99, 135)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(40, 13)
         Me.Label26.TabIndex = 28
@@ -578,7 +503,7 @@ Partial Class BetterFullscreen
         'Label25
         '
         Me.Label25.AutoSize = True
-        Me.Label25.Location = New System.Drawing.Point(6, 160)
+        Me.Label25.Location = New System.Drawing.Point(3, 154)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(76, 13)
         Me.Label25.TabIndex = 27
@@ -589,7 +514,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_TriggerEvents.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_TriggerEvents.FormattingEnabled = True
         Me.ComboBox_TriggerEvents.Items.AddRange(New Object() {"Foreground Window Changed", "Mouse Capture Start", "Foreground Window Changed & Mouse Capture Start"})
-        Me.ComboBox_TriggerEvents.Location = New System.Drawing.Point(106, 156)
+        Me.ComboBox_TriggerEvents.Location = New System.Drawing.Point(102, 151)
         Me.ComboBox_TriggerEvents.Name = "ComboBox_TriggerEvents"
         Me.ComboBox_TriggerEvents.Size = New System.Drawing.Size(222, 21)
         Me.ComboBox_TriggerEvents.TabIndex = 0
@@ -597,8 +522,7 @@ Partial Class BetterFullscreen
         'Label24
         '
         Me.Label24.AutoSize = True
-        Me.Label24.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label24.Location = New System.Drawing.Point(210, 41)
+        Me.Label24.Location = New System.Drawing.Point(206, 24)
         Me.Label24.Name = "Label24"
         Me.Label24.Size = New System.Drawing.Size(13, 13)
         Me.Label24.TabIndex = 26
@@ -607,9 +531,7 @@ Partial Class BetterFullscreen
         'CheckBox_StartHidden
         '
         Me.CheckBox_StartHidden.AutoSize = True
-        Me.CheckBox_StartHidden.Checked = True
-        Me.CheckBox_StartHidden.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox_StartHidden.Location = New System.Drawing.Point(106, 206)
+        Me.CheckBox_StartHidden.Location = New System.Drawing.Point(6, 208)
         Me.CheckBox_StartHidden.Name = "CheckBox_StartHidden"
         Me.CheckBox_StartHidden.Size = New System.Drawing.Size(85, 17)
         Me.CheckBox_StartHidden.TabIndex = 25
@@ -619,56 +541,18 @@ Partial Class BetterFullscreen
         'CheckBox_StartWithWindows
         '
         Me.CheckBox_StartWithWindows.AutoSize = True
-        Me.CheckBox_StartWithWindows.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_StartWithWindows.Location = New System.Drawing.Point(106, 183)
+        Me.CheckBox_StartWithWindows.Location = New System.Drawing.Point(6, 185)
         Me.CheckBox_StartWithWindows.Name = "CheckBox_StartWithWindows"
         Me.CheckBox_StartWithWindows.Size = New System.Drawing.Size(117, 17)
         Me.CheckBox_StartWithWindows.TabIndex = 24
         Me.CheckBox_StartWithWindows.Text = "Start with Windows"
         Me.CheckBox_StartWithWindows.UseVisualStyleBackColor = True
         '
-        'GroupBox_GameSettings
-        '
-        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_ForceTopMost)
-        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_ProfileEnabled)
-        Me.GroupBox_GameSettings.Controls.Add(Me.CheckBox_CaptureMouse)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label22)
-        Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Delay)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label23)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Button_Remove)
-        Me.GroupBox_GameSettings.Controls.Add(Me.ComboBox_Games)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Button_Save)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label1)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label7)
-        Me.GroupBox_GameSettings.Controls.Add(Me.TextBox_Title)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label8)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label2)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label9)
-        Me.GroupBox_GameSettings.Controls.Add(Me.TextBox_Class)
-        Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Left)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label3)
-        Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Top)
-        Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Width)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label10)
-        Me.GroupBox_GameSettings.Controls.Add(Me.NumericUpDown_Height)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label6)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label4)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Label5)
-        Me.GroupBox_GameSettings.Controls.Add(Me.Panel_titleRadioButtonContainer)
-        Me.GroupBox_GameSettings.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox_GameSettings.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.GroupBox_GameSettings.Location = New System.Drawing.Point(346, 3)
-        Me.GroupBox_GameSettings.Name = "GroupBox_GameSettings"
-        Me.GroupBox_GameSettings.Size = New System.Drawing.Size(290, 319)
-        Me.GroupBox_GameSettings.TabIndex = 1
-        Me.GroupBox_GameSettings.TabStop = False
-        Me.GroupBox_GameSettings.Text = "Game Settings"
-        '
         'CheckBox_ForceTopMost
         '
         Me.CheckBox_ForceTopMost.AutoSize = True
         Me.CheckBox_ForceTopMost.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(6, 264)
+        Me.CheckBox_ForceTopMost.Location = New System.Drawing.Point(6, 262)
         Me.CheckBox_ForceTopMost.Name = "CheckBox_ForceTopMost"
         Me.CheckBox_ForceTopMost.Size = New System.Drawing.Size(101, 17)
         Me.CheckBox_ForceTopMost.TabIndex = 27
@@ -679,7 +563,7 @@ Partial Class BetterFullscreen
         '
         Me.CheckBox_ProfileEnabled.AutoSize = True
         Me.CheckBox_ProfileEnabled.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_ProfileEnabled.Location = New System.Drawing.Point(188, 21)
+        Me.CheckBox_ProfileEnabled.Location = New System.Drawing.Point(228, 8)
         Me.CheckBox_ProfileEnabled.Name = "CheckBox_ProfileEnabled"
         Me.CheckBox_ProfileEnabled.Size = New System.Drawing.Size(97, 17)
         Me.CheckBox_ProfileEnabled.TabIndex = 26
@@ -690,7 +574,7 @@ Partial Class BetterFullscreen
         '
         Me.CheckBox_CaptureMouse.AutoSize = True
         Me.CheckBox_CaptureMouse.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 241)
+        Me.CheckBox_CaptureMouse.Location = New System.Drawing.Point(6, 239)
         Me.CheckBox_CaptureMouse.Name = "CheckBox_CaptureMouse"
         Me.CheckBox_CaptureMouse.Size = New System.Drawing.Size(98, 17)
         Me.CheckBox_CaptureMouse.TabIndex = 25
@@ -701,7 +585,7 @@ Partial Class BetterFullscreen
         '
         Me.Label22.AutoSize = True
         Me.Label22.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label22.Location = New System.Drawing.Point(54, 199)
+        Me.Label22.Location = New System.Drawing.Point(54, 196)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(64, 13)
         Me.Label22.TabIndex = 23
@@ -710,17 +594,17 @@ Partial Class BetterFullscreen
         'NumericUpDown_Delay
         '
         Me.NumericUpDown_Delay.Increment = New Decimal(New Integer() {100, 0, 0, 0})
-        Me.NumericUpDown_Delay.Location = New System.Drawing.Point(57, 215)
+        Me.NumericUpDown_Delay.Location = New System.Drawing.Point(57, 209)
         Me.NumericUpDown_Delay.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
         Me.NumericUpDown_Delay.Name = "NumericUpDown_Delay"
-        Me.NumericUpDown_Delay.Size = New System.Drawing.Size(97, 20)
+        Me.NumericUpDown_Delay.Size = New System.Drawing.Size(111, 20)
         Me.NumericUpDown_Delay.TabIndex = 22
         '
         'Label23
         '
         Me.Label23.AutoSize = True
         Me.Label23.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Label23.Location = New System.Drawing.Point(3, 217)
+        Me.Label23.Location = New System.Drawing.Point(3, 211)
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(34, 13)
         Me.Label23.TabIndex = 21
@@ -730,7 +614,7 @@ Partial Class BetterFullscreen
         '
         Me.Button_Remove.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Button_Remove.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.Button_Remove.Location = New System.Drawing.Point(188, 289)
+        Me.Button_Remove.Location = New System.Drawing.Point(229, 335)
         Me.Button_Remove.Name = "Button_Remove"
         Me.Button_Remove.Size = New System.Drawing.Size(95, 23)
         Me.Button_Remove.TabIndex = 20
@@ -742,16 +626,16 @@ Partial Class BetterFullscreen
         Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleIncludes)
         Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleFullMatch)
         Me.Panel_titleRadioButtonContainer.Controls.Add(Me.RadioButton_TitleStartsWith)
-        Me.Panel_titleRadioButtonContainer.Location = New System.Drawing.Point(57, 71)
+        Me.Panel_titleRadioButtonContainer.Location = New System.Drawing.Point(57, 51)
         Me.Panel_titleRadioButtonContainer.Name = "Panel_titleRadioButtonContainer"
-        Me.Panel_titleRadioButtonContainer.Size = New System.Drawing.Size(228, 22)
+        Me.Panel_titleRadioButtonContainer.Size = New System.Drawing.Size(268, 22)
         Me.Panel_titleRadioButtonContainer.TabIndex = 31
         '
         'RadioButton_TitleIncludes
         '
         Me.RadioButton_TitleIncludes.AutoSize = True
         Me.RadioButton_TitleIncludes.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_TitleIncludes.Location = New System.Drawing.Point(166, 2)
+        Me.RadioButton_TitleIncludes.Location = New System.Drawing.Point(202, 3)
         Me.RadioButton_TitleIncludes.Name = "RadioButton_TitleIncludes"
         Me.RadioButton_TitleIncludes.Size = New System.Drawing.Size(65, 17)
         Me.RadioButton_TitleIncludes.TabIndex = 30
@@ -763,7 +647,7 @@ Partial Class BetterFullscreen
         '
         Me.RadioButton_TitleFullMatch.AutoSize = True
         Me.RadioButton_TitleFullMatch.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_TitleFullMatch.Location = New System.Drawing.Point(3, 2)
+        Me.RadioButton_TitleFullMatch.Location = New System.Drawing.Point(3, 3)
         Me.RadioButton_TitleFullMatch.Name = "RadioButton_TitleFullMatch"
         Me.RadioButton_TitleFullMatch.Size = New System.Drawing.Size(74, 17)
         Me.RadioButton_TitleFullMatch.TabIndex = 28
@@ -775,7 +659,7 @@ Partial Class BetterFullscreen
         '
         Me.RadioButton_TitleStartsWith.AutoSize = True
         Me.RadioButton_TitleStartsWith.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.RadioButton_TitleStartsWith.Location = New System.Drawing.Point(83, 2)
+        Me.RadioButton_TitleStartsWith.Location = New System.Drawing.Point(101, 3)
         Me.RadioButton_TitleStartsWith.Name = "RadioButton_TitleStartsWith"
         Me.RadioButton_TitleStartsWith.Size = New System.Drawing.Size(77, 17)
         Me.RadioButton_TitleStartsWith.TabIndex = 29
@@ -783,40 +667,124 @@ Partial Class BetterFullscreen
         Me.RadioButton_TitleStartsWith.Text = "Starts With"
         Me.RadioButton_TitleStartsWith.UseVisualStyleBackColor = True
         '
-        'TableLayoutPanel4
+        'TabControl1
         '
-        Me.TableLayoutPanel4.ColumnCount = 1
-        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel4.Controls.Add(Me.TableLayoutPanel3, 0, 0)
-        Me.TableLayoutPanel4.Controls.Add(Me.GroupBox_Events, 0, 1)
-        Me.TableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel4.Location = New System.Drawing.Point(3, 3)
-        Me.TableLayoutPanel4.Name = "TableLayoutPanel4"
-        Me.TableLayoutPanel4.RowCount = 2
-        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 202.0!))
-        Me.TableLayoutPanel4.Size = New System.Drawing.Size(645, 533)
-        Me.TableLayoutPanel4.TabIndex = 7
+        Me.TabControl1.Controls.Add(Me.TabPage_ProfileSettings)
+        Me.TabControl1.Controls.Add(Me.TabPage_AppSettings)
+        Me.TabControl1.Controls.Add(Me.TabPage_EventLog)
+        Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TabControl1.Location = New System.Drawing.Point(3, 3)
+        Me.TabControl1.Name = "TabControl1"
+        Me.TabControl1.SelectedIndex = 0
+        Me.TabControl1.Size = New System.Drawing.Size(338, 391)
+        Me.TabControl1.TabIndex = 29
+        '
+        'TabPage_ProfileSettings
+        '
+        Me.TabPage_ProfileSettings.BackColor = System.Drawing.Color.White
+        Me.TabPage_ProfileSettings.Controls.Add(Me.TextBox_Title)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_ForceTopMost)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_ProfileEnabled)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.ComboBox_Games)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_CaptureMouse)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Panel_titleRadioButtonContainer)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label22)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label5)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.NumericUpDown_Delay)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label4)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label23)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label6)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Button_Remove)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.NumericUpDown_Height)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label10)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Button_Save)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.NumericUpDown_Width)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label1)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.NumericUpDown_Top)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label7)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label3)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.NumericUpDown_Left)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label8)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.TextBox_Class)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label2)
+        Me.TabPage_ProfileSettings.Controls.Add(Me.Label9)
+        Me.TabPage_ProfileSettings.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage_ProfileSettings.Name = "TabPage_ProfileSettings"
+        Me.TabPage_ProfileSettings.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage_ProfileSettings.Size = New System.Drawing.Size(330, 365)
+        Me.TabPage_ProfileSettings.TabIndex = 0
+        Me.TabPage_ProfileSettings.Text = "Profile Settings"
+        '
+        'TabPage_AppSettings
+        '
+        Me.TabPage_AppSettings.BackColor = System.Drawing.Color.White
+        Me.TabPage_AppSettings.Controls.Add(Me.Label26)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label25)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label20)
+        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_TriggerEvents)
+        Me.TabPage_AppSettings.Controls.Add(Me.NumericUpDown_DefaultTop)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label24)
+        Me.TabPage_AppSettings.Controls.Add(Me.NumericUpDown_DefaultLeft)
+        Me.TabPage_AppSettings.Controls.Add(Me.CheckBox_StartHidden)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label14)
+        Me.TabPage_AppSettings.Controls.Add(Me.CheckBox_StartWithWindows)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label13)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label15)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label12)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label16)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label11)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label18)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label17)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label19)
+        Me.TabPage_AppSettings.Controls.Add(Me.Button_SaveApp)
+        Me.TabPage_AppSettings.Controls.Add(Me.NumericUpDown_DefaultWidth)
+        Me.TabPage_AppSettings.Controls.Add(Me.NumericUpDown_DefaultHeight)
+        Me.TabPage_AppSettings.Controls.Add(Me.Label21)
+        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Key)
+        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Modifier)
+        Me.TabPage_AppSettings.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage_AppSettings.Name = "TabPage_AppSettings"
+        Me.TabPage_AppSettings.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage_AppSettings.Size = New System.Drawing.Size(330, 365)
+        Me.TabPage_AppSettings.TabIndex = 1
+        Me.TabPage_AppSettings.Text = "Settings"
+        '
+        'TabPage_EventLog
+        '
+        Me.TabPage_EventLog.BackColor = System.Drawing.Color.White
+        Me.TabPage_EventLog.Controls.Add(Me.RichTextBox_EventLog)
+        Me.TabPage_EventLog.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage_EventLog.Name = "TabPage_EventLog"
+        Me.TabPage_EventLog.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage_EventLog.Size = New System.Drawing.Size(330, 365)
+        Me.TabPage_EventLog.TabIndex = 2
+        Me.TabPage_EventLog.Text = "Event Log"
+        '
+        'Panel_DragZone
+        '
+        Me.Panel_DragZone.Location = New System.Drawing.Point(200, -3)
+        Me.Panel_DragZone.Name = "Panel_DragZone"
+        Me.Panel_DragZone.Size = New System.Drawing.Size(155, 25)
+        Me.Panel_DragZone.TabIndex = 30
         '
         'BetterFullscreen
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(651, 539)
-        Me.Controls.Add(Me.TableLayoutPanel4)
-        Me.ForeColor = System.Drawing.SystemColors.ControlLightLight
+        Me.BackColor = System.Drawing.Color.Black
+        Me.ClientSize = New System.Drawing.Size(344, 397)
+        Me.Controls.Add(Me.Panel_DragZone)
+        Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
-        Me.MaximumSize = New System.Drawing.Size(667, 578)
-        Me.MinimumSize = New System.Drawing.Size(667, 578)
+        Me.MaximumSize = New System.Drawing.Size(360, 436)
+        Me.MinimumSize = New System.Drawing.Size(360, 436)
         Me.Name = "BetterFullscreen"
         Me.Padding = New System.Windows.Forms.Padding(3)
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Better Fullscreen"
         Me.TopMost = True
         Me.TrayMenu.ResumeLayout(False)
-        Me.GroupBox_Events.ResumeLayout(False)
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown_Top, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown_Height, System.ComponentModel.ISupportInitialize).EndInit()
@@ -825,15 +793,15 @@ Partial Class BetterFullscreen
         CType(Me.NumericUpDown_DefaultTop, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown_DefaultHeight, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown_DefaultWidth, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TableLayoutPanel3.ResumeLayout(False)
-        Me.GroupBox_ApplicationSettings.ResumeLayout(False)
-        Me.GroupBox_ApplicationSettings.PerformLayout()
-        Me.GroupBox_GameSettings.ResumeLayout(False)
-        Me.GroupBox_GameSettings.PerformLayout()
         CType(Me.NumericUpDown_Delay, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel_titleRadioButtonContainer.ResumeLayout(False)
         Me.Panel_titleRadioButtonContainer.PerformLayout()
-        Me.TableLayoutPanel4.ResumeLayout(False)
+        Me.TabControl1.ResumeLayout(False)
+        Me.TabPage_ProfileSettings.ResumeLayout(False)
+        Me.TabPage_ProfileSettings.PerformLayout()
+        Me.TabPage_AppSettings.ResumeLayout(False)
+        Me.TabPage_AppSettings.PerformLayout()
+        Me.TabPage_EventLog.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -845,7 +813,6 @@ Partial Class BetterFullscreen
     Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
     Friend WithEvents ToggleWindowToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents RichTextBox_EventLog As RichTextBox
-    Friend WithEvents GroupBox_Events As GroupBox
     Friend WithEvents ComboBox_Games As ComboBox
     Friend WithEvents TextBox_Title As TextBox
     Friend WithEvents Label1 As Label
@@ -882,10 +849,6 @@ Partial Class BetterFullscreen
     Friend WithEvents Label19 As Label
     Friend WithEvents Label21 As Label
     Friend WithEvents ComboBox_Key As ComboBox
-    Friend WithEvents TableLayoutPanel3 As TableLayoutPanel
-    Friend WithEvents GroupBox_ApplicationSettings As GroupBox
-    Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
-    Friend WithEvents GroupBox_GameSettings As GroupBox
     Friend WithEvents Button_Remove As Button
     Friend WithEvents CheckBox_StartWithWindows As CheckBox
     Friend WithEvents Label22 As Label
@@ -903,4 +866,9 @@ Partial Class BetterFullscreen
     Friend WithEvents Label25 As Label
     Friend WithEvents ComboBox_TriggerEvents As ComboBox
     Friend WithEvents Label26 As Label
+    Friend WithEvents TabControl1 As TabControl
+    Friend WithEvents TabPage_ProfileSettings As TabPage
+    Friend WithEvents TabPage_AppSettings As TabPage
+    Friend WithEvents TabPage_EventLog As TabPage
+    Friend WithEvents Panel_DragZone As Panel
 End Class

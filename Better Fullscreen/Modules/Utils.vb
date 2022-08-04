@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.Runtime.InteropServices
+Imports System.Text
 Imports Microsoft.Win32
 Imports Microsoft.Win32.Registry
 
@@ -19,7 +20,7 @@ Module Utils
         window.ShowInTaskbar = IsVisible
         window.Visible = IsVisible
 
-        If IsVisible Then SendMessage(window.Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
+        SetTitleBarTheme(window.Handle)
     End Sub
 
     Public Function GetWindowTitle(HWND As IntPtr, Optional Unsafe As Boolean = False) As String
@@ -72,6 +73,22 @@ Module Utils
             Return WindowsTheme.Light
         End Using
     End Function
+
+    Public Sub SetTitleBarTheme(HWND As IntPtr)
+        If GetWindowsTheme() = WindowsTheme.Light Then
+            DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H0, Marshal.SizeOf(GetType(Boolean)))
+        Else
+            DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H1, Marshal.SizeOf(GetType(Boolean)))
+        End If
+        DwmSetWindowAttribute(HWND, DwmWindowAttribute.SystemBackdropType, DwmWASystemBackdropType.Mica, Marshal.SizeOf(GetType(Integer)))
+        DwmSetWindowAttribute(HWND, DwmWindowAttribute.WindowCornerPreference, DwmWindowCornerPreference.SemiRound, Marshal.SizeOf(GetType(Integer)))
+        DwmExtendFrameIntoClientArea(HWND, New MARGINS With {
+            .topHeight = 23,
+            .leftWidth = 3,
+            .bottomHeight = 3,
+            .rightWidth = 3
+        })
+    End Sub
 
     Public Function GetWindowsScaleFactor() As Int32
         Using Key As RegistryKey = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
