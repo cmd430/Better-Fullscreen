@@ -278,8 +278,8 @@ Public Class BetterFullscreen
             LogEvent(Game.Name & " started")
 
             Game.IsCurrentProfile = True
-            Game.UnsafeTitle = GetWindowTitle(Window_HWND, False)
-            Game.UnsafeClass = GetWindowClass(Window_HWND, False)
+            Game.UnsafeTitle = GetWindowTitle(Window_HWND, True)
+            Game.UnsafeClass = GetWindowClass(Window_HWND, True)
             Game.State = GameState.Started
             CurrentGame = Game
 

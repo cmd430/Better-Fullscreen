@@ -22,20 +22,20 @@ Module Utils
         If IsVisible Then SendMessage(window.Handle, WIN_MESSAGE.WM_SETICON, ICON_SIZE.ICON_SMALL, My.Resources.Fullscreen_Dark.Handle)
     End Sub
 
-    Public Function GetWindowTitle(HWND As IntPtr, Optional clean As Boolean = True) As String
+    Public Function GetWindowTitle(HWND As IntPtr, Optional Unsafe As Boolean = False) As String
         Dim title As New StringBuilder("", 256)
 
         GetWindowText(HWND, title, 256)
 
-        Return If(clean, title.ToString().Trim(), title.ToString())
+        Return If(Unsafe, title.ToString(), title.ToString().Trim())
     End Function
 
-    Public Function GetWindowClass(HWND As IntPtr, Optional clean As Boolean = True) As String
+    Public Function GetWindowClass(HWND As IntPtr, Optional Unsafe As Boolean = False) As String
         Dim [class] As New StringBuilder("", 256)
 
         GetClassName(HWND, [class], 256)
 
-        Return If(clean, [class].ToString().Trim(), [class].ToString())
+        Return If(Unsafe, [class].ToString(), [class].ToString().Trim())
     End Function
 
     Public Function GetWindowRectangle(HWND As IntPtr) As Rectangle
