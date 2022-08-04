@@ -292,7 +292,7 @@ Public Class BetterFullscreen
 
             LogEvent("setting WS_VISIBLE")
             SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-            SetWindowPos(Window_HWND, HWND.TOP, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
+            SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
         End If
 
         ' Window Has Focus
@@ -305,11 +305,11 @@ Public Class BetterFullscreen
 
             If Not correctSize Then
                 LogEvent("resizing window " & Game.Size.ToString())
-                SetWindowPos(Window_HWND, HWND.TOP, 0, 0, scaledWidth, scaledHeight, SWP.NOMOVE)
+                SetWindowPos(Window_HWND, 0, 0, 0, scaledWidth, scaledHeight, SWP.NOZORDER Or SWP.NOMOVE)
             End If
             If Not correctPos Then
                 LogEvent("repositioning window " & Game.Location.ToString())
-                SetWindowPos(Window_HWND, HWND.TOP, Game.Location.X, Game.Location.Y, 0, 0, SWP.NOSIZE)
+                SetWindowPos(Window_HWND, 0, Game.Location.X, Game.Location.Y, 0, 0, SWP.NOZORDER Or SWP.NOSIZE)
             End If
             If Game.ForceTopMost And Not IsWindowTopMost(Window_HWND) Then
                 LogEvent("setting HWND_TOPMOST")
