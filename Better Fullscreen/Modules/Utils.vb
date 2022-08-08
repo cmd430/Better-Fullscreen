@@ -21,6 +21,7 @@ Module Utils
         window.Visible = IsVisible
 
         SetTitleBarTheme(window.Handle)
+        DisableCloseButton(window.Handle)
     End Sub
 
     Public Function GetWindowTitle(HWND As IntPtr, Optional Unsafe As Boolean = False) As String

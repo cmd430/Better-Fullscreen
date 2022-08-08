@@ -35,7 +35,6 @@ Public Class BetterFullscreen
             TrayIcon.Icon = My.Resources.Fullscreen_Light
         End If
 
-        DisableCloseButton(Handle)
         ToggleWindowState(Me, IIf(Debugger.IsAttached Or Not Config.Settings.StartHidden, FormWindowState.Normal, FormWindowState.Minimized))
         Init()
     End Sub
