@@ -23,10 +23,18 @@ Public Module Config
         Public Property DefaultSize As Size = New Size(800, 600)
         <XmlElement(ElementName:="Default-Location")>
         Public Property DefaultLocation As Point = New Point(0, 0)
+        <XmlElement(ElementName:="Default-Delay")>
+        Public Property DefaultDelay As Integer = 0
+        <XmlElement(ElementName:="Default-Capture-Mouse")>
+        Public Property DefaultCaptureMouse As Boolean = False
+        <XmlElement(ElementName:="Default-Force-Topmost")>
+        Public Property DefaultForceTopMost As Boolean = True
         <XmlElement(ElementName:="Trigger-Events")>
         Public Property TriggerEvents As TriggerEvent = TriggerEvent.ForegroundWindowChanged
         <XmlElement(ElementName:="Start-Hidden")>
         Public Property StartHidden As Boolean = True
+        <XmlElement(ElementName:="Show-Event-Log")>
+        Public Property ShowEventLog As Boolean = False
         <XmlIgnore>
         Public Property ConfigPath As String = ""
     End Class
@@ -42,9 +50,9 @@ Public Module Config
         <XmlElement(ElementName:="Class")>
         Public Property [Class] As String = ""
         <XmlElement(ElementName:="Size")>
-        Public Property Size As Size = New Size(800, 600)
+        Public Property Size As Size = Screen.PrimaryScreen.WorkingArea.Size
         <XmlElement(ElementName:="Location")>
-        Public Property Location As Point = New Point(0, 0)
+        Public Property Location As Point = Screen.PrimaryScreen.WorkingArea.Location
         <XmlElement(ElementName:="Delay")>
         Public Property Delay As Integer = 0
         <XmlElement(ElementName:="Capture-Mouse")>

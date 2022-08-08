@@ -5,8 +5,8 @@ Public Class BetterFullscreen
     Private ReadOnly WindowsScaleFactor As Integer = GetWindowsScaleFactor()
     Private ReadOnly Hotkeys As New Hotkeys
     Private ReadOnly TaskSchedeuler As New Scheduler("Better Fullscreen", "cmd430", "Starts Better Fullscreen on Logon", Nothing, Nothing, False)
-    Private ReadOnly WinEventProcDelegate As New WinEventDelegate(AddressOf WinEventProc)
-    Private ReadOnly WinEventHook As IntPtr = SetWinEventHook(WIN_EVENT.EVENT_SYSTEM_FOREGROUND, WIN_EVENT.EVENT_SYSTEM_CAPTURESTART, IntPtr.Zero, WinEventProcDelegate, 0, 0, WIN_EVENT_FLAGS.WINEVENT_OUTOFCONTEXT)
+    Private ReadOnly WinEventDelegate As New WinEventDelegate(AddressOf WinEventHandler)
+    Private ReadOnly WinEventHook As IntPtr = SetWinEventHook([EVENT].SYSTEM_FOREGROUND, [EVENT].SYSTEM_CAPTURESTART, IntPtr.Zero, WinEventDelegate, 0, 0, WINEVENT.OUTOFCONTEXT)
     Private ReadOnly ConfigPath As String = Application.ExecutablePath.Replace(".exe", ".conf")
     Private ReadOnly Config As BetterFullscreenConfig = LoadConfig(ConfigPath)
 
@@ -27,13 +27,6 @@ Public Class BetterFullscreen
             TaskSchedeuler.UpdateTask()
             LogEvent("Updated startup task")
         End If
-
-        If LoadWithWindows() Then
-            CheckBox_StartWithWindows.Checked = True
-        End If
-
-        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
-
         If GetWindowsTheme() = WindowsTheme.Light Then
             Icon = My.Resources.Fullscreen_Dark
             TrayIcon.Icon = My.Resources.Fullscreen_Dark
@@ -42,8 +35,13 @@ Public Class BetterFullscreen
             TrayIcon.Icon = My.Resources.Fullscreen_Light
         End If
 
+        DisableCloseButton(Handle)
         ToggleWindowState(Me, IIf(Debugger.IsAttached Or Not Config.Settings.StartHidden, FormWindowState.Normal, FormWindowState.Minimized))
         Init()
+    End Sub
+
+    Private Sub CheckBox_ShowEventLog_CheckedChanged(sender As Object, e As EventArgs) Handles CheckBox_ShowEventLog.CheckedChanged
+        ToggleEventLog()
     End Sub
 
     Protected Overrides Sub SetVisibleCore(value As Boolean)
@@ -68,7 +66,7 @@ Public Class BetterFullscreen
     Private Sub Panel_DragZone_MouseDown(sender As Object, e As MouseEventArgs) Handles Panel_DragZone.MouseDown
         If e.Button = MouseButtons.Left Then
             ReleaseCapture()
-            SendMessage(Handle, WIN_MESSAGE.WM_NCLBUTTONDOWN, CURSOR_HOTSPOT.HTCAPTION, 0)
+            SendMessage(Handle, WM.NCLBUTTONDOWN, HT.CAPTION, 0)
         End If
     End Sub
 
@@ -79,7 +77,7 @@ Public Class BetterFullscreen
     Private Sub Button_Remove_Click(sender As Object, e As EventArgs) Handles Button_Remove.Click
         Dim Game As Profile = GetProfile(ComboBox_Games.SelectedItem, Config)
 
-        If MessageBox.Show("Remove Profile '" & Game.Name & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel) = DialogResult.OK Then
+        If MessageBox.Show("Remove Profile '" & Game.Name & "'?", "Confirm Profile Removal", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.OK Then
             RemoveProfile(Game.Name, Config)
             LogEvent("Removed '" & Game.Name & "' settings")
             ComboBox_Games.Items.RemoveAt(ComboBox_Games.SelectedIndex)
@@ -134,7 +132,7 @@ Public Class BetterFullscreen
     End Sub
 
     Private Sub BetterFullscreen_Closing(sender As Object, e As FormClosingEventArgs) Handles Me.Closing
-        If e.CloseReason = CloseReason.UserClosing And Not CloseSilently = True Then
+        If e.CloseReason = CloseReason.UserClosing And Not CloseSilently = True And Not Debugger.IsAttached Then
             If MessageBox.Show("You are about to exit Better Fullscreen" & vbCrLf & "Press OK to confirm and exit or Cancel to abort", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) = DialogResult.Cancel Then
                 e.Cancel = True
                 Exit Sub
@@ -156,6 +154,11 @@ Public Class BetterFullscreen
     Private Sub ComboBox_Games_KeyDown(sender As Object, e As KeyEventArgs) Handles ComboBox_Games.KeyDown
         If e.KeyCode <> Keys.Enter Then Exit Sub
         ToggleEditProfile()
+    End Sub
+
+    Private Sub Button_ClearLog_Click(sender As Object, e As EventArgs) Handles Button_ClearLog.Click
+        RichTextBox_EventLog.Clear()
+        LogEvent("Cleared log")
     End Sub
 
 #End Region
@@ -214,24 +217,47 @@ Public Class BetterFullscreen
     Private Sub LoadSettings()
         ComboBox_Key.SelectedIndex = Config.Settings.Hotkey - 112
         ComboBox_Modifier.SelectedIndex = Config.Settings.Modifier
+        ComboBox_TriggerEvents.SelectedIndex = Config.Settings.TriggerEvents
+        CheckBox_StartHidden.Checked = Config.Settings.StartHidden
+        CheckBox_ShowEventLog.Checked = Config.Settings.ShowEventLog
+        ToggleEventLog()
+        If LoadWithWindows() Then
+            CheckBox_StartWithWindows.Checked = True
+        End If
+        AddHandler CheckBox_StartWithWindows.CheckedChanged, AddressOf CheckBox_startWithWindows_CheckedChanged
         NumericUpDown_DefaultWidth.Value = Config.Settings.DefaultSize.Width
         NumericUpDown_DefaultHeight.Value = Config.Settings.DefaultSize.Height
         NumericUpDown_DefaultLeft.Value = Config.Settings.DefaultLocation.X
         NumericUpDown_DefaultTop.Value = Config.Settings.DefaultLocation.Y
-        ComboBox_TriggerEvents.SelectedIndex = Config.Settings.TriggerEvents
-        CheckBox_StartHidden.Checked = Config.Settings.StartHidden
+        NumericUpDown_DefaultDelay.Value = Config.Settings.DefaultDelay
+        CheckBox_DefaultCaptureMouse.Checked = Config.Settings.DefaultCaptureMouse
+        CheckBox_DefaultForceTopMost.Checked = Config.Settings.DefaultForceTopMost
         LogEvent("Loaded application settings")
     End Sub
 
     Private Sub SaveSettings()
         Config.Settings.Hotkey = CType(ComboBox_Key.SelectedIndex + 112, Keys)
         Config.Settings.Modifier = CType(ComboBox_Modifier.SelectedIndex, ModifierKey)
-        Config.Settings.DefaultSize = New Size(NumericUpDown_DefaultWidth.Value, NumericUpDown_DefaultHeight.Value)
-        Config.Settings.DefaultLocation = New Point(NumericUpDown_DefaultLeft.Value, NumericUpDown_DefaultTop.Value)
         Config.Settings.TriggerEvents = CType(ComboBox_TriggerEvents.SelectedIndex, TriggerEvent)
         Config.Settings.StartHidden = CheckBox_StartHidden.Checked
+        Config.Settings.ShowEventLog = CheckBox_ShowEventLog.Checked
+        Config.Settings.DefaultSize = New Size(NumericUpDown_DefaultWidth.Value, NumericUpDown_DefaultHeight.Value)
+        Config.Settings.DefaultLocation = New Point(NumericUpDown_DefaultLeft.Value, NumericUpDown_DefaultTop.Value)
+        Config.Settings.DefaultDelay = NumericUpDown_DefaultDelay.Value
+        Config.Settings.DefaultCaptureMouse = CheckBox_DefaultCaptureMouse.Checked
+        Config.Settings.DefaultForceTopMost = CheckBox_DefaultForceTopMost.Checked
         SaveConfig(ConfigPath, Config)
         LogEvent("Saved application settings")
+    End Sub
+
+    Private Sub ToggleEventLog()
+        If CheckBox_ShowEventLog.Checked Then
+            TabPage_EventLog.Parent = TabControl_Main
+            Panel_DragZone.Location = New Point(200, -2)
+        Else
+            TabPage_EventLog.Parent = Nothing
+            Panel_DragZone.Location = New Point(139, -2)
+        End If
     End Sub
 
     Private Sub ToggleEditProfile()
@@ -324,6 +350,9 @@ Public Class BetterFullscreen
                 LogEvent("locking mouse to game window location")
                 Cursor.Clip = New Rectangle(Game.Location, Game.Size)
             End If
+
+            BringWindowToTop(Window_HWND) ' Make sure our window is front most
+
             If Game.State = GameState.Focused Then Exit Sub
 
             Game.State = GameState.Focused
@@ -340,6 +369,7 @@ Public Class BetterFullscreen
                 If CurrentGame.ForceTopMost And IsWindowTopMost(Game_HWND) Then
                     LogEvent("setting HWND_NOTOPMOST")
                     SetWindowPos(Game_HWND, HWND.NOTOPMOST, 0, 0, 0, 0, SWP.NOMOVE Or SWP.NOSIZE Or SWP.NOACTIVATE)
+                    BringWindowToTop(Window_HWND)
                 End If
                 If CurrentGame.CaptureMouse And IsCursorClipped() Then
                     LogEvent("releasing mouse lock from game window location")
@@ -372,7 +402,10 @@ Public Class BetterFullscreen
             .Class = GetWindowClass(HWND),
             .Size = Config.Settings.DefaultSize,
             .Location = Config.Settings.DefaultLocation,
-            .Name = .Title.Text.Replace("[", "(").Replace("]", ")")
+            .Delay = Config.Settings.DefaultDelay,
+            .CaptureMouse = Config.Settings.DefaultCaptureMouse,
+            .ForceTopMost = Config.Settings.DefaultForceTopMost,
+            .Name = IIf(GetProfile(.Title.Text, Config) IsNot Nothing, .Title.Text & " (" & Date.Now.ToShortDateString & " - " & Date.Now.ToShortTimeString & ")", .Title.Text)
         }
 
         AddProfile(NewGame, Config)
@@ -398,21 +431,20 @@ Public Class BetterFullscreen
         End If
     End Sub
 
-    Private Sub WinEventProc(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
-        If Now.Subtract(DebounceTrigger.Key).TotalSeconds < 1.0 And DebounceTrigger.Value = HWND Then Exit Sub
+    Private Sub WinEventHandler(hWinEventHook As IntPtr, eventType As UInteger, HWND As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
+        If (Now.Subtract(DebounceTrigger.Key).TotalSeconds < 1.0 And DebounceTrigger.Value = HWND) Or (HWND = Handle Or HWND = Panel_DragZone.Handle) Then Exit Sub
 
-        DebounceTrigger = New KeyValuePair(Of Date, IntPtr)(Now, HWND)
         Dim TriggerEvents = Config.Settings.TriggerEvents
 
-        If (TriggerEvents = TriggerEvent.ForegroundWindowChanged Or TriggerEvents = TriggerEvent.Both) And eventType = WIN_EVENT.EVENT_SYSTEM_FOREGROUND Then
+        If (TriggerEvents = TriggerEvent.ForegroundWindowChanged Or TriggerEvents = TriggerEvent.Both) And eventType = [EVENT].SYSTEM_FOREGROUND Then
             Debug.WriteLine("Event: EVENT_SYSTEM_FOREGROUND")
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
-            Exit Sub
-        ElseIf (TriggerEvents = TriggerEvent.MouseCaptureStart Or TriggerEvents = TriggerEvent.Both) And eventType = WIN_EVENT.EVENT_SYSTEM_CAPTURESTART Then
+        ElseIf (TriggerEvents = TriggerEvent.MouseCaptureStart Or TriggerEvents = TriggerEvent.Both) And eventType = [EVENT].SYSTEM_CAPTURESTART Then
             Debug.WriteLine("Event: EVENT_SYSTEM_CAPTURESTART")
             DoWork(GetWindowTitle(HWND), GetWindowClass(HWND), HWND)
-            Exit Sub
         End If
+
+        DebounceTrigger = New KeyValuePair(Of Date, IntPtr)(Now, HWND)
     End Sub
 
 End Class

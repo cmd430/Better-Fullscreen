@@ -13,8 +13,8 @@ Module Win32
     Public Function GetForegroundWindow() As IntPtr
     End Function
 
-    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetForegroundWindow", CallingConvention:=CallingConvention.StdCall)>
-    Public Function SetForegroundWindow(hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="BringWindowToTop", CallingConvention:=CallingConvention.StdCall)>
+    Public Function BringWindowToTop(hWnd As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="SetWindowLongPtr", CallingConvention:=CallingConvention.StdCall)>
@@ -54,15 +54,23 @@ Module Win32
     End Function
 
     <DllImport("dwmapi.dll", PreserveSig:=True)>
-    Public Function DwmSetWindowAttribute(hwnd As IntPtr, attr As DwmWindowAttribute, ByRef attrValue As Integer, attrSize As Integer) As Integer
+    Public Function DwmSetWindowAttribute(hWnd As IntPtr, attr As DwmWindowAttribute, ByRef attrValue As Integer, attrSize As Integer) As Integer
     End Function
 
     <DllImport("dwmapi.dll", PreserveSig:=True)>
-    Public Function DwmExtendFrameIntoClientArea(ByVal hwnd As IntPtr, ByRef margins As MARGINS) As Integer
+    Public Function DwmExtendFrameIntoClientArea(hwnd As IntPtr, ByRef margins As MARGINS) As Integer
     End Function
 
     <DllImport("user32.dll", CharSet:=CharSet.Auto, SetLastError:=True, EntryPoint:="ReleaseCapture", CallingConvention:=CallingConvention.StdCall)>
     Public Function ReleaseCapture() As Boolean
+    End Function
+
+    <DllImport("user32.dll", CallingConvention:=CallingConvention.Cdecl)>
+    Public Function GetSystemMenu(hWnd As IntPtr, bRevert As Boolean) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", CallingConvention:=CallingConvention.Cdecl)>
+    Public Function EnableMenuItem(hMenu As IntPtr, wIDEnableItem As UInteger, wEnable As UInteger) As IntPtr
     End Function
 
 #End Region
@@ -241,35 +249,46 @@ Module Win32
         SHOWWINDOW = 40
     End Enum
     <Flags>
-    Public Enum WIN_EVENT_FLAGS As UInteger
-        WINEVENT_OUTOFCONTEXT = 0 'Events are ASYNC
-        WINEVENT_SKIPOWNTHREAD = 1 'Dont call back for events on installer's thread
-        WINEVENT_SKIPOWNPROCESS = 2 'Dont call back for events on installer's process
-        WINEVENT_INCONTEXT = 4 'Events are SYNC, this causes your dll To be injected into every process
+    Public Enum WINEVENT As UInteger
+        OUTOFCONTEXT = 0 'Events are ASYNC
+        SKIPOWNTHREAD = 1 'Dont call back for events on installer's thread
+        SKIPOWNPROCESS = 2 'Dont call back for events on installer's process
+        INCONTEXT = 4 'Events are SYNC, this causes your dll To be injected into every process
     End Enum
     <Flags>
-    Public Enum WIN_EVENT As UInteger
-        EVENT_SYSTEM_FOREGROUND = &H3 ' The foreground window has changed.
-        EVENT_SYSTEM_CAPTUREEND = &H9 ' A window has lost mouse capture.
-        EVENT_SYSTEM_CAPTURESTART = &H8 ' A window has received mouse capture.
-        EVENT_SYSTEM_SWITCHSTART = &H14 ' The user has pressed ALT+TAB.
-        EVENT_SYSTEM_SWITCHEND = &H15 ' The user has released ALT+TAB.
-        EVENT_SYSTEM_MINIMIZESTART = &H16 ' A window object is about to be minimized.
-        EVENT_SYSTEM_MINIMIZEEND = &H17 ' A window object is about to be restored.
-        EVENT_SYSTEM_DESKTOPSWITCH = &H20 ' The active desktop has been switched.
+    Public Enum [EVENT] As UInteger
+        SYSTEM_FOREGROUND = &H3 ' The foreground window has changed.
+        SYSTEM_CAPTUREEND = &H9 ' A window has lost mouse capture.
+        SYSTEM_CAPTURESTART = &H8 ' A window has received mouse capture.
+        SYSTEM_SWITCHSTART = &H14 ' The user has pressed ALT+TAB. (broken since windows 10)
+        SYSTEM_SWITCHEND = &H15 ' The user has released ALT+TAB.  (broken since windows 10)
+        SYSTEM_MINIMIZESTART = &H16 ' A window object is about to be minimized.
+        SYSTEM_MINIMIZEEND = &H17 ' A window object is about to be restored.
+        SYSTEM_DESKTOPSWITCH = &H20 ' The active desktop has been switched.
         ' Im missing a bunch that i probably dont care about
     End Enum
 
-    Public Enum WIN_MESSAGE As UInteger
-        WM_SETICON = &H80UI
-        WM_NCLBUTTONDOWN = &HA1
+    Public Enum WM As UInteger
+        SETICON = &H80UI
+        NCLBUTTONDOWN = &HA1
     End Enum
-    Public Enum ICON_SIZE As Integer
-        ICON_SMALL = 0
-        ICON_BIG = 1
+    Public Enum ICON As Integer
+        SMALL = 0
+        BIG = 1
     End Enum
-    Public Enum CURSOR_HOTSPOT As Integer
-        HTCAPTION = 2
+    Public Enum HT As Integer
+        CAPTION = 2
+    End Enum
+
+    Public Enum MF As UInteger
+        BYCOMMAND = 0
+        ENABLED = 0
+        GRAYED = 1
+        DISABLED = 2
+    End Enum
+
+    Public Enum SC As Integer
+        CLOSE = &HF060
     End Enum
 
 #End Region

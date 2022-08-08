@@ -90,6 +90,10 @@ Module Utils
         })
     End Sub
 
+    Public Sub DisableCloseButton(HWND As IntPtr)
+        EnableMenuItem(GetSystemMenu(HWND, False), SC.CLOSE, MF.BYCOMMAND Or MF.DISABLED Or MF.GRAYED)
+    End Sub
+
     Public Function GetWindowsScaleFactor() As Int32
         Using Key As RegistryKey = CurrentUser.OpenSubKey("Control Panel\Desktop\WindowMetrics")
             If Key IsNot Nothing Then
