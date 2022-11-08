@@ -1,4 +1,4 @@
-﻿Imports System.Threading
+﻿Imports System.Threading.Tasks
 
 Public Class BetterFullscreen
 
@@ -317,12 +317,10 @@ Public Class BetterFullscreen
 
             If Game.Delay > 0 Then
                 LogEvent("delaying actions for " & Game.Delay & "ms")
-                Thread.Sleep(Game.Delay)
+                Task.Run(Async Function()
+                             Await Task.Delay(Game.Delay)
+                         End Function).Wait()
             End If
-
-            LogEvent("setting WS_VISIBLE")
-            SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
-            SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
         End If
 
         ' Window Has Focus
@@ -332,7 +330,13 @@ Public Class BetterFullscreen
             Dim windowRect = GetWindowRectangle(Window_HWND)
             Dim correctPos = New Point(windowRect.X, windowRect.Y) = Game.Location
             Dim correctSize = New Size(windowRect.Width, windowRect.Height) = New Size(scaledWidth, scaledHeight)
+            Dim removedFrame = (GetWindowLong(Window_HWND, GWL.STYLE) And (WS.CAPTION Or WS.THICKFRAME)) = 0
 
+            If Not removedFrame Then
+                LogEvent("setting WS_VISIBLE")
+                SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
+                SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
+            End If
             If Not correctSize Then
                 LogEvent("resizing window " & Game.Size.ToString())
                 SetWindowPos(Window_HWND, 0, 0, 0, scaledWidth, scaledHeight, SWP.NOZORDER Or SWP.NOMOVE)
