@@ -20,7 +20,7 @@ Module Utils
         window.ShowInTaskbar = IsVisible
         window.Visible = IsVisible
 
-        SetTitleBarTheme(window.Handle)
+        SetTitleBarTheme(window)
         DisableCloseButton(window.Handle)
     End Sub
 
@@ -75,20 +75,30 @@ Module Utils
         End Using
     End Function
 
-    Public Sub SetTitleBarTheme(HWND As IntPtr)
-        If GetWindowsTheme() = WindowsTheme.Light Then
-            DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H0, Marshal.SizeOf(GetType(Boolean)))
+    Public Sub SetTitleBarTheme(window As Form)
+        If My.Computer.Info.OSFullName.Contains("Windows 11") Then ' should now work on windows 10 (and maybe even 7, 8, 8.1) again
+            Dim HWND As IntPtr = window.Handle
+
+            If GetWindowsTheme() = WindowsTheme.Light Then
+                DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H0, Marshal.SizeOf(GetType(Boolean)))
+            Else
+                DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H1, Marshal.SizeOf(GetType(Boolean)))
+            End If
+            DwmSetWindowAttribute(HWND, DwmWindowAttribute.SystemBackdropType, DwmWASystemBackdropType.Mica, Marshal.SizeOf(GetType(Integer)))
+            DwmSetWindowAttribute(HWND, DwmWindowAttribute.WindowCornerPreference, DwmWindowCornerPreference.SemiRound, Marshal.SizeOf(GetType(Integer)))
+            DwmExtendFrameIntoClientArea(HWND, New MARGINS With {
+                .topHeight = 23,
+                .leftWidth = 3,
+                .bottomHeight = 3,
+                .rightWidth = 3
+            })
         Else
-            DwmSetWindowAttribute(HWND, DwmWindowAttribute.UseImmersiveDarkMode, &H1, Marshal.SizeOf(GetType(Boolean)))
+            window.BackColor = SystemColors.Control
+            Dim Panel_DragZone As Panel = window.Controls("Panel_DragZone")
+            If Panel_DragZone IsNot Nothing Then
+                Panel_DragZone.BackColor = SystemColors.Control
+            End If
         End If
-        DwmSetWindowAttribute(HWND, DwmWindowAttribute.SystemBackdropType, DwmWASystemBackdropType.Mica, Marshal.SizeOf(GetType(Integer)))
-        DwmSetWindowAttribute(HWND, DwmWindowAttribute.WindowCornerPreference, DwmWindowCornerPreference.SemiRound, Marshal.SizeOf(GetType(Integer)))
-        DwmExtendFrameIntoClientArea(HWND, New MARGINS With {
-            .topHeight = 23,
-            .leftWidth = 3,
-            .bottomHeight = 3,
-            .rightWidth = 3
-        })
     End Sub
 
     Public Sub DisableCloseButton(HWND As IntPtr)

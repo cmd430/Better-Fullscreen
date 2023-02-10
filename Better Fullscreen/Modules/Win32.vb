@@ -73,6 +73,10 @@ Module Win32
     Public Function EnableMenuItem(hMenu As IntPtr, wIDEnableItem As UInteger, wEnable As UInteger) As IntPtr
     End Function
 
+    <DllImport("user32.dll", CallingConvention:=CallingConvention.Cdecl)>
+    Public Function ShowWindow(hWnd As IntPtr, nCmdShow As Integer) As Boolean
+    End Function
+
 #End Region
 
     Public Delegate Sub WinEventDelegate(hWinEventHook As IntPtr, eventType As UInteger, hWnd As IntPtr, idObject As Integer, idChild As Integer, dwEventThread As UInteger, dwmsEventTime As UInteger)
@@ -230,6 +234,7 @@ Module Win32
         OVERLAPPEDWINDOW = WINDOWEDGE Or CLIENTEDGE
         PALETTEWINDOW = WINDOWEDGE Or TOOLWINDOW Or TOPMOST
     End Enum
+
     <Flags>
     Public Enum SWP As Long
         ASYNCWINDOWPOS = 4000
@@ -248,6 +253,7 @@ Module Win32
         NOZORDER = 4
         SHOWWINDOW = 40
     End Enum
+
     <Flags>
     Public Enum WINEVENT As UInteger
         OUTOFCONTEXT = 0 'Events are ASYNC
@@ -255,6 +261,7 @@ Module Win32
         SKIPOWNPROCESS = 2 'Dont call back for events on installer's process
         INCONTEXT = 4 'Events are SYNC, this causes your dll To be injected into every process
     End Enum
+
     <Flags>
     Public Enum [EVENT] As UInteger
         SYSTEM_FOREGROUND = &H3 ' The foreground window has changed.
@@ -272,10 +279,12 @@ Module Win32
         SETICON = &H80UI
         NCLBUTTONDOWN = &HA1
     End Enum
+
     Public Enum ICON As Integer
         SMALL = 0
         BIG = 1
     End Enum
+
     Public Enum HT As Integer
         CAPTION = 2
     End Enum
@@ -289,6 +298,23 @@ Module Win32
 
     Public Enum SC As Integer
         CLOSE = &HF060
+    End Enum
+
+    Public Enum SW As Integer
+        HIDE = 0
+        SHOWNORMAL = 1
+        NORMAL = 1
+        SHOWMINIMIZED = 2
+        SHOWMAXIMIZED = 3
+        MAXIMIZE = 3
+        SHOWNOACTIVATE = 4
+        SHOW = 5
+        MINIMIZE = 6
+        SHOWMINNOACTIVE = 7
+        SHOWNA = 8
+        RESTORE = 9
+        SHOWDEFAULT = 10
+        FORCEMINIMIZE = 11
     End Enum
 
 #End Region

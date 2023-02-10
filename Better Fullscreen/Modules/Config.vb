@@ -29,6 +29,8 @@ Public Module Config
         Public Property DefaultCaptureMouse As Boolean = False
         <XmlElement(ElementName:="Default-Force-Topmost")>
         Public Property DefaultForceTopMost As Boolean = True
+        <XmlElement(ElementName:="Default-Remove-Window-Frame")>
+        Public Property DefaultRemoveWindowFrame As Boolean = True
         <XmlElement(ElementName:="Trigger-Events")>
         Public Property TriggerEvents As TriggerEvent = TriggerEvent.ForegroundWindowChanged
         <XmlElement(ElementName:="Start-Hidden")>
@@ -59,6 +61,8 @@ Public Module Config
         Public Property CaptureMouse As Boolean = False
         <XmlElement(ElementName:="Force-Topmost")>
         Public Property ForceTopMost As Boolean = True
+        <XmlElement(ElementName:="Remove-Window-Frame")>
+        Public Property RemoveWindowFrame As Boolean = True
         <XmlIgnore>
         Public Property UnsafeTitle As String = ""
         <XmlIgnore>

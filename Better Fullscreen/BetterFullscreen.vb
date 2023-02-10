@@ -187,6 +187,7 @@ Public Class BetterFullscreen
             NumericUpDown_Delay.Value = Game.Delay
             CheckBox_CaptureMouse.Checked = Game.CaptureMouse
             CheckBox_ForceTopMost.Checked = Game.ForceTopMost
+            CheckBox_RemoveWindowFrame.Checked = Game.RemoveWindowFrame
             CheckBox_ProfileEnabled.Checked = Game.Enabled
             LogEvent("Loaded '" & Game.Name & "' settings")
         End If
@@ -204,6 +205,7 @@ Public Class BetterFullscreen
             Game.CaptureMouse = CheckBox_CaptureMouse.Checked
             Game.Enabled = CheckBox_ProfileEnabled.Checked
             Game.ForceTopMost = CheckBox_ForceTopMost.Checked
+            Game.RemoveWindowFrame = CheckBox_RemoveWindowFrame.Checked
             SaveConfig(ConfigPath, Config)
             LogEvent("Saved '" & Game.Name & "' settings")
         End If
@@ -231,6 +233,7 @@ Public Class BetterFullscreen
         NumericUpDown_DefaultDelay.Value = Config.Settings.DefaultDelay
         CheckBox_DefaultCaptureMouse.Checked = Config.Settings.DefaultCaptureMouse
         CheckBox_DefaultForceTopMost.Checked = Config.Settings.DefaultForceTopMost
+        CheckBox_DefaultRemoveWindowFrame.Checked = Config.Settings.DefaultRemoveWindowFrame
         LogEvent("Loaded application settings")
     End Sub
 
@@ -245,6 +248,7 @@ Public Class BetterFullscreen
         Config.Settings.DefaultDelay = NumericUpDown_DefaultDelay.Value
         Config.Settings.DefaultCaptureMouse = CheckBox_DefaultCaptureMouse.Checked
         Config.Settings.DefaultForceTopMost = CheckBox_DefaultForceTopMost.Checked
+        Config.Settings.DefaultRemoveWindowFrame = CheckBox_DefaultRemoveWindowFrame.Checked
         SaveConfig(ConfigPath, Config)
         LogEvent("Saved application settings")
     End Sub
@@ -331,17 +335,22 @@ Public Class BetterFullscreen
             Dim correctPos = New Point(windowRect.X, windowRect.Y) = Game.Location
             Dim correctSize = New Size(windowRect.Width, windowRect.Height) = New Size(scaledWidth, scaledHeight)
             Dim removedFrame = (GetWindowLong(Window_HWND, GWL.STYLE) And (WS.CAPTION Or WS.THICKFRAME)) = 0
+            Dim shouldProcess As Boolean = Game.State = GameState.Started Or Game.RemoveWindowFrame ' Small fix for when not stripping window frame we still want to initally pos. + size the window
 
-            If Not removedFrame Then
+            If Game.RemoveWindowFrame And Not removedFrame Then
                 LogEvent("setting WS_VISIBLE")
                 SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                 SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
             End If
-            If Not correctSize Then
+            If Not Game.RemoveWindowFrame And shouldProcess Then ' if we are moving the window with a frame we dont want it to be maximised
+                ShowWindow(Window_HWND, SW.NORMAL)
+                SetWindowPos(Window_HWND, 0, 0, 0, scaledWidth + 1, scaledHeight, SWP.NOZORDER Or SWP.NOMOVE) ' a stupid fix for the plex desktop app on my system
+            End If
+            If shouldProcess And Not correctSize Then
                 LogEvent("resizing window " & Game.Size.ToString())
                 SetWindowPos(Window_HWND, 0, 0, 0, scaledWidth, scaledHeight, SWP.NOZORDER Or SWP.NOMOVE)
             End If
-            If Not correctPos Then
+            If shouldProcess And Not correctPos Then
                 LogEvent("repositioning window " & Game.Location.ToString())
                 SetWindowPos(Window_HWND, 0, Game.Location.X, Game.Location.Y, 0, 0, SWP.NOZORDER Or SWP.NOSIZE)
             End If

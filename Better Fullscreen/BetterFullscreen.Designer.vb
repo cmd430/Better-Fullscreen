@@ -87,18 +87,20 @@ Partial Class BetterFullscreen
         Me.TabControl_Main = New System.Windows.Forms.TabControl()
         Me.TabPage_ProfileSettings = New System.Windows.Forms.TabPage()
         Me.TabPage_Settings = New System.Windows.Forms.TabPage()
-        Me.TabPage_EventLog = New System.Windows.Forms.TabPage()
-        Me.Panel_DragZone = New System.Windows.Forms.Panel()
-        Me.CheckBox_ShowEventLog = New System.Windows.Forms.CheckBox()
         Me.TabControl_Settings = New System.Windows.Forms.TabControl()
         Me.TabPage_AppSettings = New System.Windows.Forms.TabPage()
+        Me.CheckBox_ShowEventLog = New System.Windows.Forms.CheckBox()
         Me.TabPage_ProfileDefaults = New System.Windows.Forms.TabPage()
         Me.CheckBox_DefaultForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_DefaultCaptureMouse = New System.Windows.Forms.CheckBox()
         Me.Label27 = New System.Windows.Forms.Label()
         Me.NumericUpDown_DefaultDelay = New System.Windows.Forms.NumericUpDown()
         Me.Label28 = New System.Windows.Forms.Label()
+        Me.TabPage_EventLog = New System.Windows.Forms.TabPage()
         Me.Button_ClearLog = New System.Windows.Forms.Button()
+        Me.Panel_DragZone = New System.Windows.Forms.Panel()
+        Me.CheckBox_RemoveWindowFrame = New System.Windows.Forms.CheckBox()
+        Me.CheckBox_DefaultRemoveWindowFrame = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_Top, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -113,11 +115,11 @@ Partial Class BetterFullscreen
         Me.TabControl_Main.SuspendLayout()
         Me.TabPage_ProfileSettings.SuspendLayout()
         Me.TabPage_Settings.SuspendLayout()
-        Me.TabPage_EventLog.SuspendLayout()
         Me.TabControl_Settings.SuspendLayout()
         Me.TabPage_AppSettings.SuspendLayout()
         Me.TabPage_ProfileDefaults.SuspendLayout()
         CType(Me.NumericUpDown_DefaultDelay, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage_EventLog.SuspendLayout()
         Me.SuspendLayout()
         '
         'TrayIcon
@@ -697,6 +699,7 @@ Partial Class BetterFullscreen
         'TabPage_ProfileSettings
         '
         Me.TabPage_ProfileSettings.BackColor = System.Drawing.Color.White
+        Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_RemoveWindowFrame)
         Me.TabPage_ProfileSettings.Controls.Add(Me.TextBox_Title)
         Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_ForceTopMost)
         Me.TabPage_ProfileSettings.Controls.Add(Me.CheckBox_ProfileEnabled)
@@ -742,36 +745,6 @@ Partial Class BetterFullscreen
         Me.TabPage_Settings.TabIndex = 1
         Me.TabPage_Settings.Text = "Settings"
         '
-        'TabPage_EventLog
-        '
-        Me.TabPage_EventLog.BackColor = System.Drawing.Color.White
-        Me.TabPage_EventLog.Controls.Add(Me.Button_ClearLog)
-        Me.TabPage_EventLog.Controls.Add(Me.RichTextBox_EventLog)
-        Me.TabPage_EventLog.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage_EventLog.Name = "TabPage_EventLog"
-        Me.TabPage_EventLog.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage_EventLog.Size = New System.Drawing.Size(330, 365)
-        Me.TabPage_EventLog.TabIndex = 2
-        Me.TabPage_EventLog.Text = "Event Log"
-        '
-        'Panel_DragZone
-        '
-        Me.Panel_DragZone.BackColor = System.Drawing.Color.Black
-        Me.Panel_DragZone.Location = New System.Drawing.Point(200, -2)
-        Me.Panel_DragZone.Name = "Panel_DragZone"
-        Me.Panel_DragZone.Size = New System.Drawing.Size(211, 25)
-        Me.Panel_DragZone.TabIndex = 30
-        '
-        'CheckBox_ShowEventLog
-        '
-        Me.CheckBox_ShowEventLog.AutoSize = True
-        Me.CheckBox_ShowEventLog.Location = New System.Drawing.Point(9, 148)
-        Me.CheckBox_ShowEventLog.Name = "CheckBox_ShowEventLog"
-        Me.CheckBox_ShowEventLog.Size = New System.Drawing.Size(105, 17)
-        Me.CheckBox_ShowEventLog.TabIndex = 29
-        Me.CheckBox_ShowEventLog.Text = "Show Event Log"
-        Me.CheckBox_ShowEventLog.UseVisualStyleBackColor = True
-        '
         'TabControl_Settings
         '
         Me.TabControl_Settings.Controls.Add(Me.TabPage_AppSettings)
@@ -805,9 +778,20 @@ Partial Class BetterFullscreen
         Me.TabPage_AppSettings.TabIndex = 0
         Me.TabPage_AppSettings.Text = "Application Settings"
         '
+        'CheckBox_ShowEventLog
+        '
+        Me.CheckBox_ShowEventLog.AutoSize = True
+        Me.CheckBox_ShowEventLog.Location = New System.Drawing.Point(9, 148)
+        Me.CheckBox_ShowEventLog.Name = "CheckBox_ShowEventLog"
+        Me.CheckBox_ShowEventLog.Size = New System.Drawing.Size(105, 17)
+        Me.CheckBox_ShowEventLog.TabIndex = 29
+        Me.CheckBox_ShowEventLog.Text = "Show Event Log"
+        Me.CheckBox_ShowEventLog.UseVisualStyleBackColor = True
+        '
         'TabPage_ProfileDefaults
         '
         Me.TabPage_ProfileDefaults.BackColor = System.Drawing.Color.White
+        Me.TabPage_ProfileDefaults.Controls.Add(Me.CheckBox_DefaultRemoveWindowFrame)
         Me.TabPage_ProfileDefaults.Controls.Add(Me.CheckBox_DefaultForceTopMost)
         Me.TabPage_ProfileDefaults.Controls.Add(Me.CheckBox_DefaultCaptureMouse)
         Me.TabPage_ProfileDefaults.Controls.Add(Me.Label27)
@@ -883,6 +867,18 @@ Partial Class BetterFullscreen
         Me.Label28.TabIndex = 28
         Me.Label28.Text = "Default Delay"
         '
+        'TabPage_EventLog
+        '
+        Me.TabPage_EventLog.BackColor = System.Drawing.Color.White
+        Me.TabPage_EventLog.Controls.Add(Me.Button_ClearLog)
+        Me.TabPage_EventLog.Controls.Add(Me.RichTextBox_EventLog)
+        Me.TabPage_EventLog.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage_EventLog.Name = "TabPage_EventLog"
+        Me.TabPage_EventLog.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage_EventLog.Size = New System.Drawing.Size(330, 365)
+        Me.TabPage_EventLog.TabIndex = 2
+        Me.TabPage_EventLog.Text = "Event Log"
+        '
         'Button_ClearLog
         '
         Me.Button_ClearLog.Location = New System.Drawing.Point(279, 3)
@@ -891,6 +887,34 @@ Partial Class BetterFullscreen
         Me.Button_ClearLog.TabIndex = 2
         Me.Button_ClearLog.Text = "Clear"
         Me.Button_ClearLog.UseVisualStyleBackColor = True
+        '
+        'Panel_DragZone
+        '
+        Me.Panel_DragZone.BackColor = System.Drawing.Color.Black
+        Me.Panel_DragZone.Location = New System.Drawing.Point(200, -2)
+        Me.Panel_DragZone.Name = "Panel_DragZone"
+        Me.Panel_DragZone.Size = New System.Drawing.Size(211, 25)
+        Me.Panel_DragZone.TabIndex = 30
+        '
+        'CheckBox_RemoveWindowFrame
+        '
+        Me.CheckBox_RemoveWindowFrame.AutoSize = True
+        Me.CheckBox_RemoveWindowFrame.Location = New System.Drawing.Point(6, 293)
+        Me.CheckBox_RemoveWindowFrame.Name = "CheckBox_RemoveWindowFrame"
+        Me.CheckBox_RemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
+        Me.CheckBox_RemoveWindowFrame.TabIndex = 32
+        Me.CheckBox_RemoveWindowFrame.Text = "Remove Window Frame"
+        Me.CheckBox_RemoveWindowFrame.UseVisualStyleBackColor = True
+        '
+        'CheckBox_DefaultRemoveWindowFrame
+        '
+        Me.CheckBox_DefaultRemoveWindowFrame.AutoSize = True
+        Me.CheckBox_DefaultRemoveWindowFrame.Location = New System.Drawing.Point(9, 191)
+        Me.CheckBox_DefaultRemoveWindowFrame.Name = "CheckBox_DefaultRemoveWindowFrame"
+        Me.CheckBox_DefaultRemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
+        Me.CheckBox_DefaultRemoveWindowFrame.TabIndex = 33
+        Me.CheckBox_DefaultRemoveWindowFrame.Text = "Remove Window Frame"
+        Me.CheckBox_DefaultRemoveWindowFrame.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
@@ -925,13 +949,13 @@ Partial Class BetterFullscreen
         Me.TabPage_ProfileSettings.ResumeLayout(False)
         Me.TabPage_ProfileSettings.PerformLayout()
         Me.TabPage_Settings.ResumeLayout(False)
-        Me.TabPage_EventLog.ResumeLayout(False)
         Me.TabControl_Settings.ResumeLayout(False)
         Me.TabPage_AppSettings.ResumeLayout(False)
         Me.TabPage_AppSettings.PerformLayout()
         Me.TabPage_ProfileDefaults.ResumeLayout(False)
         Me.TabPage_ProfileDefaults.PerformLayout()
         CType(Me.NumericUpDown_DefaultDelay, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage_EventLog.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -1011,4 +1035,6 @@ Partial Class BetterFullscreen
     Friend WithEvents NumericUpDown_DefaultDelay As NumericUpDown
     Friend WithEvents Label28 As Label
     Friend WithEvents Button_ClearLog As Button
+    Friend WithEvents CheckBox_RemoveWindowFrame As CheckBox
+    Friend WithEvents CheckBox_DefaultRemoveWindowFrame As CheckBox
 End Class
