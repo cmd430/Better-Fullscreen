@@ -324,6 +324,9 @@ Public Class BetterFullscreen
                 Task.Run(Async Function()
                              Await Task.Delay(Game.Delay)
                          End Function).Wait()
+                ' Some games change window title after inital creation we should update it after our delay
+                Game.UnsafeTitle = GetWindowTitle(Window_HWND, True)
+                CurrentGame = Game
             End If
         End If
 
@@ -334,10 +337,16 @@ Public Class BetterFullscreen
             Dim windowRect = GetWindowRectangle(Window_HWND)
             Dim correctPos = New Point(windowRect.X, windowRect.Y) = Game.Location
             Dim correctSize = New Size(windowRect.Width, windowRect.Height) = New Size(scaledWidth, scaledHeight)
-            Dim removedFrame = (GetWindowLong(Window_HWND, GWL.STYLE) And (WS.CAPTION Or WS.THICKFRAME)) = 0
+            Dim removedFrameStyle = (GetWindowLong(Window_HWND, GWL.STYLE) And (WS.CAPTION Or WS.THICKFRAME)) = 0
+            Dim removedFrameExStyle = (GetWindowLong(Window_HWND, GWL.EXSTYLE) And (WS_EX.WINDOWEDGE Or WS_EX.CLIENTEDGE)) = 0
             Dim shouldProcess As Boolean = Game.State = GameState.Started Or Game.RemoveWindowFrame ' Small fix for when not stripping window frame we still want to initally pos. + size the window
 
-            If Game.RemoveWindowFrame And Not removedFrame Then
+            If Game.RemoveWindowFrame And Not removedFrameExStyle Then ' remove all extended window styles
+                LogEvent("setting WS_EX_None")
+                SetWindowLong(Window_HWND, GWL.EXSTYLE, WS_EX.None)
+                SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE)
+            End If
+            If Game.RemoveWindowFrame And Not removedFrameStyle Then ' remove all windows styles then set WS_VISIBLE
                 LogEvent("setting WS_VISIBLE")
                 SetWindowLong(Window_HWND, GWL.STYLE, WS.VISIBLE)
                 SetWindowPos(Window_HWND, 0, 0, 0, 0, 0, SWP.NOZORDER Or SWP.NOMOVE Or SWP.NOSIZE Or SWP.FRAMECHANGED)
@@ -373,7 +382,6 @@ Public Class BetterFullscreen
 
         ' Window Unfocused / Closed
         If Game Is Nothing And CurrentGame IsNot Nothing Then
-
             Dim Game_HWND = FindWindow(CurrentGame.UnsafeClass, CurrentGame.UnsafeTitle)
             Dim CurrentWindow_HWND = GetForegroundWindow()
 
