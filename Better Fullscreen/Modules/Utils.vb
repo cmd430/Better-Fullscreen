@@ -122,7 +122,10 @@ Module Utils
     End Function
 
     Public Function IsCursorClipped() As Boolean
-        Return Cursor.Clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)
+        Dim clip = Cursor.Clip
+
+        If (clip = New Rectangle(New Point(0, 0), SystemInformation.VirtualScreen.Size)) Then Return False
+        Return True
     End Function
 
 End Module

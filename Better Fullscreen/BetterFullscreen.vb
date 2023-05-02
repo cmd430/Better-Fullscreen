@@ -1,6 +1,4 @@
-﻿Imports System.Threading.Tasks
-
-Public Class BetterFullscreen
+﻿Public Class BetterFullscreen
 
     Private ReadOnly WindowsScaleFactor As Integer = GetWindowsScaleFactor()
     Private ReadOnly Hotkeys As New Hotkeys
