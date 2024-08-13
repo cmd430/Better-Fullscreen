@@ -423,6 +423,7 @@
             .Delay = Config.Settings.DefaultDelay,
             .CaptureMouse = Config.Settings.DefaultCaptureMouse,
             .ForceTopMost = Config.Settings.DefaultForceTopMost,
+            .RemoveWindowFrame = Config.Settings.DefaultRemoveWindowFrame,
             .Name = IIf(GetProfile(.Title.Text, Config) IsNot Nothing, .Title.Text & " (" & Date.Now.ToShortDateString & " - " & Date.Now.ToShortTimeString & ")", .Title.Text)
         }
 
