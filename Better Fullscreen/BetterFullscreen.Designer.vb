@@ -86,11 +86,13 @@ Partial Class BetterFullscreen
         Me.RadioButton_TitleStartsWith = New System.Windows.Forms.RadioButton()
         Me.TabControl_Main = New System.Windows.Forms.TabControl()
         Me.TabPage_ProfileSettings = New System.Windows.Forms.TabPage()
+        Me.CheckBox_RemoveWindowFrame = New System.Windows.Forms.CheckBox()
         Me.TabPage_Settings = New System.Windows.Forms.TabPage()
         Me.TabControl_Settings = New System.Windows.Forms.TabControl()
         Me.TabPage_AppSettings = New System.Windows.Forms.TabPage()
         Me.CheckBox_ShowEventLog = New System.Windows.Forms.CheckBox()
         Me.TabPage_ProfileDefaults = New System.Windows.Forms.TabPage()
+        Me.CheckBox_DefaultRemoveWindowFrame = New System.Windows.Forms.CheckBox()
         Me.CheckBox_DefaultForceTopMost = New System.Windows.Forms.CheckBox()
         Me.CheckBox_DefaultCaptureMouse = New System.Windows.Forms.CheckBox()
         Me.Label27 = New System.Windows.Forms.Label()
@@ -99,8 +101,6 @@ Partial Class BetterFullscreen
         Me.TabPage_EventLog = New System.Windows.Forms.TabPage()
         Me.Button_ClearLog = New System.Windows.Forms.Button()
         Me.Panel_DragZone = New System.Windows.Forms.Panel()
-        Me.CheckBox_RemoveWindowFrame = New System.Windows.Forms.CheckBox()
-        Me.CheckBox_DefaultRemoveWindowFrame = New System.Windows.Forms.CheckBox()
         Me.TrayMenu.SuspendLayout()
         CType(Me.NumericUpDown_Left, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown_Top, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -465,7 +465,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_Modifier.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_Modifier.FormattingEnabled = True
         Me.ComboBox_Modifier.Items.AddRange(New Object() {"None", "Alt", "Ctrl", "Shift"})
-        Me.ComboBox_Modifier.Location = New System.Drawing.Point(213, 19)
+        Me.ComboBox_Modifier.Location = New System.Drawing.Point(100, 19)
         Me.ComboBox_Modifier.Name = "ComboBox_Modifier"
         Me.ComboBox_Modifier.Size = New System.Drawing.Size(97, 21)
         Me.ComboBox_Modifier.TabIndex = 0
@@ -502,7 +502,7 @@ Partial Class BetterFullscreen
         Me.ComboBox_Key.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.ComboBox_Key.FormattingEnabled = True
         Me.ComboBox_Key.Items.AddRange(New Object() {"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12"})
-        Me.ComboBox_Key.Location = New System.Drawing.Point(101, 19)
+        Me.ComboBox_Key.Location = New System.Drawing.Point(213, 19)
         Me.ComboBox_Key.Name = "ComboBox_Key"
         Me.ComboBox_Key.Size = New System.Drawing.Size(97, 21)
         Me.ComboBox_Key.TabIndex = 22
@@ -733,6 +733,16 @@ Partial Class BetterFullscreen
         Me.TabPage_ProfileSettings.TabIndex = 0
         Me.TabPage_ProfileSettings.Text = "Profile Settings"
         '
+        'CheckBox_RemoveWindowFrame
+        '
+        Me.CheckBox_RemoveWindowFrame.AutoSize = True
+        Me.CheckBox_RemoveWindowFrame.Location = New System.Drawing.Point(6, 293)
+        Me.CheckBox_RemoveWindowFrame.Name = "CheckBox_RemoveWindowFrame"
+        Me.CheckBox_RemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
+        Me.CheckBox_RemoveWindowFrame.TabIndex = 32
+        Me.CheckBox_RemoveWindowFrame.Text = "Remove Window Frame"
+        Me.CheckBox_RemoveWindowFrame.UseVisualStyleBackColor = True
+        '
         'TabPage_Settings
         '
         Me.TabPage_Settings.BackColor = System.Drawing.Color.White
@@ -761,9 +771,7 @@ Partial Class BetterFullscreen
         Me.TabPage_AppSettings.BackColor = System.Drawing.Color.White
         Me.TabPage_AppSettings.Controls.Add(Me.Label19)
         Me.TabPage_AppSettings.Controls.Add(Me.CheckBox_ShowEventLog)
-        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Modifier)
         Me.TabPage_AppSettings.Controls.Add(Me.Label26)
-        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Key)
         Me.TabPage_AppSettings.Controls.Add(Me.Label25)
         Me.TabPage_AppSettings.Controls.Add(Me.Label21)
         Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_TriggerEvents)
@@ -771,6 +779,8 @@ Partial Class BetterFullscreen
         Me.TabPage_AppSettings.Controls.Add(Me.CheckBox_StartHidden)
         Me.TabPage_AppSettings.Controls.Add(Me.Label24)
         Me.TabPage_AppSettings.Controls.Add(Me.CheckBox_StartWithWindows)
+        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Modifier)
+        Me.TabPage_AppSettings.Controls.Add(Me.ComboBox_Key)
         Me.TabPage_AppSettings.Location = New System.Drawing.Point(4, 22)
         Me.TabPage_AppSettings.Name = "TabPage_AppSettings"
         Me.TabPage_AppSettings.Padding = New System.Windows.Forms.Padding(3)
@@ -815,6 +825,16 @@ Partial Class BetterFullscreen
         Me.TabPage_ProfileDefaults.Size = New System.Drawing.Size(316, 310)
         Me.TabPage_ProfileDefaults.TabIndex = 1
         Me.TabPage_ProfileDefaults.Text = "Profile Defaults"
+        '
+        'CheckBox_DefaultRemoveWindowFrame
+        '
+        Me.CheckBox_DefaultRemoveWindowFrame.AutoSize = True
+        Me.CheckBox_DefaultRemoveWindowFrame.Location = New System.Drawing.Point(9, 191)
+        Me.CheckBox_DefaultRemoveWindowFrame.Name = "CheckBox_DefaultRemoveWindowFrame"
+        Me.CheckBox_DefaultRemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
+        Me.CheckBox_DefaultRemoveWindowFrame.TabIndex = 33
+        Me.CheckBox_DefaultRemoveWindowFrame.Text = "Remove Window Frame"
+        Me.CheckBox_DefaultRemoveWindowFrame.UseVisualStyleBackColor = True
         '
         'CheckBox_DefaultForceTopMost
         '
@@ -895,26 +915,6 @@ Partial Class BetterFullscreen
         Me.Panel_DragZone.Name = "Panel_DragZone"
         Me.Panel_DragZone.Size = New System.Drawing.Size(211, 25)
         Me.Panel_DragZone.TabIndex = 30
-        '
-        'CheckBox_RemoveWindowFrame
-        '
-        Me.CheckBox_RemoveWindowFrame.AutoSize = True
-        Me.CheckBox_RemoveWindowFrame.Location = New System.Drawing.Point(6, 293)
-        Me.CheckBox_RemoveWindowFrame.Name = "CheckBox_RemoveWindowFrame"
-        Me.CheckBox_RemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
-        Me.CheckBox_RemoveWindowFrame.TabIndex = 32
-        Me.CheckBox_RemoveWindowFrame.Text = "Remove Window Frame"
-        Me.CheckBox_RemoveWindowFrame.UseVisualStyleBackColor = True
-        '
-        'CheckBox_DefaultRemoveWindowFrame
-        '
-        Me.CheckBox_DefaultRemoveWindowFrame.AutoSize = True
-        Me.CheckBox_DefaultRemoveWindowFrame.Location = New System.Drawing.Point(9, 191)
-        Me.CheckBox_DefaultRemoveWindowFrame.Name = "CheckBox_DefaultRemoveWindowFrame"
-        Me.CheckBox_DefaultRemoveWindowFrame.Size = New System.Drawing.Size(140, 17)
-        Me.CheckBox_DefaultRemoveWindowFrame.TabIndex = 33
-        Me.CheckBox_DefaultRemoveWindowFrame.Text = "Remove Window Frame"
-        Me.CheckBox_DefaultRemoveWindowFrame.UseVisualStyleBackColor = True
         '
         'BetterFullscreen
         '
